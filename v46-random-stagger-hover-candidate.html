@@ -46,7 +46,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"New 
 .word-inner{display:inline-block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(1);will-change:transform;pointer-events:none;transition:transform 180ms cubic-bezier(.2,.72,.2,1)}
 .word.is-hovered .word-inner{transform:scaleY(-1)}
 .char{display:inline-block;line-height:1;will-change:opacity,transform;pointer-events:none}
-.char-flip{display:inline-block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(1);will-change:transform;transition:transform 167ms cubic-bezier(.2,.72,.2,1);pointer-events:none}
+.char-flip{display:inline-block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(1);will-change:transform;transition:transform 230ms cubic-bezier(.2,.72,.2,1);pointer-events:none}
 .char-flip.is-flipped{transform:scaleY(-1)}
 
 .photo-module{position:absolute;z-index:4;right:5.7%;top:18%;width:min(31vw,430px);aspect-ratio:1;cursor:auto;user-select:none}
@@ -243,7 +243,9 @@ function intro(){const cs=[...document.querySelectorAll('.char')];cs.forEach(c=>
 // present in the DOM from the v42 click-exit structure) with a small independent
 // random delay, instead of the whole word flipping as one unit (v45) or letters
 // flipping in left-to-right order (v44). Hit box stays stationary (unchanged).
-const MENU_FLIP_STAGGER_MS=90;
+// Slowed slightly per William's 2026-09-04 feedback: stagger window 90ms -> 130ms,
+// per-letter flip transition 167ms -> 230ms (see .char-flip CSS).
+const MENU_FLIP_STAGGER_MS=130;
 words.forEach(w=>{
   let inside=false;
   let hoverToken=0;
