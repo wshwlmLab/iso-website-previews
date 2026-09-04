@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Il Suono Organizzato — Soglia — prototipo isolato: ciclo frasi L/M/N (enter/exit)</title>
+<style>
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Book.otf") format("opentype");
+  font-weight:400;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Bold.otf") format("opentype");
+  font-weight:700;font-style:normal;font-display:swap;
+}
+html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"New Heterodox Mono","Courier New",monospace}
+#stage{
+  position:absolute;inset:0;background:#fff;color:#090909;
+  display:flex;align-items:center;justify-content:center;
+}
+#sentence{
+  display:flex;flex-wrap:wrap;justify-content:center;align-content:center;
+  max-width:78vw;gap:0 .9ch;
+  font-size:clamp(20px,3.4vw,40px);line-height:1.32;font-weight:500;
+  letter-spacing:.01em;text-align:center;
+}
+.word{display:inline-flex;white-space:nowrap;will-change:transform,opacity}
+.char{display:inline-block;line-height:1}
+#hud{
+  position:absolute;left:0;right:0;bottom:3vh;text-align:center;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;
+  opacity:.55;pointer-events:none;
+}
+#hud b{opacity:1}
+</style>
+</head>
+<body>
+<div id="stage"><div id="sentence"></div></div>
+<div id="hud">DA VERIFICARE — prototipo isolato, non integrato in Soglia — fase corrente: <b id="hudPhase">L</b></div>
+
+<script>
+(() => {
+// ---------- DA VERIFICARE: solo le parole/struttura sono quelle approvate da William
+// (L, M, N). Layout (a capo naturale, non griglia a righe fissa) e timing di ciclo
+// sono una prima proposta mia, non ancora confermati — pensati per far leggere
+// chiaramente il meccanismo di entrata/uscita, non come composizione finale.
+const PHRASES = {
+  L: [
+    ['FORME',''],['CHE',''],['NASCONO',''],['NEL',''],['SUONO',''],['CREANO',''],
+    ['RELAZIONI',','],['IMMAGINI',','],['SPAZI',','],['STORIE','.']
+  ],
+  M: [
+    ['RELAZIONI',','],['IMMAGINI',','],['SPAZI',','],['STORIE',':'],
+    ['NASCONO',''],['NEL',''],['SUONO',','],['CREANO',''],['FORME','.']
+  ],
+  N: [
+    ['SUONO','.'],['RELAZIONI',','],['IMMAGINI',','],['SPAZI',','],['STORIE','.'],
+    ['CHE',''],['NASCONO',','],['CHE',''],['CREANO',''],['FORME','.']
+  ]
+};
+const ORDER=['L','M','N'];
+const DWELL_MS=3200;      // how long a phrase stays fully formed before the next swap starts
+const TRANSITION_MS=650;  // FLIP / enter / exit duration
+const ENTER_EXIT_OFFSET_PX=64; // how far "outside" new/removed words start/end from
+
+const sentenceEl=document.getElementById('sentence');
+const hudPhase=document.getElementById('hudPhase');
+let orderIdx=0;
+let wordEls=[]; // parallel to current phrase's word array: {text, punct, el, key}
+
+function keyFor(text,occurrenceIndex){return text+'#'+occurrenceIndex;}
+
+function buildWordEl(text,punct){
+  const w=document.createElement('span');
+  w.className='word';
+  [...text].forEach(ch=>{
+    const c=document.createElement('span');
+    c.className='char';
+    c.textContent=ch;
+    w.appendChild(c);
+  });
+  if(punct){
+    const c=document.createElement('span');
+    c.className='char';
+    c.textContent=punct;
+    w.appendChild(c);
+  }
+  return w;
+}
+
+function currentKeyedWords(phraseId){
+  const seen={};
+  return PHRASES[phraseId].map(([text,punct])=>{
+    seen[text]=(seen[text]||0)+1;
+    return {text,punct,key:keyFor(text,seen[text])};
+  });
+}
+
+function renderInitial(phraseId){
+  const words=currentKeyedWords(phraseId);
+  words.forEach(w=>{
+    w.el=buildWordEl(w.text,w.punct);
+    sentenceEl.appendChild(w.el);
+  });
+  wordEls=words;
+  hudPhase.textContent=phraseId;
+}
+
+function transitionTo(phraseId){
+  const oldWords=wordEls;
+  const oldByKey={};
+  oldWords.forEach(w=>{oldByKey[w.key]=w;});
+
+  const newWords=currentKeyedWords(phraseId);
+  const newByKey={};
+  newWords.forEach(w=>{newByKey[w.key]=w;});
+
+  // 1. Record FIRST rects for words that will persist.
+  const firstRects={};
+  oldWords.forEach(w=>{
+    if(newByKey[w.key]) firstRects[w.key]=w.el.getBoundingClientRect();
+  });
+
+  // 2. Words leaving: animate out, then remove.
+  oldWords.forEach(w=>{
+    if(newByKey[w.key]) return;
+    const el=w.el;
+    el.style.transition='none';
+    el.style.transform='translateY(0) translateX(0)';
+    el.style.opacity='1';
+    requestAnimationFrame(()=>{
+      el.style.transition=`transform ${TRANSITION_MS}ms cubic-bezier(.3,.7,.2,1), opacity ${TRANSITION_MS}ms ease`;
+      el.style.transform=`translateY(${ENTER_EXIT_OFFSET_PX}px)`;
+      el.style.opacity='0';
+    });
+    setTimeout(()=>{el.remove();},TRANSITION_MS+40);
+  });
+
+  // 3. Rebuild sentence DOM in the new word order (persisting elements are reused,
+  //    new ones are freshly built and appended in place).
+  newWords.forEach(w=>{
+    if(oldByKey[w.key]){
+      w.el=oldByKey[w.key].el;
+    }else{
+      w.el=buildWordEl(w.text,w.punct);
+    }
+    sentenceEl.appendChild(w.el);
+  });
+
+  // 4. New words: start from "outside" (above, faded out), will animate to identity.
+  newWords.forEach(w=>{
+    if(oldByKey[w.key]) return;
+    w.el.style.transition='none';
+    w.el.style.transform=`translateY(${-ENTER_EXIT_OFFSET_PX}px)`;
+    w.el.style.opacity='0';
+  });
+
+  // 5. Persisting words: FLIP — measure LAST, apply inverse of the delta, then
+  //    play to identity so they visibly glide from old position to new position.
+  requestAnimationFrame(()=>{
+    newWords.forEach(w=>{
+      if(!oldByKey[w.key])return;
+      const first=firstRects[w.key];
+      const last=w.el.getBoundingClientRect();
+      const dx=first.left-last.left, dy=first.top-last.top;
+      w.el.style.transition='none';
+      w.el.style.transform=`translate(${dx}px,${dy}px)`;
+      w.el.style.opacity='1';
+    });
+    requestAnimationFrame(()=>{
+      newWords.forEach(w=>{
+        w.el.style.transition=`transform ${TRANSITION_MS}ms cubic-bezier(.3,.7,.2,1), opacity ${TRANSITION_MS}ms ease`;
+        w.el.style.transform='translate(0,0)';
+        w.el.style.opacity='1';
+      });
+    });
+  });
+
+  wordEls=newWords;
+  hudPhase.textContent=phraseId;
+}
+
+function cycle(){
+  orderIdx=(orderIdx+1)%ORDER.length;
+  transitionTo(ORDER[orderIdx]);
+  setTimeout(cycle,DWELL_MS+TRANSITION_MS);
+}
+
+renderInitial(ORDER[0]);
+setTimeout(cycle,DWELL_MS);
+})();
+</script>
+</body>
+</html>
