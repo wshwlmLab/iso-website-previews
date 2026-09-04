@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WORKS — v37 — linked director + mute + stable fullscreen QA</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Book.otf") format("opentype");
+  font-style:normal;
+  font-weight:400 500;
+  font-display:swap;
+}
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Bold.otf") format("opentype");
+  font-style:normal;
+  font-weight:600 900;
+  font-display:swap;
+}
+:root{
+  --side:5.55vw;
+  --large-w:88.9vw;
+  --large-h:50.00625vw;
+  --medium-w:79vw;
+  --medium-h:44.4375vw;
+  --gap:7.5vh;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;color:#fff;font-family:"New Heterodox Mono","Courier New",monospace}
+html{overflow-x:hidden}
+body{min-height:100vh;overflow-x:hidden}
+.top-ui{
+  position:fixed;top:14px;left:0;right:0;z-index:1000;
+  display:flex;justify-content:center;
+  font-size:10px;letter-spacing:.08em;color:#fff;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.scroll-hint{
+  position:fixed;top:14px;right:18px;z-index:1000;
+  font-size:9px;letter-spacing:.08em;color:#fff;opacity:.48;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.topspace{height:44vh;min-height:320px}
+.endspace{height:42vh}
+
+.project{
+  position:relative;width:100vw;margin-bottom:var(--gap);
+}
+.project.large{height:var(--large-h)}
+.project.medium{height:var(--medium-h)}
+.media{
+  position:absolute;top:0;overflow:hidden;background:#111;
+}
+.media::after{
+  content:"";
+  position:absolute;inset:0;z-index:5;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .38s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .media::after{
+  opacity:.31;
+}
+.project.is-opening .media::after{
+  opacity:.52;
+  transition:opacity .26s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .line-inner,
+.project.is-opening .line-inner{color:#fff}
+.large .media{left:var(--side);width:var(--large-w);height:var(--large-h)}
+.medium .media{width:var(--medium-w);height:var(--medium-h)}
+.medium.left .media{left:var(--side)}
+.medium.right .media{right:var(--side)}
+
+/* STEP B v21 — one canonical visible-video geometry.
+   Only the inner video moves on entry. Motion is DIRECTLY scroll-linked
+   (no independent spring lag), so it is guaranteed to be at 0 before top exit. */
+.video-layer{
+  position:absolute;inset:0;
+  will-change:transform;
+  transform:translate3d(0,0,0);
+}
+
+.video-frame{
+  position:absolute;
+  inset:-3.8%;
+  width:107.6%;
+  height:107.6%;
+  border:0;
+  display:block;
+  background:#000;
+  transform:scale(1.035);
+  pointer-events:none;
+}
+.media .underlay{
+  position:absolute;
+  inset:0;
+  background:#050505;
+}
+
+/* Critical change:
+   this full-width layer is exactly as tall as the video.
+   Text can extend sideways into black, but NEVER vertically beyond the video. */
+.copy-clip{
+  position:absolute;left:0;top:0;width:100vw;height:100%;
+  overflow:hidden;z-index:40;pointer-events:none;
+}
+.line-mask{
+  position:absolute;left:0;top:0;width:100vw;
+  overflow:hidden;pointer-events:none;
+  will-change:transform;
+}
+.line-inner{
+  position:absolute;left:0;top:0;width:max-content;max-width:97vw;
+  color:rgba(255,255,255,.50);white-space:nowrap;
+  transition:color .30s cubic-bezier(.22,.61,.36,1);
+  will-change:transform,opacity,filter;
+  pointer-events:auto;
+  cursor:pointer;
+}
+.title-mask{height:clamp(48px,7.4vw,118px)}
+.director-mask{height:clamp(18px,2.2vw,36px)}
+.title{
+  font-size:clamp(48px,7vw,112px);line-height:.92;
+  letter-spacing:-.029em;font-weight:700;
+}
+.director{
+  font-size:clamp(14px,1.65vw,27px);line-height:1;
+  font-weight:400;text-transform:uppercase;
+  letter-spacing:.01em;
+}
+.director .credit-label{
+  font-size:.62em;
+  letter-spacing:.10em;
+  opacity:.78;
+  margin-right:.72em;
+  vertical-align:.08em;
+}
+.director .credit-name{
+  font-size:1em;
+  letter-spacing:.01em;
+  opacity:1;
+}
+.medium .title{font-size:clamp(41px,5.7vw,91px)}
+.medium .director{font-size:clamp(13px,1.45vw,23px)}
+.medium .title-mask{height:clamp(42px,6.1vw,98px)}
+.medium .director-mask{height:clamp(17px,2vw,31px)}
+
+@media(max-width:800px){
+  :root{
+    --side:5vw;
+    --large-w:90vw;--large-h:50.625vw;
+    --medium-w:82vw;--medium-h:46.125vw;
+    --gap:6.8vh;
+  }
+  .title{font-size:10.7vw}
+  .director{font-size:2.7vw}
+  .medium .title{font-size:9.1vw}
+  .medium .director{font-size:2.4vw}
+  .top-ui,.scroll-hint{font-size:8px}
+}
+</style>
+
+<style id="trailer-v30-style">
+[data-trailer-trigger]{cursor:pointer}
+body.trailer-open{overflow:hidden}
+body.trailer-open::after{
+  content:"";position:fixed;top:0;right:0;width:8.5vw;height:100vh;z-index:4998;
+  backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  -webkit-backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  background:rgba(0,0,0,.08);pointer-events:none;
+  opacity:1;transition:opacity .55s ease;
+}
+.trailer-panel{
+  position:fixed;left:0;top:0;width:91.5vw;height:100vh;z-index:5000;
+  color:#fff;transform:translate3d(-100%,0,0);
+  transition:transform 1.72s cubic-bezier(.19,1,.22,1);
+  visibility:hidden;pointer-events:none;overflow:visible;
+  font-family:"New Heterodox Mono","Courier New",monospace;
+  will-change:transform;
+}
+.trailer-panel.is-visible{visibility:visible}
+.trailer-panel.is-open{transform:translate3d(0,0,0);pointer-events:auto}
+.trailer-panel-inner{position:absolute;inset:0;background:#000;overflow:hidden}
+.trailer-brand{
+  position:absolute;top:15px;left:0;width:100%;z-index:8;
+  display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;
+  padding:0 clamp(22px,2.6vw,50px);box-sizing:border-box;
+  font-size:clamp(24px,2.15vw,42px);line-height:.95;letter-spacing:.02em;font-weight:700;
+  opacity:0;transform:translateY(-2px);
+  transition:opacity .62s ease .58s,transform .72s cubic-bezier(.19,1,.22,1) .52s;
+  white-space:nowrap;pointer-events:none;
+}
+.trailer-brand span:nth-child(1){justify-self:start}
+.trailer-brand span:nth-child(2){justify-self:center}
+.trailer-brand span:nth-child(3){justify-self:end}
+.trailer-panel.is-open .trailer-brand{opacity:1;transform:none}
+.trailer-panel.is-exiting .trailer-brand{opacity:0;transform:translateY(-4px);transition:opacity .52s ease,transform .62s cubic-bezier(.19,1,.22,1)}
+
+/* PrettyBird-like player: picture + controls UNDER the picture, no platform chrome. */
+.trailer-player-wrap{
+  position:absolute;left:50%;top:50%;z-index:3;
+  width:min(84vw,calc(76vh * 16 / 9));
+  transform:translate(-50%,-48.5%) scale(.994);
+  opacity:0;transition:opacity .70s ease .54s,transform 1.02s cubic-bezier(.19,1,.22,1) .46s;
+  cursor:auto;
+}
+.trailer-panel.is-open .trailer-player-wrap{opacity:1;transform:translate(-50%,-48.5%) scale(1)}
+
+.trailer-fullscreen-stage{position:relative;width:100%;background:#000;transform-origin:center center}
+/* v33: cinematic fullscreen is a single in-page FLIP gesture. No native fullscreen jump/flash. */
+.trailer-fullscreen-stage.is-cinematic-fullscreen{
+  position:fixed;inset:0;width:100vw;height:100vh;z-index:9000;background:#000;overflow:hidden;
+}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-video-surface{
+  position:absolute;inset:0;width:100vw;height:100vh;aspect-ratio:auto;background:#000;
+}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-video-surface video{
+  width:100vw;height:100vh;object-fit:contain;background:#000;
+}
+/* Cinematic fullscreen begins as pure picture. Controls return only after real pointer movement. */
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-controls{
+  position:absolute;left:clamp(22px,3vw,52px);right:clamp(22px,3vw,52px);bottom:clamp(16px,2.5vh,30px);
+  width:auto;height:58px;z-index:20;margin:0;padding:0 8px;
+  grid-template-columns:58px minmax(0,1fr) 60px 60px;gap:14px;
+  background:linear-gradient(to top,rgba(0,0,0,.50),rgba(0,0,0,.14) 62%,rgba(0,0,0,0));
+  opacity:0!important;pointer-events:none!important;transition:opacity .32s ease;
+}
+.trailer-fullscreen-stage.is-cinematic-fullscreen.fs-controls-active .trailer-controls{opacity:1!important;pointer-events:auto!important}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-control-btn{width:56px;height:56px}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-control-btn svg{width:32px;height:32px}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-preview-tip{bottom:58px}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-time-tip{bottom:38px}
+.trailer-fullscreen-stage.is-cinematic-fullscreen .trailer-volume-pop{bottom:55px}
+body.cinematic-fullscreen-open{overflow:hidden}
+/* v37: keep the SAME video element in the SAME DOM branch during fullscreen.
+   Safari/desktop compositors can black-frame a playing video when it is reparented. */
+.trailer-panel.is-fullscreen-host{transform:none!important;width:100vw!important;overflow:visible!important}
+.trailer-panel.is-fullscreen-host .trailer-panel-inner{overflow:visible!important}
+body.cinematic-fullscreen-open::after{opacity:0!important;pointer-events:none!important}
+.trailer-video-surface{
+  position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;
+}
+.trailer-video-surface video{
+  position:absolute;inset:0;width:100%;height:100%;display:block;background:#000;object-fit:contain;cursor:auto;
+  opacity:0;transition:opacity .30s ease;
+}
+.trailer-player-wrap.media-ready .trailer-video-surface video{opacity:1}
+.trailer-player-wrap.closing-black .trailer-video-surface video{opacity:0;transition:opacity .22s ease}
+.trailer-player-wrap.closing-black .trailer-controls{opacity:0!important;pointer-events:none!important}
+.trailer-loader{
+  position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
+  border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;
+  animation:trailerSpin .82s linear infinite;z-index:6;opacity:0;transition:opacity .22s ease;pointer-events:none;
+}
+.trailer-loader.is-loading{opacity:1}
+@keyframes trailerSpin{to{transform:rotate(360deg)}}
+
+.trailer-controls{
+  position:relative;width:100%;height:38px;margin-top:0;
+  display:grid;grid-template-columns:44px minmax(0,1fr) 46px 46px;gap:10px;align-items:center;
+  padding:0 0 0 0;background:#000;
+  opacity:0;transition:opacity .20s ease;pointer-events:none;
+}
+.trailer-player-wrap.controls-active .trailer-controls,
+.trailer-player-wrap:hover .trailer-controls{opacity:1;pointer-events:auto}
+.trailer-control-btn{
+  appearance:none;border:0;background:transparent;color:#fff;padding:0;margin:0;width:42px;height:42px;
+  display:grid;place-items:center;cursor:pointer;
+}
+.trailer-control-btn svg{width:27px;height:27px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.trailer-control-btn .fill-icon{fill:currentColor;stroke:none}
+.trailer-control-btn:focus-visible{outline:1px solid rgba(255,255,255,.9);outline-offset:2px}
+
+.trailer-progress{position:relative;height:42px;cursor:pointer;min-width:0;display:flex;align-items:center}
+.trailer-progress-track{position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%);background:#4c4c4c}
+.trailer-progress-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+.trailer-progress-knob{position:absolute;top:50%;left:0;width:7px;height:7px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);opacity:0;transition:opacity .12s ease}
+.trailer-progress:hover .trailer-progress-knob{opacity:1}
+.trailer-time-tip{
+  position:absolute;bottom:27px;left:0;transform:translateX(-50%);
+  font:700 10px/1 Arial,Helvetica,sans-serif;white-space:nowrap;background:#fff;color:#111;
+  padding:4px 5px 3px;border-radius:2px;opacity:0;pointer-events:none;
+}
+.trailer-progress:hover .trailer-time-tip{opacity:1}
+.trailer-preview-tip{
+  position:absolute;bottom:42px;left:0;width:142px;aspect-ratio:16/9;
+  transform:translateX(-50%);background:#070707;border:1px solid rgba(255,255,255,.38);
+  opacity:0;pointer-events:none;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.45);
+}
+.trailer-progress:hover .trailer-preview-tip{opacity:1}
+.trailer-preview-tip img{display:block;width:100%;height:100%;object-fit:cover;background:#111}
+.trailer-preview-time{
+  position:absolute;left:0;right:0;bottom:0;height:19px;background:rgba(0,0,0,.82);color:#fff;
+  display:grid;place-items:center;font:700 10px/1 Arial,Helvetica,sans-serif;
+}
+.trailer-volume-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-volume-pop{
+  position:absolute;left:50%;bottom:34px;width:58px;height:148px;transform:translateX(-50%);
+  background:rgba(0,0,0,.90);border:1px solid rgba(255,255,255,.18);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .16s ease;
+}
+/* Invisible bridge overlaps the icon area so the popup cannot vanish while the pointer travels upward. */
+.trailer-volume-pop::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-30px;height:34px}
+.trailer-volume-wrap:hover .trailer-volume-pop,.trailer-volume-wrap.volume-open .trailer-volume-pop,.trailer-volume-pop.is-active{opacity:1;pointer-events:auto}
+/* 30px real hit target around a 4px visual rail. */
+.trailer-volume-track{position:relative;width:30px;height:116px;background:transparent;cursor:ns-resize;touch-action:none}
+.trailer-volume-track::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:#505050}
+.trailer-volume-fill{position:absolute;left:50%;bottom:0;width:4px;height:100%;transform:translateX(-50%);background:#fff}
+.trailer-volume-knob{position:absolute;left:50%;bottom:100%;width:12px;height:12px;border-radius:50%;background:#fff;transform:translate(-50%,50%);pointer-events:none}
+
+.trailer-close{
+  position:absolute;right:-4.25vw;top:50%;z-index:15;width:58px;height:58px;
+  transform:translate(50%,-50%);border:1px solid rgba(255,255,255,.94);border-radius:50%;
+  background:#000;color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;opacity:0;
+  transition:opacity .42s ease .60s,transform .34s cubic-bezier(.19,1,.22,1);
+}
+.trailer-close .close-x{position:relative;width:21px;height:21px;display:block;transition:transform .42s cubic-bezier(.19,1,.22,1)}
+.trailer-close .close-x::before,.trailer-close .close-x::after{
+  content:"";position:absolute;left:50%;top:50%;width:23px;height:1.4px;background:#fff;transform-origin:center;
+}
+.trailer-close .close-x::before{transform:translate(-50%,-50%) rotate(45deg)}
+.trailer-close .close-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.trailer-panel.is-open .trailer-close{opacity:1}
+.trailer-panel.is-closing .trailer-close{opacity:0;transition:opacity .34s ease 0s;transform:translate(48%,-50%)}
+.trailer-close:hover .close-x{transform:rotate(90deg)}
+.trailer-close:focus-visible{outline:1px solid rgba(255,255,255,.8);outline-offset:4px}
+
+@media(max-width:800px){
+  body.trailer-open::after{width:8vw;backdrop-filter:blur(9px) brightness(.72);-webkit-backdrop-filter:blur(9px) brightness(.72)}
+  .trailer-panel{width:92vw}
+  .trailer-player-wrap{width:min(88vw,calc(72vh * 16 / 9))}
+  .trailer-close{right:-4vw;width:50px;height:50px}
+  .trailer-brand{top:14px;font-size:clamp(20px,5vw,30px);padding:0 18px}
+  .trailer-preview-tip{width:108px}
+}
+</style>
+
+</head>
+<body>
+<div class="top-ui">WORKS — v37 — 4 FILMS / PLAYER QA</div>
+<div class="scroll-hint">SCROLL ↓ / ↑</div>
+<div class="topspace"></div>
+
+<section class="project large"
+  data-trailer-uid="55556633b51205cada191208d9a8434d"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA GIOIA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/55556633b51205cada191208d9a8434d/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA GIOIA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">NICOLANGELO GELORMINI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium right"
+  data-trailer-uid="961ad447c679f89f44df207c36097e76"
+  data-title-x="27.8"
+  data-hover-mode="align-to-offset-gentle"
+  data-start-anchor="0.10"
+  data-end-anchor="0.40"
+  data-director-start="0.372"
+  data-director-end="0.295"
+  data-director-k="22.5"
+  data-director-d="9.9" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview IDDU — L’ULTIMO PADRINO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/961ad447c679f89f44df207c36097e76/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>IDDU — L’ULTIMO PADRINO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">FABIO GRASSADONIA / ANTONIO PIAZZA</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="74d87806ed367e9f161f57787d008ce0"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.42"
+  data-end-anchor="0.20"
+  data-director-start="0.385"
+  data-director-end="0.305"
+  data-director-k="24"
+  data-director-d="10.0" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA CITTÀ PROIBITA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/74d87806ed367e9f161f57787d008ce0/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA CITTÀ PROIBITA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">GABRIELE MAINETTI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="6039cd93b27aa495737af3065c55d9e0"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.14"
+  data-end-anchor="0.42"
+  data-director-start="0.405"
+  data-director-end="0.325"
+  data-director-k="29"
+  data-director-d="10.8" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview COMANDANTE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/6039cd93b27aa495737af3065c55d9e0/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>COMANDANTE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">EDOARDO DE ANGELIS</span></div></div>
+  </div>
+</section>
+
+<div class="endspace"></div>
+
+<script>
+(()=>{
+  const projects=[...document.querySelectorAll('.project')];
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const smooth=(a,b,x)=>{
+    const t=clamp((x-a)/(b-a),0,1);
+    return t*t*(3-2*t);
+  };
+
+  function springStep(s,target,dt,k,c){
+    const t=Math.min(dt,40)/1000;
+    const a=(target-s.x)*k-s.v*c;
+    s.v+=a*t;
+    s.x+=s.v*t;
+    return s.x;
+  }
+
+  const states=new Map();
+  projects.forEach(p=>{
+    states.set(p,{
+      titleIn:{x:0,v:0},
+      directorIn:{x:0,v:0},
+      titleOut:{x:0,v:0},
+      directorOut:{x:0,v:0},
+      xTitle:{x:Number(p.dataset.titleX),v:0},
+      xDirector:{x:Number(p.dataset.titleX),v:0},
+      hover:{x:0,v:0},
+      hoverTarget:0,
+      directorDelayStart:null,
+      directorDelayArmed:false
+    });
+  });
+
+  let pointerX=-9999, pointerY=-9999;
+  let hoverProject=null;
+
+  /* IMPORTANT:
+     Hover is activated ONLY by a real pointer-move event.
+     Scrolling a text underneath a stationary cursor cannot trigger it. */
+  addEventListener('pointermove',e=>{
+    pointerX=e.clientX;
+    pointerY=e.clientY;
+
+    let hit=null;
+
+    for(const p of projects){
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+      const tr=title.getBoundingClientRect();
+      const dr=director.getBoundingClientRect();
+      const pad=16;
+
+      const overTitle=
+        pointerX>=tr.left-pad && pointerX<=tr.right+pad &&
+        pointerY>=tr.top-pad && pointerY<=tr.bottom+pad;
+
+      const overDirector=
+        pointerX>=dr.left-pad && pointerX<=dr.right+pad &&
+        pointerY>=dr.top-pad && pointerY<=dr.bottom+pad;
+
+      if(overTitle||overDirector){
+        hit=p;
+        break;
+      }
+    }
+
+    hoverProject=hit;
+  },{passive:true});
+
+  addEventListener('pointerleave',()=>{
+    pointerX=-9999;
+    pointerY=-9999;
+    hoverProject=null;
+  },{passive:true});
+
+  /* MEDIA ENTRY — stable geometry, not a second animation system.
+     Root cause carried from v19:
+     - the black-tail amount is a FIXED optical pixel measure derived from the
+       approved large reference, so medium/large cards get the same visible gap;
+     - the reveal is a deterministic eased function of scroll position, with
+       no spring state that can lag behind during top exit;
+     - visibleVideoTop is the canonical visual edge used by text clipping + QA. */
+  const MEDIA_TAIL_REF=0.58;
+  const MEDIA_ENTRY_BAND_REF=1.00;
+  // Screen-recording-derived guard: the active picture occupies the upper
+  // portion of the 16:9 Cloudflare player box; the remaining lower band is
+  // player/source black and MUST NOT be treated as image for copy geometry.
+  // v22: keep the picture-safe guard but lower the text baseline again.
+  // Use a much fuller active-picture height so the director line sits lower,
+  // while still preserving a small protected lower band for the black-bar issue.
+  const PICTURE_SAFE_RATIO=0.88;
+  const mediaEase=t=>{
+    t=clamp(t,0,1);
+    // slightly slower discovery for a more visible upward reveal, still reversible
+    return t*t*(3-2*t);
+  };
+  const mediaRevealFor=(mr,refH)=>{
+    const tailPx=refH*MEDIA_TAIL_REF;
+    const bandPx=refH*MEDIA_ENTRY_BAND_REF;
+    const progress=mediaEase((innerHeight-mr.top)/Math.max(1,bandPx));
+    return tailPx*(1-progress);
+  };
+
+  let prev=performance.now();
+
+  function frame(now){
+    const dt=now-prev; prev=now;
+    const vh=innerHeight;
+
+    projects.forEach(p=>{
+      const s=states.get(p);
+      const media=p.querySelector('.media');
+      const mr=media.getBoundingClientRect();
+      const pr=p.getBoundingClientRect();
+
+      // Canonical visual video rectangle. The reveal uses a fixed px tail based
+      // on the first large media, so every pair has the same optical black gap.
+      const refMediaRect=projects[0].querySelector('.media').getBoundingClientRect();
+      const revealPx=mediaRevealFor(mr,refMediaRect.height);
+      const mediaLayer=p.querySelector('[data-video-layer]');
+      mediaLayer.style.transform=`translate3d(0,${revealPx.toFixed(3)}px,0)`;
+      mediaLayer.dataset.revealPx=revealPx.toFixed(3);
+      const pictureTop=Math.min(mr.bottom, mr.top+revealPx);
+      const pictureNominalHeight=mr.height*PICTURE_SAFE_RATIO;
+      const pictureBottom=Math.min(mr.bottom, pictureTop+pictureNominalHeight);
+      const pictureHeight=Math.max(0,pictureBottom-pictureTop);
+      p.dataset.pictureTop=pictureTop.toFixed(3);
+      p.dataset.pictureBottom=pictureBottom.toFixed(3);
+
+      const titleMask=p.querySelector('.title-mask');
+      const directorMask=p.querySelector('.director-mask');
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+
+      const titleH=titleMask.offsetHeight;
+      const directorH=directorMask.offsetHeight;
+      const large=p.classList.contains('large');
+
+      /* VERTICAL GEOMETRY — v10.
+         ONE optical source of truth: the real visible .media rectangle.
+         copy-clip, bottom anchor, sticky coordinates and exit all use this box.
+         The approved La gioia bottom air is reused in pixels on every format. */
+      const copyClip=p.querySelector('.copy-clip');
+      const titleLineH=title.offsetHeight;
+      const directorLineH=director.offsetHeight;
+
+      // HARD STRUCTURAL FIX: copy-clip itself is the conservative ACTIVE PICTURE
+      // window, not the 16:9 player box. Descendant text therefore cannot paint
+      // into the lower black player/source band even if exit springs lag.
+      const pictureLocalTop=pictureTop-pr.top;
+      copyClip.style.top=`${pictureLocalTop}px`;
+      copyClip.style.height=`${pictureHeight}px`;
+      copyClip.style.clipPath='none';
+
+      // La gioia (first large project) is the optical reference approved by William.
+      // Reuse its actual visible-frame clearance in px so medium cards do not compress.
+      const referenceMedia=projects[0].querySelector('.media').getBoundingClientRect();
+      const referencePictureHeight=referenceMedia.height*PICTURE_SAFE_RATIO;
+      const baseBottomClearance=Math.max(28,referencePictureHeight*.048);
+      const visibleBottomLift=referencePictureHeight*Number(p.dataset.visibleBottomLift||0);
+      const bottomClearance=baseBottomClearance+visibleBottomLift;
+
+      // Preserve the accepted title/director separation using rendered glyph geometry.
+      const interlineAir=Math.max(16,titleLineH*.18);
+
+      const naturalDirectorY=pictureBottom-bottomClearance-directorLineH;
+      const naturalTitleY=naturalDirectorY-titleLineH-interlineAir;
+      const naturalGap=naturalDirectorY-naturalTitleY;
+
+      /* ENTRY — based on VIDEO CENTER, not a timer.
+         In the reference title starts around the moment the media center
+         crosses the viewport center. The director requires extra scrolling. */
+      const center=mr.top+mr.height*.5;
+
+      // Narrow zone = faster "snap" for the title.
+      const titleRaw=smooth(vh*.535,vh*.475,center);
+
+      // v37: director is causally linked to the title, not to a second scroll threshold.
+      // As soon as the FILM TITLE completes its entrance, the director starts almost immediately
+      // (an immediate hand-off: perceived as “one-two”, with no dead gap).
+      const directorK=Number(p.dataset.directorK||29);
+      const directorD=Number(p.dataset.directorD||10.8);
+
+      const titleIn=clamp(springStep(s.titleIn,titleRaw,dt,50,12.6),0,1.015);
+
+      if(!s.directorDelayArmed && titleIn>=.985){
+        s.directorDelayArmed=true;
+        s.directorDelayStart=now;
+      }
+      // Reset only if the title genuinely retreats before completing the card entry.
+      // Do not couple this reset to top-exit geometry: the approved exit behavior stays intact.
+      if(s.directorDelayArmed && titleIn<.72){
+        s.directorDelayArmed=false;
+        s.directorDelayStart=null;
+      }
+
+      const directorDelayDone=s.directorDelayArmed && s.directorDelayStart!==null && (now-s.directorDelayStart)>=0;
+      const directorTarget=directorDelayDone?1:0;
+      const directorIn=clamp(springStep(s.directorIn,directorTarget,dt,directorK,directorD),0,1.012);
+      const directorEntryGate=smooth(.90,.985,titleIn);
+      const directorVisibleIn=directorIn*directorEntryGate;
+
+      /* STICKY TOP.
+         It waits there, but copy-clip guarantees that nothing can ever
+         render above/below the video's vertical extent. */
+      const stickyTop=0;
+      const sticky=naturalTitleY<=stickyTop;
+      const titleViewportY=sticky ? stickyTop : naturalTitleY;
+      const directorViewportY=titleViewportY+naturalGap;
+
+      /* EXIT — geometric, still constrained to the video.
+         Title falls first. Director starts only after the video edge
+         has travelled a bit farther. */
+      /* EXIT — corrected from the screen recording:
+         the TITLE starts leaving first, the DIRECTOR follows later,
+         and both are already gone before the visible slice of video becomes
+         too shallow to contain them cleanly. */
+      const titleExitStart=titleViewportY+titleH+150;
+      const titleExitEnd=titleViewportY+titleH+70;
+      const directorExitStart=directorViewportY+directorH+42;
+      const directorExitEnd=directorViewportY+directorH+10;
+
+      const titleExitRaw=sticky ? 1-smooth(titleExitEnd,titleExitStart,pictureBottom) : 0;
+      const directorExitRaw=sticky ? 1-smooth(directorExitEnd,directorExitStart,pictureBottom) : 0;
+
+      // Keep the approved spring character on exit.
+      // Do not force raw scroll geometry over the spring: the exit must remain soft and reversible.
+      const titleOut=clamp(springStep(s.titleOut,titleExitRaw,dt,18,9.3),0,1.025);
+      const directorOutBase=clamp(springStep(s.directorOut,directorExitRaw,dt,11.8,8.9),0,1.02);
+      // v24: on reverse scroll, keep the director hidden a bit longer so the
+      // film title reappears first, then the director follows.
+      const directorReverseHold=sticky ? smooth(0.40,0.72,titleOut) : 0;
+      const directorOut=Math.max(directorOutBase,directorReverseHold);
+
+      /* HORIZONTAL IDENTITY — BASE
+         One visual identity, with controlled variation:
+         - offset -> aligned
+         - almost aligned -> offset
+         - slight offset -> a bit more offset
+
+         Timing remains the v4.4 timing: decisive but not frantic.
+         Scroll stays soft; hover is clear and intentional.
+      */
+      const scrollConv=smooth(vh*.54,vh*.10,center);
+
+      const baseTitle=Number(p.dataset.titleX);
+      const mode=p.dataset.hoverMode||'offset-to-align';
+      const startAnchor=Number(p.dataset.startAnchor||.5);
+      const endAnchor=Number(p.dataset.endAnchor||.16);
+
+      const titleWidthPx=title.offsetWidth;
+      const vwPx=innerWidth/100;
+
+      // Start state is derived from the actual title length.
+      // This is what makes "half / three-quarters" adapt naturally case by case.
+      const startDirectorX=baseTitle + (titleWidthPx*startAnchor)/vwPx;
+
+      // Soft scroll convergence toward the top remains subtle.
+      const scrollTitleX=baseTitle + scrollConv*.55;
+      const scrollDirectorX=startDirectorX - scrollConv*1.15;
+
+      /* Hover state is now LOCKED to pointer intent.
+         If the cursor stays still and the page scrolls under it,
+         hoverProject does not change, so there is no open/close bounce. */
+      s.hoverTarget=(hoverProject===p)?1:0;
+      p.classList.toggle('is-hover',s.hoverTarget===1);
+
+      // Same decisive speed as the good v4.4 version.
+      const hover=clamp(springStep(s.hover,s.hoverTarget,dt,112,20.5),0,1);
+
+      let hoverTitleX=scrollTitleX;
+      let hoverDirectorX=scrollDirectorX;
+
+      if(mode==='offset-to-align'){
+        // Start staggered; both converge to one readable guide.
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/vwPx;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='offset-to-align-soft'){
+        // Like Comandante in spirit, but ending aligned. Smaller, more elegant excursion.
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/vwPx;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='align-to-offset'){
+        // Start nearly aligned; on hover they split clearly, but naturally.
+        const centerX=baseTitle + (titleWidthPx*.17)/vwPx;
+        hoverTitleX=centerX - Math.max(18,titleWidthPx*.055)/vwPx;
+        hoverDirectorX=centerX + Math.max(64,titleWidthPx*.23)/vwPx;
+
+      }else if(mode==='align-to-offset-gentle'){
+        // For IDDU: same identity as Comandante, but less travel and more air.
+        const centerX=baseTitle + (titleWidthPx*.13)/vwPx;
+        hoverTitleX=centerX - Math.max(16,titleWidthPx*.05)/vwPx;
+        hoverDirectorX=centerX + Math.max(32,titleWidthPx*.115)/vwPx;
+
+      }else if(mode==='align-to-offset-soft'){
+        // For COMANDANTE: avoid the whole block drifting together.
+        // Start almost aligned, then open gently in opposite directions.
+        const centerX=baseTitle + (titleWidthPx*.14)/vwPx;
+        hoverTitleX=centerX - Math.max(22,titleWidthPx*.07)/vwPx;
+        hoverDirectorX=centerX + Math.max(44,titleWidthPx*.16)/vwPx;
+
+      }else{
+        // Slightly staggered at rest; a little more character on hover.
+        const centerX=baseTitle + (titleWidthPx*.20)/vwPx;
+        hoverTitleX=centerX - Math.max(14,titleWidthPx*.045)/vwPx;
+        hoverDirectorX=centerX + Math.max(50,titleWidthPx*.19)/vwPx;
+      }
+
+      const targetTitleX=scrollTitleX+(hoverTitleX-scrollTitleX)*hover;
+      const targetDirectorX=scrollDirectorX+(hoverDirectorX-scrollDirectorX)*hover;
+
+      const activeHover=hover>.02;
+
+      const xTitle=activeHover
+        ? springStep(s.xTitle,targetTitleX,dt,88,16.8)
+        : springStep(s.xTitle,targetTitleX,dt,18,9.2);
+
+      const xDirector=activeHover
+        ? springStep(s.xDirector,targetDirectorX,dt,82,15.8)
+        : springStep(s.xDirector,targetDirectorX,dt,16,8.8);
+
+      // Masks live inside copy-clip, whose origin is the visible media top.
+      // v12 structural guard: each text row is ALSO clipped against the exact
+      // current .media rectangle. This makes vertical escape impossible even
+      // when sticky/transformed layers are promoted by the browser compositor.
+      titleMask.style.transform=`translate3d(0,${titleViewportY-pictureTop}px,0)`;
+      directorMask.style.transform=`translate3d(0,${directorViewportY-pictureTop}px,0)`;
+
+      const clampMaskToPicture=(mask, viewportY, maskH)=>{
+        const maskBottom=viewportY+maskH;
+        const clipTop=clamp(pictureTop-viewportY,0,maskH);
+        const clipBottom=clamp(maskBottom-pictureBottom,0,maskH);
+        const fullyOutside=(clipTop+clipBottom)>=maskH-.5 || pictureHeight<1;
+        mask.style.visibility=fullyOutside?'hidden':'visible';
+        mask.style.clipPath=fullyOutside
+          ? 'inset(50% 0 50% 0)'
+          : `inset(${clipTop}px 0 ${clipBottom}px 0)`;
+      };
+
+      clampMaskToPicture(titleMask,titleViewportY,titleH);
+      clampMaskToPicture(directorMask,directorViewportY,directorH);
+
+      // Entry from slit: title quicker, director slower.
+      const titleEntryY=(1-titleIn)*.98*titleH;
+      const directorEntryY=(1-directorVisibleIn)*.98*directorH;
+
+      // Exit falls DOWN into the slit, never outside the media because of copy-clip.
+      const titleExitY=titleOut*1.015*titleH;
+      const directorExitY=directorOut*1.015*directorH;
+
+      const titleY=titleEntryY+titleExitY;
+      const directorY=directorEntryY+directorExitY;
+
+      // Very subtle softening only at the last part of exit.
+      const titleSoft=smooth(.55,1,titleOut);
+      const directorSoft=smooth(.55,1,directorOut);
+
+      title.style.transform=`translate3d(${xTitle}vw,${titleY}px,0)`;
+      director.style.transform=`translate3d(${xDirector}vw,${directorY}px,0)`;
+      title.style.opacity=clamp(titleIn*(1-titleSoft*.42),0,1);
+      director.style.opacity=clamp(directorVisibleIn*(1-directorSoft*.42),0,1);
+      title.style.filter=`blur(${titleSoft*.35}px)`;
+      director.style.filter=`blur(${directorSoft*.35}px)`;
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+
+  // QA helper: returns the real player box and the conservative picture-safe box.
+  window.__worksV21QA=()=>projects.map((p,i)=>{
+    const mr=p.querySelector('.media').getBoundingClientRect();
+    const revealPx=Number(p.querySelector('[data-video-layer]').dataset.revealPx||0);
+    const pictureTop=Math.min(mr.bottom,mr.top+revealPx);
+    const pictureBottom=Math.min(mr.bottom,pictureTop+mr.height*PICTURE_SAFE_RATIO);
+    const cc=p.querySelector('.copy-clip').getBoundingClientRect();
+    return {i,mediaTop:mr.top,mediaBottom:mr.bottom,revealPx,pictureTop,pictureBottom,copyTop:cc.top,copyBottom:cc.bottom};
+  });
+})();
+</script>
+
+<div class="trailer-panel" id="trailerPanel" aria-hidden="true">
+  <div class="trailer-panel-inner">
+    <div class="trailer-brand" aria-label="Il Suono Organizzato"><span>I</span><span>S</span><span>O</span></div>
+    <div class="trailer-player-wrap" id="trailerPlayerWrap">
+      <div class="trailer-fullscreen-stage" id="trailerFullscreenStage">
+      <div class="trailer-video-surface" id="trailerVideoSurface">
+        <div class="trailer-loader is-loading" id="trailerLoader" aria-label="Caricamento trailer"></div>
+        <video id="trailerVideo" playsinline preload="auto"></video>
+      </div>
+      <div class="trailer-controls" id="trailerControls" aria-label="Controlli trailer">
+        <button class="trailer-control-btn" id="trailerPlay" aria-label="Play / Pause">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><g id="playGlyph"><path class="fill-icon" d="M6 4.2 15 10 6 15.8Z"/></g><g id="pauseGlyph" style="display:none"><rect class="fill-icon" x="5" y="4" width="3.2" height="12"/><rect class="fill-icon" x="11.8" y="4" width="3.2" height="12"/></g></svg>
+        </button>
+        <div class="trailer-progress" id="trailerProgress" role="slider" aria-label="Posizione trailer" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="trailer-progress-track"><div class="trailer-progress-fill" id="trailerProgressFill"></div></div>
+          <div class="trailer-progress-knob" id="trailerProgressKnob"></div>
+          <div class="trailer-time-tip" id="trailerTimeTip">00:00</div>
+          <div class="trailer-preview-tip" id="trailerPreviewTip"><img id="trailerPreviewImg" alt=""><div class="trailer-preview-time" id="trailerPreviewTime">00:00</div></div>
+        </div>
+        <div class="trailer-volume-wrap">
+          <button class="trailer-control-btn" id="trailerMute" aria-label="Audio">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8h3l4-3v10l-4-3H4z"/><path id="volWave1" d="M13.2 7.2c1.4 1.4 1.4 4.2 0 5.6"/><path id="volWave2" d="M15.5 5.3c2.4 2.5 2.4 6.9 0 9.4"/></svg>
+          </button>
+          <div class="trailer-volume-pop" id="trailerVolumePop" aria-label="Volume"><div class="trailer-volume-track" id="trailerVolumeTrack"><div class="trailer-volume-fill" id="trailerVolumeFill"></div><div class="trailer-volume-knob" id="trailerVolumeKnob"></div></div></div>
+        </div>
+        <button class="trailer-control-btn" id="trailerFullscreen" aria-label="Schermo intero">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 7V3.5H7M13 3.5h3.5V7M16.5 13v3.5H13M7 16.5H3.5V13"/></svg>
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+  <button class="trailer-close" id="trailerClose" aria-label="Torna ai lavori"><span class="close-x" aria-hidden="true"></span></button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+<script id="trailer-v33-script">
+(()=>{
+  const panel=document.getElementById('trailerPanel');
+  const closeBtn=document.getElementById('trailerClose');
+  const wrap=document.getElementById('trailerPlayerWrap');
+  const fsStage=document.getElementById('trailerFullscreenStage');
+  const fsHome=document.createComment('fullscreen-stage-home');
+  fsStage.parentNode.insertBefore(fsHome,fsStage);
+  const video=document.getElementById('trailerVideo');
+  const videoSurface=document.getElementById('trailerVideoSurface');
+  const loader=document.getElementById('trailerLoader');
+  const playBtn=document.getElementById('trailerPlay');
+  const playGlyph=document.getElementById('playGlyph');
+  const pauseGlyph=document.getElementById('pauseGlyph');
+  const muteBtn=document.getElementById('trailerMute');
+  const volWave1=document.getElementById('volWave1');
+  const volWave2=document.getElementById('volWave2');
+  const volumePop=document.getElementById('trailerVolumePop');
+  const volumeTrack=document.getElementById('trailerVolumeTrack');
+  const volumeFill=document.getElementById('trailerVolumeFill');
+  const volumeKnob=document.getElementById('trailerVolumeKnob');
+  let volumeValue=1;
+  const fsBtn=document.getElementById('trailerFullscreen');
+  const progress=document.getElementById('trailerProgress');
+  const fill=document.getElementById('trailerProgressFill');
+  const knob=document.getElementById('trailerProgressKnob');
+  const timeTip=document.getElementById('trailerTimeTip');
+  const previewTip=document.getElementById('trailerPreviewTip');
+  const previewImg=document.getElementById('trailerPreviewImg');
+  const previewTime=document.getElementById('trailerPreviewTime');
+  const triggers=[...document.querySelectorAll('[data-trailer-trigger]')];
+
+  // v35 QA: the same trailer/player behavior is available on all four current WORKS films.
+  // For this integration pass each trailer page uses the current Cloudflare preview UID for that film.
+  const CF='https://customer-g4gszpjfcto93ptl.cloudflarestream.com';
+  let currentUID=null;
+  const HLS_SRC=()=>currentUID?`${CF}/${currentUID}/manifest/video.m3u8`:'';
+  const THUMB_SRC=t=>currentUID?`${CF}/${currentUID}/thumbnails/thumbnail.jpg?time=${Math.max(0,t).toFixed(1)}s&height=120`:'';
+  let hls=null,sourceAttached=false,qualityReady=false,mediaReady=false,open=false,lastScrollY=0,openingProject=null;
+  let closeTimer=null,openTimer=null,controlsTimer=null,fsControlsTimer=null,revealTimer=null,desiredLevel=-1,lastPreviewSecond=-1,volumeDragging=false,volumeHideTimer=null,cinematicFullscreen=false,fullscreenAnimating=false;
+  let userMuted=false,lastAudibleVolume=1;
+  const PANEL_MS=1720, BLACK_BEFORE_EXIT_MS=250, MIN_LOADER_MS=520, CLICK_DARKEN_MS=290;
+
+  const formatTime=s=>{if(!Number.isFinite(s))return '00:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')};
+  const readyEnough=()=>video.readyState>=3 && (qualityReady || !window.Hls || !Hls.isSupported());
+
+  function markMediaReady(){
+    mediaReady=true;
+    wrap.classList.add('media-ready');
+    loader.classList.remove('is-loading');
+    if(open){video.volume=volumeValue;video.muted=userMuted || video.volume===0;video.play().catch(()=>{});showControls();updateVolumeIcon();}
+  }
+  function maybeReveal(openedAt=0){
+    if(!readyEnough())return;
+    const wait=Math.max(0,MIN_LOADER_MS-(performance.now()-openedAt));
+    clearTimeout(revealTimer);
+    revealTimer=setTimeout(markMediaReady,wait);
+  }
+  function destroySource(){
+    try{video.pause();}catch(e){}
+    if(hls){try{hls.destroy();}catch(e){} hls=null;}
+    try{video.removeAttribute('src');video.load?.();}catch(e){}
+    sourceAttached=false;qualityReady=false;mediaReady=false;desiredLevel=-1;lastPreviewSecond=-1;
+    wrap.classList.remove('media-ready');loader.classList.add('is-loading');
+  }
+  function selectSource(uid){
+    if(!uid)return;
+    if(currentUID===uid && sourceAttached)return;
+    if(sourceAttached || currentUID!==uid)destroySource();
+    currentUID=uid;
+    attachSource();
+  }
+  function attachSource(){
+    if(sourceAttached||!currentUID)return;sourceAttached=true;
+    video.preload='auto';
+    if(window.Hls&&Hls.isSupported()){
+      hls=new Hls({enableWorker:true,lowLatencyMode:false,capLevelToPlayerSize:false,abrEwmaDefaultEstimate:8000000,maxBufferLength:40});
+      hls.loadSource(HLS_SRC());hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+        desiredLevel=hls.levels.reduce((best,l,i)=>((l.height||0)>(hls.levels[best]?.height||0)?i:best),0);
+        if(desiredLevel>=0){
+          try{hls.startLevel=desiredLevel;hls.loadLevel=desiredLevel;hls.nextLevel=desiredLevel;}catch(e){}
+        }
+      });
+      hls.on(Hls.Events.FRAG_BUFFERED,(_,data)=>{
+        const lvl=data&&data.frag&&Number.isInteger(data.frag.level)?data.frag.level:-1;
+        if(desiredLevel<0 || lvl===desiredLevel){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}
+      });
+      hls.on(Hls.Events.ERROR,(_,data)=>{if(data&&data.fatal){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}});
+    }else{
+      video.src=HLS_SRC();
+      video.oncanplaythrough=()=>{qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);};
+      // Safari may not fire canplaythrough predictably; loadeddata + short buffer is our fallback.
+      video.onloadeddata=()=>setTimeout(()=>{if(sourceAttached){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}},900);
+    }
+    video.load?.();
+  }
+  // Preconnect only; the selected film source is attached immediately on click during the pre-open darkening beat.
+  window.addEventListener('load',()=>{
+    try{const l=document.createElement('link');l.rel='preconnect';l.href=CF;document.head.appendChild(l);}catch(e){}
+  },{once:true});
+
+  function showControls(){
+    if(wrap.classList.contains('closing-black'))return;
+    wrap.classList.add('controls-active');
+    clearTimeout(controlsTimer);
+    controlsTimer=setTimeout(()=>wrap.classList.remove('controls-active'),1500);
+  }
+  function showFullscreenControls(){
+    if(!cinematicFullscreen)return;
+    fsStage.classList.add('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+    fsControlsTimer=setTimeout(()=>fsStage.classList.remove('fs-controls-active'),650);
+  }
+  function openTrailer(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    if(open)return;
+    open=true;lastScrollY=window.scrollY;
+    openingProject=ev&&ev.currentTarget?ev.currentTarget.closest('.project'):null;
+    if(openingProject)openingProject.classList.add('is-opening');
+    clearTimeout(openTimer);clearTimeout(closeTimer);clearTimeout(revealTimer);clearTimeout(fsControlsTimer);
+    fsStage.classList.remove('fs-controls-active');panel.classList.remove('is-exiting');
+    wrap.classList.remove('closing-black');panel.classList.remove('is-closing');wrap.classList.remove('media-ready');mediaReady=false;
+    loader.classList.add('is-loading');
+    const selectedUID=openingProject?.dataset?.trailerUid || '55556633b51205cada191208d9a8434d';
+    selectSource(selectedUID);
+
+    // v34: first let the selected WORKS picture darken under the now-white copy.
+    // Only after that short, deliberate beat does the trailer panel begin its entrance.
+    openTimer=setTimeout(()=>{
+      if(!open)return;
+      window.__trailerOpenedAt=performance.now();
+      panel.classList.add('is-visible');panel.setAttribute('aria-hidden','false');document.body.classList.add('trailer-open');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('is-open')));
+      maybeReveal(window.__trailerOpenedAt);
+      // Safety fallback: never show a blurry progressive image; if quality signal is unavailable, wait and reveal only once playable.
+      setTimeout(()=>{if(open&&!mediaReady&&video.readyState>=3){qualityReady=true;maybeReveal(window.__trailerOpenedAt);}},3000);
+    },CLICK_DARKEN_MS);
+  }
+  function finishClose(){
+    cinematicFullscreen=false;fullscreenAnimating=false;
+    fsStage.classList.remove('is-cinematic-fullscreen','fs-controls-active');
+    panel.classList.remove('is-fullscreen-host');
+    fsStage.style.transform='';fsStage.style.transition='';fsStage.style.borderRadius='';
+    videoSurface.style.transition='';videoSurface.style.position='';videoSurface.style.inset='';videoSurface.style.left='';videoSurface.style.top='';videoSurface.style.width='';videoSurface.style.height='';videoSurface.style.aspectRatio='';videoSurface.style.zIndex='';
+    document.body.classList.remove('cinematic-fullscreen-open');
+    panel.classList.remove('is-visible','is-closing','is-exiting');document.body.classList.remove('trailer-open');
+    wrap.classList.remove('controls-active','closing-black','media-ready');loader.classList.remove('is-loading');
+    clearTimeout(openTimer);
+    if(openingProject){openingProject.classList.remove('is-opening');openingProject=null;}
+    try{video.currentTime=0;}catch(e){}
+    window.scrollTo(0,lastScrollY);
+  }
+  function closeTrailer(){
+    if(!open)return;open=false;panel.setAttribute('aria-hidden','true');
+    clearTimeout(openTimer);clearTimeout(controlsTimer);clearTimeout(fsControlsTimer);clearTimeout(revealTimer);clearTimeout(volumeHideTimer);
+    try{video.pause();}catch(e){}
+    panel.classList.add('is-closing');
+    if(cinematicFullscreen){exitCinematicFullscreen(false);}
+    if(!panel.classList.contains('is-visible')){finishClose();return;}
+    // First: picture becomes fully black. Only then does the panel leave.
+    wrap.classList.add('closing-black');
+    closeTimer=setTimeout(()=>{
+      panel.classList.add('is-exiting');
+      panel.classList.remove('is-open');
+      closeTimer=setTimeout(finishClose,PANEL_MS+80);
+    },BLACK_BEFORE_EXIT_MS);
+  }
+
+  function updatePlay(){const paused=video.paused;playGlyph.style.display=paused?'':'none';pauseGlyph.style.display=paused?'none':'';}
+  function updateVolumeIcon(){const silent=video.muted||video.volume===0;volWave1.style.display=silent?'none':'';volWave2.style.display=silent?'none':'';const v=video.muted?0:video.volume;volumeFill.style.height=(v*100)+'%';volumeKnob.style.bottom=(v*100)+'%';}
+  function updateProgress(){
+    const d=video.duration||0,p=d?video.currentTime/d:0,pct=Math.max(0,Math.min(100,p*100));
+    fill.style.width=pct+'%';knob.style.left=pct+'%';progress.setAttribute('aria-valuenow',String(Math.round(pct)));
+  }
+  function seekFromEvent(e){if(!video.duration)return;const r=progress.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));video.currentTime=p*video.duration;updateProgress();}
+  function updateHoverPreview(e){
+    const r=progress.getBoundingClientRect();const rawX=Math.max(0,Math.min(r.width,e.clientX-r.left));const p=r.width?rawX/r.width:0;const t=p*(video.duration||0);
+    const safePreviewX=Math.max(71,Math.min(r.width-71,rawX));
+    timeTip.style.left=rawX+'px';timeTip.textContent=formatTime(t);
+    previewTip.style.left=safePreviewX+'px';previewTime.textContent=formatTime(t);
+    const sec=Math.max(0,Math.floor(t));
+    if(sec!==lastPreviewSecond){lastPreviewSecond=sec;previewImg.src=THUMB_SRC(sec);}
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  progress.addEventListener('click',seekFromEvent);
+  progress.addEventListener('pointermove',updateHoverPreview);
+  progress.addEventListener('pointerleave',()=>{lastPreviewSecond=-1;});
+  playBtn.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('play',updatePlay);video.addEventListener('pause',updatePlay);video.addEventListener('timeupdate',updateProgress);video.addEventListener('durationchange',updateProgress);
+  video.addEventListener('waiting',()=>{if(open&&!mediaReady)loader.classList.add('is-loading');});
+  video.addEventListener('canplay',()=>maybeReveal(window.__trailerOpenedAt||0));
+  function setVolumeFromPointer(e){
+    const r=volumeTrack.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(r.bottom-e.clientY)/r.height));
+    volumeValue=p;video.volume=p;if(p>0){lastAudibleVolume=p;userMuted=false;}else{userMuted=true;}video.muted=userMuted;updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  const volumeWrap=volumePop.parentElement;
+  const openVolume=()=>{clearTimeout(volumeHideTimer);volumeWrap.classList.add('volume-open');};
+  const scheduleVolumeClose=()=>{if(volumeDragging)return;clearTimeout(volumeHideTimer);volumeHideTimer=setTimeout(()=>volumeWrap.classList.remove('volume-open'),650);};
+  volumeWrap.addEventListener('pointerenter',openVolume);
+  volumeWrap.addEventListener('pointerleave',scheduleVolumeClose);
+  volumePop.addEventListener('pointerenter',openVolume);
+  volumePop.addEventListener('pointerleave',scheduleVolumeClose);
+  volumeTrack.addEventListener('pointerdown',e=>{openVolume();volumeDragging=true;volumePop.classList.add('is-active');volumeTrack.setPointerCapture?.(e.pointerId);setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointermove',e=>{if(volumeDragging)setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointerup',e=>{volumeDragging=false;volumePop.classList.remove('is-active');volumeTrack.releasePointerCapture?.(e.pointerId);scheduleVolumeClose();});
+  volumeTrack.addEventListener('pointercancel',()=>{volumeDragging=false;volumePop.classList.remove('is-active');scheduleVolumeClose();});
+  muteBtn.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();openVolume();
+    userMuted=!userMuted;
+    if(!userMuted&&video.volume===0){const restore=Math.max(.5,lastAudibleVolume||volumeValue||1);video.volume=restore;volumeValue=restore;}
+    if(!userMuted&&video.volume>0)lastAudibleVolume=video.volume;
+    video.muted=userMuted;
+    updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();scheduleVolumeClose();
+  });
+
+  async function enterCinematicFullscreen(){
+    if(cinematicFullscreen||fullscreenAnimating)return;
+    fullscreenAnimating=true;
+    const r=videoSurface.getBoundingClientRect();
+
+    // v37: do NOT reparent the playing video/stage. Reparenting was the likely source
+    // of the black fullscreen frame on desktop/Safari. Instead, temporarily make the
+    // trailer panel the fullscreen host and FLIP the same video surface in place.
+    panel.classList.add('is-fullscreen-host');
+    document.body.classList.add('cinematic-fullscreen-open');
+    fsStage.classList.add('is-cinematic-fullscreen');
+    fsStage.classList.remove('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+
+    videoSurface.style.transition='none';
+    videoSurface.style.position='fixed';
+    videoSurface.style.inset='auto';
+    videoSurface.style.left=r.left+'px';videoSurface.style.top=r.top+'px';
+    videoSurface.style.width=r.width+'px';videoSurface.style.height=r.height+'px';
+    videoSurface.style.aspectRatio='auto';
+    videoSurface.style.zIndex='9001';
+    videoSurface.getBoundingClientRect();
+
+    requestAnimationFrame(()=>{
+      videoSurface.style.transition='left .94s cubic-bezier(.19,1,.22,1),top .94s cubic-bezier(.19,1,.22,1),width .94s cubic-bezier(.19,1,.22,1),height .94s cubic-bezier(.19,1,.22,1)';
+      videoSurface.style.left='0px';videoSurface.style.top='0px';
+      videoSurface.style.width='100vw';videoSurface.style.height='100vh';
+    });
+
+    setTimeout(()=>{
+      cinematicFullscreen=true;fullscreenAnimating=false;
+      // Keep the surface fixed while fullscreen is active; this avoids a compositor
+      // handoff right after the animation and keeps the picture stable.
+      videoSurface.style.transition='';
+      fsStage.classList.remove('fs-controls-active');
+    },990);
+  }
+  function exitCinematicFullscreen(showNormalControls=true){
+    if((!cinematicFullscreen&&!fullscreenAnimating)||!fsStage.classList.contains('is-cinematic-fullscreen'))return;
+    cinematicFullscreen=false;fullscreenAnimating=true;fsStage.classList.remove('fs-controls-active');clearTimeout(fsControlsTimer);
+    fsStage.style.transition='opacity .22s ease';
+    fsStage.style.opacity='0';
+    setTimeout(()=>{
+      fsStage.classList.remove('is-cinematic-fullscreen');
+      panel.classList.remove('is-fullscreen-host');
+      document.body.classList.remove('cinematic-fullscreen-open');
+      fsStage.style.transition='';fsStage.style.opacity='';fsStage.style.transform='';fsStage.style.transformOrigin='';
+      videoSurface.style.transition='';videoSurface.style.position='';videoSurface.style.inset='';videoSurface.style.left='';videoSurface.style.top='';videoSurface.style.width='';videoSurface.style.height='';videoSurface.style.aspectRatio='';videoSurface.style.zIndex='';
+      fullscreenAnimating=false;
+      if(open&&showNormalControls)showControls();
+    },230);
+  }
+  fsBtn.addEventListener('click',()=>{cinematicFullscreen||fullscreenAnimating?exitCinematicFullscreen(true):enterCinematicFullscreen();});
+  fsStage.addEventListener('pointermove',()=>{if(cinematicFullscreen)showFullscreenControls();});
+  fsStage.addEventListener('pointerdown',()=>{if(cinematicFullscreen)showFullscreenControls();});
+  wrap.addEventListener('pointermove',()=>{if(!cinematicFullscreen&&!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerenter',()=>{if(!cinematicFullscreen&&!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerleave',()=>{if(!cinematicFullscreen&&!fullscreenAnimating){clearTimeout(controlsTimer);wrap.classList.remove('controls-active');}});
+  triggers.forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('click',openTrailer);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){openTrailer(e);}});});
+  closeBtn.addEventListener('click',closeTrailer);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open){if(cinematicFullscreen||fullscreenAnimating)exitCinematicFullscreen(true);else closeTrailer();}});
+  updatePlay();updateVolumeIcon();
+})();
+</script>
+
+</body>
+</html>
