@@ -1497,6 +1497,7 @@ if(document.fonts&&document.fonts.ready){
 }else{bootInitialMotionIntro();}
 
 const DURATION=1490;
+const OPEN_DURATION=1065;
 function motionSources(){return [...stage.querySelectorAll('.word,.glyph,#sentencePunctuation .punct')];}
 function snapshotSources(){
   const sr=stage.getBoundingClientRect();const m=new Map();
@@ -1507,8 +1508,9 @@ function animate(toOpen,nextPhase){
   if(animating||dispersionStarted)return;
   animationDirection=toOpen?'open':'close';animating=true;armed=false;
   const from=isOpen?1:0,to=toOpen?1:0,t0=performance.now();
+  const dur=toOpen?OPEN_DURATION:DURATION;
   function frame(now){
-    const r=clamp((now-t0)/DURATION);render(lerp(from,to,r));
+    const r=clamp((now-t0)/dur);render(lerp(from,to,r));
     if(r<1){requestAnimationFrame(frame);return;}
     isOpen=toOpen;phase=nextPhase;animating=false;
     if(phase===1||phase===3||phase===5)compactSnapshot=snapshotSources();
