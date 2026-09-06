@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WORKS — real clips v03 — per-clip proportional clearance (fix) (DERIVATA DA v54 + v01 + v02)</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Book.otf") format("opentype");
+  font-style:normal;
+  font-weight:400 500;
+  font-display:swap;
+}
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Bold.otf") format("opentype");
+  font-style:normal;
+  font-weight:600 900;
+  font-display:swap;
+}
+:root{
+  --side:5.55vw;
+  --large-w:88.9vw;
+  --large-h:50.00625vw;
+  --medium-w:79vw;
+  --medium-h:44.4375vw;
+  --wide-w:84vw;
+  --wide-h:47.25vw;
+  --gap:7.5vh;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;color:#fff;font-family:"New Heterodox Mono","Courier New",monospace}
+html{overflow-x:hidden}
+body{min-height:100vh;overflow-x:hidden}
+.top-ui{
+  position:fixed;top:14px;left:0;right:0;z-index:1000;
+  display:flex;justify-content:center;
+  font-size:10px;letter-spacing:.08em;color:#fff;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.scroll-hint{
+  position:fixed;top:14px;right:18px;z-index:1000;
+  font-size:9px;letter-spacing:.08em;color:#fff;opacity:.48;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.topspace{height:44vh;min-height:320px}
+.endspace{height:42vh}
+
+.project{
+  position:relative;width:100vw;margin-bottom:var(--gap);
+}
+.project.large{height:var(--large-h)}
+.project.medium{height:var(--medium-h)}
+.project.wide{height:var(--wide-h)}
+.media{
+  position:absolute;top:0;overflow:hidden;background:#111;
+}
+.media::after{
+  content:"";
+  position:absolute;inset:0;z-index:5;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .38s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .media::after{
+  opacity:.31;
+}
+.project.is-opening .media::after{
+  opacity:.52;
+  transition:opacity .26s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .line-inner,
+.project.is-opening .line-inner{color:#fff}
+.large .media{left:var(--side);width:var(--large-w);height:var(--large-h)}
+.medium .media{width:var(--medium-w);height:var(--medium-h)}
+.medium.left .media{left:var(--side)}
+.medium.right .media{right:var(--side)}
+.wide .media{width:var(--wide-w);height:var(--wide-h)}
+.wide.right .media{right:var(--side)}
+
+/* STEP B v21 — one canonical visible-video geometry.
+   Only the inner video moves on entry. Motion is DIRECTLY scroll-linked
+   (no independent spring lag), so it is guaranteed to be at 0 before top exit. */
+.video-layer{
+  position:absolute;inset:0;
+  will-change:transform;
+  transform:translate3d(0,0,0);
+}
+
+.video-frame{
+  position:absolute;
+  inset:-3.8%;
+  width:107.6%;
+  height:107.6%;
+  border:0;
+  display:block;
+  background:#000;
+  transform:scale(1.035);
+  pointer-events:none;
+}
+.media .underlay{
+  position:absolute;
+  inset:0;
+  background:#050505;
+}
+
+/* Critical change:
+   this full-width layer is exactly as tall as the video.
+   Text can extend sideways into black, but NEVER vertically beyond the video. */
+.copy-clip{
+  position:absolute;left:0;top:0;width:100vw;height:100%;
+  overflow:hidden;z-index:40;pointer-events:none;
+}
+.line-mask{
+  position:absolute;left:0;top:0;width:100vw;
+  overflow:hidden;pointer-events:none;
+  will-change:transform;
+}
+.line-inner{
+  position:absolute;left:0;top:0;width:max-content;max-width:97vw;
+  color:rgba(255,255,255,.50);white-space:nowrap;
+  transition:color .30s cubic-bezier(.22,.61,.36,1);
+  will-change:transform,opacity,filter;
+  pointer-events:auto;
+  cursor:pointer;
+}
+.title-mask{height:clamp(48px,7.4vw,118px)}
+.director-mask{height:clamp(18px,2.2vw,36px)}
+.title{
+  font-size:clamp(48px,7vw,112px);line-height:.92;
+  letter-spacing:-.029em;font-weight:700;
+}
+.director{
+  font-size:clamp(14px,1.65vw,27px);line-height:1;
+  font-weight:400;text-transform:uppercase;
+  letter-spacing:.01em;
+}
+.director .credit-label{
+  font-size:.62em;
+  letter-spacing:.10em;
+  opacity:.78;
+  margin-right:.72em;
+  vertical-align:.08em;
+}
+.director .credit-name{
+  font-size:1em;
+  letter-spacing:.01em;
+  opacity:1;
+}
+.medium .title{font-size:clamp(41px,5.7vw,91px)}
+.medium .director{font-size:clamp(13px,1.45vw,23px)}
+.medium .title-mask{height:clamp(42px,6.1vw,98px)}
+.medium .director-mask{height:clamp(17px,2vw,31px)}
+.wide .title{font-size:clamp(46px,6.6vw,105px)}
+.wide .director{font-size:clamp(14px,1.58vw,25px)}
+.wide .title-mask{height:clamp(46px,7vw,111px)}
+.wide .director-mask{height:clamp(18px,2.1vw,33px)}
+
+@media(max-width:800px){
+  :root{
+    --side:5vw;
+    --large-w:90vw;--large-h:50.625vw;
+    --medium-w:82vw;--medium-h:46.125vw;
+    --wide-w:86vw;--wide-h:48.375vw;
+    --gap:6.8vh;
+  }
+  .title{font-size:10.7vw}
+  .director{font-size:2.7vw}
+  .medium .title{font-size:9.1vw}
+  .medium .director{font-size:2.4vw}
+  .wide .title{font-size:9.9vw}
+  .wide .director{font-size:2.55vw}
+  .top-ui,.scroll-hint{font-size:8px}
+}
+</style>
+
+<style id="trailer-v30-style">
+[data-trailer-trigger]{cursor:pointer}
+body.trailer-open{overflow:hidden}
+body.trailer-open::after{
+  content:"";position:fixed;top:0;right:0;width:8.5vw;height:100vh;z-index:4998;
+  backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  -webkit-backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  background:rgba(0,0,0,.08);pointer-events:none;
+  opacity:1;transition:opacity .55s ease;
+}
+.trailer-panel{
+  position:fixed;left:0;top:0;width:91.5vw;height:100vh;z-index:5000;
+  color:#fff;transform:translate3d(-100%,0,0);
+  transition:transform 1.72s cubic-bezier(.19,1,.22,1);
+  visibility:hidden;pointer-events:none;overflow:visible;
+  font-family:"New Heterodox Mono","Courier New",monospace;
+  will-change:transform;
+}
+.trailer-panel.is-visible{visibility:visible}
+.trailer-panel.is-open{transform:translate3d(0,0,0);pointer-events:auto}
+.trailer-panel-inner{position:absolute;inset:0;background:#000;overflow:hidden}
+.trailer-brand{
+  position:absolute;top:15px;left:0;width:100%;z-index:8;
+  display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;
+  padding:0 clamp(22px,2.6vw,50px);box-sizing:border-box;
+  font-size:clamp(24px,2.15vw,42px);line-height:.95;letter-spacing:.02em;font-weight:700;
+  opacity:0;transform:translateY(-2px);
+  transition:opacity .62s ease .58s,transform .72s cubic-bezier(.19,1,.22,1) .52s;
+  white-space:nowrap;pointer-events:none;
+}
+.trailer-brand span:nth-child(1){justify-self:start}
+.trailer-brand span:nth-child(2){justify-self:center}
+.trailer-brand span:nth-child(3){justify-self:end}
+.trailer-panel.is-open .trailer-brand{opacity:1;transform:none}
+.trailer-panel.is-exiting .trailer-brand{opacity:0;transform:translateY(-4px);transition:opacity .52s ease,transform .62s cubic-bezier(.19,1,.22,1)}
+
+/* PrettyBird-like player: picture + controls UNDER the picture, no platform chrome. */
+.trailer-player-wrap{
+  position:absolute;left:50%;top:50%;z-index:3;
+  width:min(84vw,calc(76vh * 16 / 9));
+  transform:translate(-50%,-48.5%) scale(.994);
+  opacity:0;transition:opacity .70s ease .54s,transform 1.02s cubic-bezier(.19,1,.22,1) .46s;
+  cursor:auto;
+}
+.trailer-panel.is-open .trailer-player-wrap{opacity:1;transform:translate(-50%,-48.5%) scale(1)}
+
+.trailer-fullscreen-stage{position:relative;width:100%;background:#000}
+.trailer-player-wrap:fullscreen,.trailer-player-wrap:-webkit-full-screen{
+  position:fixed;left:0;top:0;
+  width:100vw;height:100vh;max-width:none;background:#000;
+  transform:none;transition:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.trailer-player-wrap.fs-instant{transition:none!important}
+.trailer-player-wrap:fullscreen .trailer-fullscreen-stage,
+.trailer-player-wrap:-webkit-full-screen .trailer-fullscreen-stage{width:100%;height:100%}
+.trailer-player-wrap:fullscreen .trailer-video-surface,
+.trailer-player-wrap:-webkit-full-screen .trailer-video-surface{
+  position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;background:#000;
+}
+.trailer-player-wrap:fullscreen .trailer-video-surface video,
+.trailer-player-wrap:-webkit-full-screen .trailer-video-surface video{
+  width:100%;height:100%;object-fit:contain;background:#000;
+}
+.trailer-player-wrap:fullscreen .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen .trailer-controls{
+  position:absolute;left:clamp(22px,3vw,52px);right:clamp(22px,3vw,52px);bottom:clamp(16px,2.5vh,30px);
+  width:auto;height:58px;z-index:10;margin:0;padding:0 8px;
+  grid-template-columns:70px minmax(0,1fr) 60px 60px;gap:14px;
+  background:linear-gradient(to top,rgba(0,0,0,.50),rgba(0,0,0,.14) 62%,rgba(0,0,0,0));
+  opacity:0;pointer-events:none;transition:opacity .32s ease;
+}
+.trailer-player-wrap:fullscreen.fs-controls-active .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen.fs-controls-active .trailer-controls{opacity:1;pointer-events:auto}
+.trailer-player-wrap:fullscreen:not(.fs-controls-active),
+.trailer-player-wrap:fullscreen:not(.fs-controls-active) *,
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active),
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active) *{cursor:none!important}
+.trailer-player-wrap:fullscreen:not(.fs-controls-active) .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active) .trailer-controls{opacity:0!important;pointer-events:none!important}
+.trailer-player-wrap:fullscreen .trailer-control-btn,
+.trailer-player-wrap:-webkit-full-screen .trailer-control-btn{width:56px;height:56px}
+.trailer-player-wrap:fullscreen .trailer-play-btn,
+.trailer-player-wrap:-webkit-full-screen .trailer-play-btn{width:84px;height:52px}
+.trailer-player-wrap:fullscreen .trailer-control-btn svg,
+.trailer-player-wrap:-webkit-full-screen .trailer-control-btn svg{width:32px;height:32px}
+.trailer-player-wrap:fullscreen .trailer-preview-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-preview-tip{bottom:58px}
+.trailer-player-wrap:fullscreen .trailer-time-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-time-tip{bottom:38px}
+.trailer-player-wrap:fullscreen .trailer-volume-pop,
+.trailer-player-wrap:-webkit-full-screen .trailer-volume-pop{bottom:55px}
+.trailer-player-wrap:fullscreen .trailer-fs-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-fs-tip{bottom:70px}
+.trailer-player-wrap:fullscreen .trailer-play-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-play-tip{bottom:66px}
+.trailer-video-surface{
+  position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;
+}
+.trailer-video-surface video{
+  position:absolute;inset:0;width:100%;height:100%;display:block;background:#000;object-fit:contain;cursor:auto;
+  opacity:0;transition:opacity .30s ease;
+}
+.trailer-player-wrap.media-ready .trailer-video-surface video{opacity:1}
+.trailer-player-wrap.closing-black .trailer-video-surface video{opacity:0;transition:opacity .22s ease}
+.trailer-player-wrap.closing-black .trailer-controls{opacity:0!important;pointer-events:none!important}
+.trailer-loader{
+  position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
+  border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;
+  animation:trailerSpin .82s linear infinite;z-index:6;opacity:0;transition:opacity .22s ease;pointer-events:none;
+}
+.trailer-loader.is-loading{opacity:1}
+@keyframes trailerSpin{to{transform:rotate(360deg)}}
+
+.trailer-controls{
+  position:relative;width:100%;height:38px;margin-top:0;
+  display:grid;grid-template-columns:54px minmax(0,1fr) 46px 46px;gap:10px;align-items:center;
+  padding:0 0 0 0;background:#000;
+  opacity:0;transition:opacity .55s ease;pointer-events:none;
+}
+.trailer-player-wrap.controls-active .trailer-controls,
+.trailer-player-wrap:hover .trailer-controls{opacity:1;pointer-events:auto}
+.trailer-control-btn{
+  appearance:none;border:0;background:transparent;color:#fff;padding:0;margin:0;width:42px;height:42px;
+  display:grid;place-items:center;cursor:pointer;
+}
+.trailer-control-btn svg{width:27px;height:27px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.trailer-control-btn .fill-icon{fill:currentColor;stroke:none}
+.trailer-control-btn:focus-visible{outline:1px solid rgba(255,255,255,.9);outline-offset:2px}
+.trailer-control-btn{color:rgba(255,255,255,.65);transition:color .12s ease}
+.trailer-control-btn:hover{color:#fff}
+.trailer-fs-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-fs-tip{
+  position:absolute;bottom:46px;left:50%;transform:translateX(-50%);
+  font:600 11px/1 Arial,Helvetica,sans-serif;white-space:nowrap;background:none;color:#fff;
+  padding:0;opacity:0;pointer-events:none;transition:opacity .14s ease;
+}
+.trailer-fs-wrap:hover .trailer-fs-tip{opacity:1}
+.trailer-play-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-play-tip{bottom:44px}
+.trailer-play-btn{width:50px;height:32px;background:transparent;border-radius:4px;transition:background .12s ease,color .12s ease}
+.trailer-play-btn:hover{background:#fff;color:#111!important}
+.trailer-play-wrap:hover .trailer-play-tip{opacity:1}
+
+.trailer-progress{position:relative;height:42px;cursor:pointer;min-width:0;display:flex;align-items:center}
+.trailer-progress-track{position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%) scaleY(1);background:#2c2c2c;transition:transform .12s ease}
+.trailer-progress:hover .trailer-progress-track{transform:translateY(-50%) scaleY(1.4)}
+.trailer-progress-buffered{position:absolute;left:0;top:0;bottom:0;width:0;background:#6a6a6a}
+.trailer-progress-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+.trailer-progress-knob{position:absolute;top:50%;left:0;width:7px;height:7px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);opacity:0;transition:opacity .12s ease}
+.trailer-progress:hover .trailer-progress-knob{opacity:1}
+.trailer-time-tip{
+  position:absolute;bottom:27px;left:0;transform:translateX(-50%);
+  font:700 10px/1 Arial,Helvetica,sans-serif;white-space:nowrap;background:#fff;color:#111;
+  padding:4px 5px 3px;border-radius:2px;opacity:0;pointer-events:none;
+}
+.trailer-progress:hover .trailer-time-tip{opacity:1}
+.trailer-preview-tip{
+  position:absolute;bottom:42px;left:0;width:142px;aspect-ratio:16/9;
+  transform:translateX(-50%);background:#070707;border:1px solid rgba(255,255,255,.38);
+  opacity:0;pointer-events:none;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.45);
+}
+.trailer-progress:hover .trailer-preview-tip{opacity:1}
+.trailer-preview-tip img{display:block;width:100%;height:100%;object-fit:cover;background:#111}
+.trailer-preview-time{
+  position:absolute;left:0;right:0;bottom:0;height:19px;background:rgba(0,0,0,.82);color:#fff;
+  display:grid;place-items:center;font:700 10px/1 Arial,Helvetica,sans-serif;
+}
+.trailer-volume-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-volume-wrap #trailerMute{position:relative;z-index:3;cursor:pointer}
+.trailer-volume-pop{
+  position:absolute;left:50%;bottom:34px;width:40px;height:104px;transform:translateX(-50%);
+  background:rgba(0,0,0,.90);border:none;border-radius:3px;
+  z-index:2;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .16s ease;
+}
+.trailer-volume-pop::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-30px;height:34px}
+.trailer-volume-wrap:hover .trailer-volume-pop,.trailer-volume-wrap.volume-open .trailer-volume-pop,.trailer-volume-pop.is-active{opacity:1;pointer-events:auto}
+.trailer-volume-track{position:relative;width:26px;height:78px;background:transparent;cursor:pointer;touch-action:none}
+.trailer-volume-track::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%) scaleX(1);background:#505050;transition:transform .12s ease}
+.trailer-volume-fill{position:absolute;left:50%;bottom:0;width:3px;height:100%;transform:translateX(-50%) scaleX(1);background:#fff;transition:transform .12s ease}
+.trailer-volume-track:hover::before{transform:translateX(-50%) scaleX(1.6)}
+.trailer-volume-track:hover .trailer-volume-fill{transform:translateX(-50%) scaleX(1.6)}
+.trailer-volume-knob{position:absolute;left:50%;bottom:100%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,50%);pointer-events:none}
+
+.trailer-close{
+  position:absolute;right:-4.25vw;top:50%;z-index:15;width:58px;height:58px;
+  transform:translate(50%,-50%);border:3px solid rgba(255,255,255,.94);border-radius:50%;
+  background:#000;color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;opacity:0;
+  transition:opacity .42s ease .60s,transform .34s cubic-bezier(.19,1,.22,1);
+}
+.trailer-close .close-x{position:relative;width:21px;height:21px;display:block;transition:transform .42s cubic-bezier(.19,1,.22,1)}
+.trailer-close .close-x::before,.trailer-close .close-x::after{
+  content:"";position:absolute;left:50%;top:50%;width:24px;height:3px;background:#fff;transform-origin:center;
+}
+.trailer-close .close-x::before{transform:translate(-50%,-50%) rotate(45deg)}
+.trailer-close .close-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.trailer-panel.is-open .trailer-close{opacity:1}
+.trailer-panel.is-closing .trailer-close{opacity:0;transition:opacity .34s ease 0s;transform:translate(48%,-50%)}
+.trailer-close:hover .close-x{transform:rotate(90deg)}
+.trailer-close:focus-visible{outline:1px solid rgba(255,255,255,.8);outline-offset:4px}
+
+@media(max-width:800px){
+  body.trailer-open::after{width:8vw;backdrop-filter:blur(9px) brightness(.72);-webkit-backdrop-filter:blur(9px) brightness(.72)}
+  .trailer-panel{width:92vw}
+  .trailer-player-wrap{width:min(88vw,calc(72vh * 16 / 9))}
+  .trailer-close{right:-4vw;width:50px;height:50px}
+  .trailer-brand{top:14px;font-size:clamp(20px,5vw,30px);padding:0 18px}
+  .trailer-preview-tip{width:108px}
+}
+</style>
+
+</head>
+<body>
+<div class="top-ui">WORKS — REAL CLIPS v03 — PROPORTIONAL CLEARANCE FIX / CANDIDATE</div>
+<div class="scroll-hint">SCROLL ↓ / ↑</div>
+<div class="topspace"></div>
+
+<section class="project large"
+  data-trailer-uid="6ed5be5a72671ec0c638d8bbfe39549c"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA GIOIA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/6ed5be5a72671ec0c638d8bbfe39549c/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA GIOIA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">NICOLANGELO GELORMINI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="92f50eece104e8e985198215b1df0e25"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.12"
+  data-end-anchor="0.41"
+  data-director-start="0.378"
+  data-director-end="0.298"
+  data-director-k="22.5"
+  data-director-d="9.9" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview IDDU — L’ULTIMO PADRINO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/92f50eece104e8e985198215b1df0e25/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>IDDU — L’ULTIMO PADRINO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">FABIO GRASSADONIA / ANTONIO PIAZZA</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="a710a3741e9c323a2320299b67185908"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.43"
+  data-end-anchor="0.21"
+  data-director-start="0.390"
+  data-director-end="0.310"
+  data-director-k="24.5"
+  data-director-d="10.1" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA CITTÀ PROIBITA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/a710a3741e9c323a2320299b67185908/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA CITTÀ PROIBITA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">GABRIELE MAINETTI</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="fa8ee4822135ea036b8a6e1acec44cff"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.46"
+  data-end-anchor="0.23"
+  data-director-start="0.400"
+  data-director-end="0.320"
+  data-director-k="25.5"
+  data-director-d="10.3" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview COMANDANTE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/fa8ee4822135ea036b8a6e1acec44cff/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>COMANDANTE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">EDOARDO DE ANGELIS</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="57fd01c634e151dd590d2d97b0800d9b"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.16"
+  data-end-anchor="0.44"
+  data-director-start="0.412"
+  data-director-end="0.332"
+  data-director-k="27"
+  data-director-d="10.6" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview PARTHENOPE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/57fd01c634e151dd590d2d97b0800d9b/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>PARTHENOPE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">PAOLO SORRENTINO</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="4c8442c466978d1f71e780a9f3372972"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.45"
+  data-end-anchor="0.22"
+  data-director-start="0.424"
+  data-director-end="0.344"
+  data-director-k="28"
+  data-director-d="10.8" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview DENTI DA SQUALO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/4c8442c466978d1f71e780a9f3372972/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>DENTI DA SQUALO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">DAVIDE GENTILE</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="6b32cdc1c5c3e867e297df89f91a9537"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.47"
+  data-end-anchor="0.24"
+  data-director-start="0.436"
+  data-director-end="0.356"
+  data-director-k="29"
+  data-director-d="11.0" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview DIVA FUTURA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/6b32cdc1c5c3e867e297df89f91a9537/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>DIVA FUTURA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">GIULIA LOUISE STEIGERWALT</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="12fcb6666cb7ce211b5c7f6b154bbaef"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.18"
+  data-end-anchor="0.46"
+  data-director-start="0.448"
+  data-director-end="0.368"
+  data-director-k="30.5"
+  data-director-d="11.3" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview SEI FRATELLI"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/12fcb6666cb7ce211b5c7f6b154bbaef/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>SEI FRATELLI</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">SIMONE GODANO</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="ba8a016a2e99daba5cc2d037b11f1bd6"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.49"
+  data-end-anchor="0.25"
+  data-director-start="0.460"
+  data-director-end="0.380"
+  data-director-k="31.5"
+  data-director-d="11.5" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview HANNO UCCISO L’UOMO RAGNO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/ba8a016a2e99daba5cc2d037b11f1bd6/iframe?autoplay=true&muted=true&loop=true&controls=false&preload=auto"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>HANNO UCCISO L’UOMO RAGNO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">SYDNEY SIBILIA</span></div></div>
+  </div>
+</section>
+
+<div class="endspace"></div>
+
+<script>
+(()=>{
+  const projects=[...document.querySelectorAll('.project')];
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const smooth=(a,b,x)=>{
+    const t=clamp((x-a)/(b-a),0,1);
+    return t*t*(3-2*t);
+  };
+
+  function springStep(s,target,dt,k,c){
+    const t=Math.min(dt,40)/1000;
+    const a=(target-s.x)*k-s.v*c;
+    s.v+=a*t;
+    s.x+=s.v*t;
+    return s.x;
+  }
+
+  const states=new Map();
+  projects.forEach(p=>{
+    states.set(p,{
+      titleIn:{x:0,v:0},
+      directorIn:{x:0,v:0},
+      titleOut:{x:0,v:0},
+      directorOut:{x:0,v:0},
+      xTitle:{x:Number(p.dataset.titleX),v:0},
+      xDirector:{x:Number(p.dataset.titleX),v:0},
+      hover:{x:0,v:0},
+      hoverTarget:0,
+      directorDelayStart:null,
+      directorDelayArmed:false,
+      titleArmed:false
+    });
+  });
+
+  let pointerX=-9999, pointerY=-9999;
+  let hoverProject=null;
+
+  addEventListener('pointermove',e=>{
+    pointerX=e.clientX;
+    pointerY=e.clientY;
+
+    let hit=null;
+
+    for(const p of projects){
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+      const tr=title.getBoundingClientRect();
+      const dr=director.getBoundingClientRect();
+      const pad=16;
+
+      const overTitle=
+        pointerX>=tr.left-pad && pointerX<=tr.right+pad &&
+        pointerY>=tr.top-pad && pointerY<=tr.bottom+pad;
+
+      const overDirector=
+        pointerX>=dr.left-pad && pointerX<=dr.right+pad &&
+        pointerY>=dr.top-pad && pointerY<=dr.bottom+pad;
+
+      if(overTitle||overDirector){
+        hit=p;
+        break;
+      }
+    }
+
+    hoverProject=hit;
+  },{passive:true});
+
+  addEventListener('pointerleave',()=>{
+    pointerX=-9999;
+    pointerY=-9999;
+    hoverProject=null;
+  },{passive:true});
+
+  const MEDIA_TAIL_REF=0.58;
+  const MEDIA_ENTRY_BAND_REF=1.00;
+  const PICTURE_SAFE_RATIO=0.88;
+  const mediaEase=t=>{
+    t=clamp(t,0,1);
+    return t*t*(3-2*t);
+  };
+  const mediaRevealFor=(mr,refH)=>{
+    const tailPx=refH*MEDIA_TAIL_REF;
+    const bandPx=refH*MEDIA_ENTRY_BAND_REF;
+    const progress=mediaEase((innerHeight-mr.top)/Math.max(1,bandPx));
+    return tailPx*(1-progress);
+  };
+
+  let prev=performance.now();
+
+  function frame(now){
+    const dt=now-prev; prev=now;
+    const vh=innerHeight;
+
+    projects.forEach(p=>{
+      const s=states.get(p);
+      const media=p.querySelector('.media');
+      const mr=media.getBoundingClientRect();
+      const pr=p.getBoundingClientRect();
+
+      const refMediaRect=projects[0].querySelector('.media').getBoundingClientRect();
+      const revealPx=mediaRevealFor(mr,refMediaRect.height);
+      const mediaLayer=p.querySelector('[data-video-layer]');
+      mediaLayer.style.transform=`translate3d(0,${revealPx.toFixed(3)}px,0)`;
+      mediaLayer.dataset.revealPx=revealPx.toFixed(3);
+      const pictureTop=Math.min(mr.bottom, mr.top+revealPx);
+      const pictureNominalHeight=mr.height*PICTURE_SAFE_RATIO;
+      const pictureBottom=Math.min(mr.bottom, pictureTop+pictureNominalHeight);
+      const pictureHeight=Math.max(0,pictureBottom-pictureTop);
+      p.dataset.pictureTop=pictureTop.toFixed(3);
+      p.dataset.pictureBottom=pictureBottom.toFixed(3);
+
+      const titleMask=p.querySelector('.title-mask');
+      const directorMask=p.querySelector('.director-mask');
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+
+      const titleH=titleMask.offsetHeight;
+      const directorH=directorMask.offsetHeight;
+      const large=p.classList.contains('large');
+
+      const copyClip=p.querySelector('.copy-clip');
+      const titleLineH=title.offsetHeight;
+      const directorLineH=director.offsetHeight;
+
+      const pictureLocalTop=pictureTop-pr.top;
+      copyClip.style.top=`${pictureLocalTop}px`;
+      copyClip.style.height=`${pictureHeight}px`;
+      copyClip.style.clipPath='none';
+
+      // v03 — FIX segnalato da William 2026-09-06: la v02 calcolava la clearance
+      // come percentuale dell'altezza della SOLA immagine di riferimento (La Gioia,
+      // formato "grande") e poi applicava quello stesso valore assoluto in px a
+      // tutte le altre clip. Formati con altezza diversa (medio/largo) ricevevano
+      // quindi una percentuale reale diversa dal 4% dichiarato: bug corretto usando
+      // l'altezza dell'immagine attiva DI QUESTA clip (pictureHeight), cosi il 4%
+      // e realmente identico, in proporzione, su ogni formato e ogni film.
+      const bottomClearance=Math.max(20,pictureHeight*.04);
+
+      // Preserve the accepted title/director separation using rendered glyph geometry.
+      const interlineAir=Math.max(16,titleLineH*.18);
+
+      const naturalDirectorY=pictureBottom-bottomClearance-directorLineH;
+      const naturalTitleY=naturalDirectorY-titleLineH-interlineAir;
+      const naturalGap=naturalDirectorY-naturalTitleY;
+
+      const center=mr.top+mr.height*.5;
+
+      const titleRawContinuous=smooth(vh*.535,vh*.475,center);
+      if(!s.titleArmed && titleRawContinuous>=.5) s.titleArmed=true;
+      if(s.titleArmed && titleRawContinuous<=.08) s.titleArmed=false;
+      const titleRaw=s.titleArmed?1:0;
+
+      const directorK=Number(p.dataset.directorK||29);
+      const directorD=Number(p.dataset.directorD||10.8);
+
+      const titleIn=clamp(springStep(s.titleIn,titleRaw,dt,50,12.6),0,1.015);
+
+      if(!s.directorDelayArmed && titleIn>=.985){
+        s.directorDelayArmed=true;
+        s.directorDelayStart=now;
+      }
+      if(s.directorDelayArmed && titleIn<.72){
+        s.directorDelayArmed=false;
+        s.directorDelayStart=null;
+      }
+
+      const directorDelayDone=s.directorDelayArmed && s.directorDelayStart!==null && (now-s.directorDelayStart)>=0;
+      const directorTarget=directorDelayDone?1:0;
+      const directorIn=clamp(springStep(s.directorIn,directorTarget,dt,directorK,directorD),0,1.012);
+      const directorEntryGate=smooth(.90,.985,titleIn);
+      const directorVisibleIn=directorIn*directorEntryGate;
+
+      const stickyTop=0;
+      const sticky=naturalTitleY<=stickyTop;
+      const titleViewportY=sticky ? stickyTop : naturalTitleY;
+      const directorViewportY=titleViewportY+naturalGap;
+
+      const titleExitStart=titleViewportY+titleH+150;
+      const titleExitEnd=titleViewportY+titleH+70;
+      const directorExitStart=directorViewportY+directorH+42;
+      const directorExitEnd=directorViewportY+directorH+10;
+
+      const titleExitRaw=sticky ? 1-smooth(titleExitEnd,titleExitStart,pictureBottom) : 0;
+      const directorExitRaw=sticky ? 1-smooth(directorExitEnd,directorExitStart,pictureBottom) : 0;
+
+      const titleOut=clamp(springStep(s.titleOut,titleExitRaw,dt,18,9.3),0,1.025);
+      const directorOutBase=clamp(springStep(s.directorOut,directorExitRaw,dt,11.8,8.9),0,1.02);
+      const directorReverseHold=sticky ? smooth(0.40,0.72,titleOut) : 0;
+      const directorOut=Math.max(directorOutBase,directorReverseHold);
+
+      const scrollConv=smooth(vh*.54,vh*.10,center);
+
+      const baseTitle=Number(p.dataset.titleX);
+      const mode=p.dataset.hoverMode||'offset-to-align';
+      const startAnchor=Number(p.dataset.startAnchor||.5);
+      const endAnchor=Number(p.dataset.endAnchor||.16);
+
+      const titleWidthPx=title.offsetWidth;
+      const vwPx=innerWidth/100;
+
+      const startDirectorX=baseTitle + (titleWidthPx*startAnchor)/vwPx;
+
+      const scrollTitleX=baseTitle + scrollConv*.55;
+      const scrollDirectorX=startDirectorX - scrollConv*1.15;
+
+      s.hoverTarget=(hoverProject===p)?1:0;
+      p.classList.toggle('is-hover',s.hoverTarget===1);
+
+      const hover=clamp(springStep(s.hover,s.hoverTarget,dt,112,20.5),0,1);
+
+      let hoverTitleX=scrollTitleX;
+      let hoverDirectorX=scrollDirectorX;
+
+      if(mode==='offset-to-align'){
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/vwPx;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='offset-to-align-soft'){
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/vwPx;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='align-to-offset'){
+        const centerX=baseTitle + (titleWidthPx*.17)/vwPx;
+        hoverTitleX=centerX - Math.max(18,titleWidthPx*.055)/vwPx;
+        hoverDirectorX=centerX + Math.max(64,titleWidthPx*.23)/vwPx;
+
+      }else if(mode==='align-to-offset-gentle'){
+        const centerX=baseTitle + (titleWidthPx*.13)/vwPx;
+        hoverTitleX=centerX - Math.max(16,titleWidthPx*.05)/vwPx;
+        hoverDirectorX=centerX + Math.max(32,titleWidthPx*.115)/vwPx;
+
+      }else if(mode==='align-to-offset-soft'){
+        const centerX=baseTitle + (titleWidthPx*.14)/vwPx;
+        hoverTitleX=centerX - Math.max(22,titleWidthPx*.07)/vwPx;
+        hoverDirectorX=centerX + Math.max(44,titleWidthPx*.16)/vwPx;
+
+      }else{
+        const centerX=baseTitle + (titleWidthPx*.20)/vwPx;
+        hoverTitleX=centerX - Math.max(14,titleWidthPx*.045)/vwPx;
+        hoverDirectorX=centerX + Math.max(50,titleWidthPx*.19)/vwPx;
+      }
+
+      const targetTitleX=scrollTitleX+(hoverTitleX-scrollTitleX)*hover;
+      const targetDirectorX=scrollDirectorX+(hoverDirectorX-scrollDirectorX)*hover;
+
+      const activeHover=hover>.02;
+
+      const xTitle=activeHover
+        ? springStep(s.xTitle,targetTitleX,dt,88,16.8)
+        : springStep(s.xTitle,targetTitleX,dt,18,9.2);
+
+      const xDirector=activeHover
+        ? springStep(s.xDirector,targetDirectorX,dt,82,15.8)
+        : springStep(s.xDirector,targetDirectorX,dt,16,8.8);
+
+      titleMask.style.transform=`translate3d(0,${titleViewportY-pictureTop}px,0)`;
+      directorMask.style.transform=`translate3d(0,${directorViewportY-pictureTop}px,0)`;
+
+      const clampMaskToPicture=(mask, viewportY, maskH)=>{
+        const maskBottom=viewportY+maskH;
+        const clipTop=clamp(pictureTop-viewportY,0,maskH);
+        const clipBottom=clamp(maskBottom-pictureBottom,0,maskH);
+        const fullyOutside=(clipTop+clipBottom)>=maskH-.5 || pictureHeight<1;
+        mask.style.visibility=fullyOutside?'hidden':'visible';
+        mask.style.clipPath=fullyOutside
+          ? 'inset(50% 0 50% 0)'
+          : `inset(${clipTop}px 0 ${clipBottom}px 0)`;
+      };
+
+      clampMaskToPicture(titleMask,titleViewportY,titleH);
+      clampMaskToPicture(directorMask,directorViewportY,directorH);
+
+      const titleEntryY=(1-titleIn)*.98*titleH;
+      const directorEntryY=(1-directorVisibleIn)*.98*directorH;
+
+      const titleExitY=titleOut*1.015*titleH;
+      const directorExitY=directorOut*1.015*directorH;
+
+      const titleY=titleEntryY+titleExitY;
+      const directorY=directorEntryY+directorExitY;
+
+      const titleSoft=smooth(.55,1,titleOut);
+      const directorSoft=smooth(.55,1,directorOut);
+
+      title.style.transform=`translate3d(${xTitle}vw,${titleY}px,0)`;
+      director.style.transform=`translate3d(${xDirector}vw,${directorY}px,0)`;
+      title.style.opacity=clamp(titleIn*(1-titleSoft*.42),0,1);
+      director.style.opacity=clamp(directorVisibleIn*(1-directorSoft*.42),0,1);
+      title.style.filter=`blur(${titleSoft*.35}px)`;
+      director.style.filter=`blur(${directorSoft*.35}px)`;
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+
+  window.__worksV21QA=()=>projects.map((p,i)=>{
+    const mr=p.querySelector('.media').getBoundingClientRect();
+    const revealPx=Number(p.querySelector('[data-video-layer]').dataset.revealPx||0);
+    const pictureTop=Math.min(mr.bottom,mr.top+revealPx);
+    const pictureBottom=Math.min(mr.bottom,pictureTop+mr.height*PICTURE_SAFE_RATIO);
+    const cc=p.querySelector('.copy-clip').getBoundingClientRect();
+    return {i,mediaTop:mr.top,mediaBottom:mr.bottom,revealPx,pictureTop,pictureBottom,copyTop:cc.top,copyBottom:cc.bottom};
+  });
+})();
+</script>
+
+<div class="trailer-panel" id="trailerPanel" aria-hidden="true">
+  <div class="trailer-panel-inner">
+    <div class="trailer-brand" aria-label="Il Suono Organizzato"><span>I</span><span>S</span><span>O</span></div>
+    <div class="trailer-player-wrap" id="trailerPlayerWrap">
+      <div class="trailer-fullscreen-stage" id="trailerFullscreenStage">
+      <div class="trailer-video-surface" id="trailerVideoSurface">
+        <div class="trailer-loader is-loading" id="trailerLoader" aria-label="Caricamento trailer"></div>
+        <video id="trailerVideo" playsinline preload="auto"></video>
+      </div>
+      <div class="trailer-controls" id="trailerControls" aria-label="Controlli trailer">
+        <div class="trailer-play-wrap">
+          <button type="button" class="trailer-control-btn trailer-play-btn" id="trailerPlay" aria-label="Play / Pause">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><g id="playGlyph"><path class="fill-icon" d="M6 4.2 15 10 6 15.8Z"/></g><g id="pauseGlyph" style="display:none"><rect class="fill-icon" x="5" y="4" width="3.2" height="12"/><rect class="fill-icon" x="11.8" y="4" width="3.2" height="12"/></g></svg>
+          </button>
+          <div class="trailer-fs-tip trailer-play-tip" id="trailerPlayTip">Play</div>
+        </div>
+        <div class="trailer-progress" id="trailerProgress" role="slider" aria-label="Posizione trailer" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="trailer-progress-track"><div class="trailer-progress-buffered" id="trailerProgressBuffered"></div><div class="trailer-progress-fill" id="trailerProgressFill"></div></div>
+          <div class="trailer-progress-knob" id="trailerProgressKnob"></div>
+          <div class="trailer-time-tip" id="trailerTimeTip">00:00</div>
+          <div class="trailer-preview-tip" id="trailerPreviewTip"><img id="trailerPreviewImg" alt=""><div class="trailer-preview-time" id="trailerPreviewTime">00:00</div></div>
+        </div>
+        <div class="trailer-volume-wrap">
+          <button type="button" class="trailer-control-btn" id="trailerMute" aria-label="Audio">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8h3l4-3v10l-4-3H4z"/><path id="volWave1" d="M13.2 7.2c1.4 1.4 1.4 4.2 0 5.6"/><path id="volWave2" d="M15.5 5.3c2.4 2.5 2.4 6.9 0 9.4"/><path id="volMuteSlash" d="M2.8 3.2L17.2 16.8" style="display:none;stroke-width:2.1"/></svg>
+          </button>
+          <div class="trailer-volume-pop" id="trailerVolumePop" aria-label="Volume"><div class="trailer-volume-track" id="trailerVolumeTrack"><div class="trailer-volume-fill" id="trailerVolumeFill"></div><div class="trailer-volume-knob" id="trailerVolumeKnob"></div></div></div>
+        </div>
+        <div class="trailer-fs-wrap">
+          <button type="button" class="trailer-control-btn" id="trailerFullscreen" aria-label="Schermo intero">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <g id="fsEnterGlyph"><path d="M3.5 7V3.5H7M13 3.5h3.5V7M16.5 13v3.5H13M7 16.5H3.5V13"/></g>
+              <g id="fsExitGlyph" style="display:none"><path d="M7 3.5V7H3.5M13 3.5V7h3.5M13 16.5V13h3.5M7 16.5V13H3.5"/></g>
+            </svg>
+          </button>
+          <div class="trailer-fs-tip" id="trailerFsTip">Fullscreen</div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  <button class="trailer-close" id="trailerClose" aria-label="Torna ai lavori"><span class="close-x" aria-hidden="true"></span></button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+<script id="trailer-v33-script">
+(()=>{
+  const panel=document.getElementById('trailerPanel');
+  const closeBtn=document.getElementById('trailerClose');
+  const wrap=document.getElementById('trailerPlayerWrap');
+  const fsStage=document.getElementById('trailerFullscreenStage');
+  const fsHome=document.createComment('fullscreen-stage-home');
+  fsStage.parentNode.insertBefore(fsHome,fsStage);
+  const video=document.getElementById('trailerVideo');
+  const videoSurface=document.getElementById('trailerVideoSurface');
+  const loader=document.getElementById('trailerLoader');
+  const playBtn=document.getElementById('trailerPlay');
+  const playGlyph=document.getElementById('playGlyph');
+  const playTip=document.getElementById('trailerPlayTip');
+  const pauseGlyph=document.getElementById('pauseGlyph');
+  const muteBtn=document.getElementById('trailerMute');
+  const volWave1=document.getElementById('volWave1');
+  const volWave2=document.getElementById('volWave2');
+  const volMuteSlash=document.getElementById('volMuteSlash');
+  const volumePop=document.getElementById('trailerVolumePop');
+  const volumeTrack=document.getElementById('trailerVolumeTrack');
+  const volumeFill=document.getElementById('trailerVolumeFill');
+  const volumeKnob=document.getElementById('trailerVolumeKnob');
+  let volumeValue=1;
+  const fsBtn=document.getElementById('trailerFullscreen');
+  const fsTip=document.getElementById('trailerFsTip');
+  const fsEnterGlyph=document.getElementById('fsEnterGlyph');
+  const fsExitGlyph=document.getElementById('fsExitGlyph');
+  const progress=document.getElementById('trailerProgress');
+  const fill=document.getElementById('trailerProgressFill');
+  const buffered=document.getElementById('trailerProgressBuffered');
+  const knob=document.getElementById('trailerProgressKnob');
+  const timeTip=document.getElementById('trailerTimeTip');
+  const previewTip=document.getElementById('trailerPreviewTip');
+  const previewImg=document.getElementById('trailerPreviewImg');
+  const previewTime=document.getElementById('trailerPreviewTime');
+  const triggers=[...document.querySelectorAll('[data-trailer-trigger]')];
+
+  const CF='https://customer-g4gszpjfcto93ptl.cloudflarestream.com';
+  let currentUID=null;
+  const HLS_SRC=()=>currentUID?`${CF}/${currentUID}/manifest/video.m3u8`:'';
+  const THUMB_SRC=t=>currentUID?`${CF}/${currentUID}/thumbnails/thumbnail.jpg?time=${Math.max(0,t).toFixed(1)}s&height=120`:'';
+  let hls=null,sourceAttached=false,qualityReady=false,mediaReady=false,open=false,lastScrollY=0,openingProject=null;
+  let closeTimer=null,openTimer=null,controlsTimer=null,fsControlsTimer=null,revealTimer=null,desiredLevel=-1,lastPreviewSecond=-1,volumeDragging=false,volumeHideTimer=null,cinematicFullscreen=false,fullscreenAnimating=false;
+  let userMuted=false,lastAudibleVolume=1;
+  const PANEL_MS=1720, BLACK_BEFORE_EXIT_MS=250, MIN_LOADER_MS=520, CLICK_DARKEN_MS=290;
+
+  const formatTime=s=>{if(!Number.isFinite(s))return '00:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')};
+  const readyEnough=()=>video.readyState>=3 && (qualityReady || !window.Hls || !Hls.isSupported());
+
+  function markMediaReady(){
+    mediaReady=true;
+    wrap.classList.add('media-ready');
+    loader.classList.remove('is-loading');
+    if(open){video.volume=volumeValue;video.muted=userMuted || video.volume===0;video.play().catch(()=>{});showControls();updateVolumeIcon();}
+  }
+  function maybeReveal(openedAt=0){
+    if(!readyEnough())return;
+    const wait=Math.max(0,MIN_LOADER_MS-(performance.now()-openedAt));
+    clearTimeout(revealTimer);
+    revealTimer=setTimeout(markMediaReady,wait);
+  }
+  function destroySource(){
+    try{video.pause();}catch(e){}
+    if(hls){try{hls.destroy();}catch(e){} hls=null;}
+    try{video.removeAttribute('src');video.load?.();}catch(e){}
+    sourceAttached=false;qualityReady=false;mediaReady=false;desiredLevel=-1;lastPreviewSecond=-1;
+    wrap.classList.remove('media-ready');loader.classList.add('is-loading');
+  }
+  function selectSource(uid){
+    if(!uid)return;
+    if(currentUID===uid && sourceAttached)return;
+    if(sourceAttached || currentUID!==uid)destroySource();
+    currentUID=uid;
+    attachSource();
+  }
+  function attachSource(){
+    if(sourceAttached||!currentUID)return;sourceAttached=true;
+    video.preload='auto';
+    if(window.Hls&&Hls.isSupported()){
+      hls=new Hls({enableWorker:true,lowLatencyMode:false,capLevelToPlayerSize:false,abrEwmaDefaultEstimate:8000000,maxBufferLength:40});
+      hls.loadSource(HLS_SRC());hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+        desiredLevel=hls.levels.reduce((best,l,i)=>((l.height||0)>(hls.levels[best]?.height||0)?i:best),0);
+        if(desiredLevel>=0){
+          try{hls.startLevel=desiredLevel;hls.loadLevel=desiredLevel;hls.nextLevel=desiredLevel;}catch(e){}
+        }
+      });
+      hls.on(Hls.Events.FRAG_BUFFERED,(_,data)=>{
+        const lvl=data&&data.frag&&Number.isInteger(data.frag.level)?data.frag.level:-1;
+        if(desiredLevel<0 || lvl===desiredLevel){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}
+      });
+      hls.on(Hls.Events.ERROR,(_,data)=>{if(data&&data.fatal){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}});
+    }else{
+      video.src=HLS_SRC();
+      video.oncanplaythrough=()=>{qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);};
+      video.onloadeddata=()=>setTimeout(()=>{if(sourceAttached){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}},900);
+    }
+    video.load?.();
+  }
+  window.addEventListener('load',()=>{
+    try{const l=document.createElement('link');l.rel='preconnect';l.href=CF;document.head.appendChild(l);}catch(e){}
+  },{once:true});
+
+  function showControls(){
+    if(wrap.classList.contains('closing-black'))return;
+    wrap.classList.add('controls-active');
+    clearTimeout(controlsTimer);
+    controlsTimer=setTimeout(()=>wrap.classList.remove('controls-active'),1500);
+  }
+  function showFullscreenControls(){
+    if(!cinematicFullscreen)return;
+    wrap.classList.add('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+    fsControlsTimer=setTimeout(()=>wrap.classList.remove('fs-controls-active'),1000);
+  }
+  function openTrailer(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    if(open)return;
+    open=true;lastScrollY=window.scrollY;
+    openingProject=ev&&ev.currentTarget?ev.currentTarget.closest('.project'):null;
+    if(openingProject)openingProject.classList.add('is-opening');
+    clearTimeout(openTimer);clearTimeout(closeTimer);clearTimeout(revealTimer);clearTimeout(fsControlsTimer);
+    fsStage.classList.remove('fs-controls-active');panel.classList.remove('is-exiting');
+    wrap.classList.remove('closing-black');panel.classList.remove('is-closing');wrap.classList.remove('media-ready');mediaReady=false;
+    loader.classList.add('is-loading');
+    const selectedUID=openingProject?.dataset?.trailerUid || '55556633b51205cada191208d9a8434d';
+    selectSource(selectedUID);
+
+    openTimer=setTimeout(()=>{
+      if(!open)return;
+      window.__trailerOpenedAt=performance.now();
+      panel.classList.add('is-visible');panel.setAttribute('aria-hidden','false');document.body.classList.add('trailer-open');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('is-open')));
+      maybeReveal(window.__trailerOpenedAt);
+      setTimeout(()=>{if(open&&!mediaReady&&video.readyState>=3){qualityReady=true;maybeReveal(window.__trailerOpenedAt);}},3000);
+    },CLICK_DARKEN_MS);
+  }
+  function finishClose(){
+    cinematicFullscreen=false;fullscreenAnimating=false;
+    wrap.classList.remove('fs-controls-active');
+    panel.classList.remove('is-visible','is-closing','is-exiting');document.body.classList.remove('trailer-open');
+    wrap.classList.remove('controls-active','closing-black','media-ready');loader.classList.remove('is-loading');
+    clearTimeout(openTimer);
+    if(openingProject){openingProject.classList.remove('is-opening');openingProject=null;}
+    try{video.currentTime=0;}catch(e){}
+    window.scrollTo(0,lastScrollY);
+  }
+  function closeTrailer(){
+    if(!open)return;open=false;panel.setAttribute('aria-hidden','true');
+    clearTimeout(openTimer);clearTimeout(controlsTimer);clearTimeout(fsControlsTimer);clearTimeout(revealTimer);clearTimeout(volumeHideTimer);
+    try{video.pause();}catch(e){}
+    panel.classList.add('is-closing');
+    if(cinematicFullscreen){exitCinematicFullscreen();}
+    if(!panel.classList.contains('is-visible')){finishClose();return;}
+    wrap.classList.add('closing-black');
+    closeTimer=setTimeout(()=>{
+      panel.classList.add('is-exiting');
+      panel.classList.remove('is-open');
+      closeTimer=setTimeout(finishClose,PANEL_MS+80);
+    },BLACK_BEFORE_EXIT_MS);
+  }
+
+  function updatePlay(){const paused=video.paused;playGlyph.style.display=paused?'':'none';pauseGlyph.style.display=paused?'none':'';playTip.textContent=paused?'Play':'Pause';}
+  function updateVolumeIcon(){const silent=video.muted||video.volume===0;volWave1.style.display=silent?'none':'';volWave2.style.display=silent?'none':'';volMuteSlash.style.display=silent?'':'none';muteBtn.setAttribute('aria-label',silent?'Riattiva audio':'Disattiva audio');muteBtn.setAttribute('aria-pressed',String(silent));const v=video.muted?0:video.volume;volumeFill.style.height=(v*100)+'%';volumeKnob.style.bottom=(v*100)+'%';}
+  function updateProgress(){
+    const d=video.duration||0,p=d?video.currentTime/d:0,pct=Math.max(0,Math.min(100,p*100));
+    fill.style.width=pct+'%';knob.style.left=pct+'%';progress.setAttribute('aria-valuenow',String(Math.round(pct)));
+  }
+  function updateBuffered(){
+    const d=video.duration;
+    if(!d||!video.buffered.length){buffered.style.width='0%';return;}
+    let end=0;
+    for(let i=0;i<video.buffered.length;i++){
+      if(video.buffered.start(i)<=video.currentTime+0.5)end=Math.max(end,video.buffered.end(i));
+    }
+    buffered.style.width=Math.max(0,Math.min(100,(end/d)*100))+'%';
+  }
+  video.addEventListener('progress',updateBuffered);
+  video.addEventListener('timeupdate',updateBuffered);
+  function seekFromEvent(e){if(!video.duration)return;const r=progress.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));video.currentTime=p*video.duration;updateProgress();}
+  function updateHoverPreview(e){
+    const r=progress.getBoundingClientRect();const rawX=Math.max(0,Math.min(r.width,e.clientX-r.left));const p=r.width?rawX/r.width:0;const t=p*(video.duration||0);
+    const safePreviewX=Math.max(71,Math.min(r.width-71,rawX));
+    timeTip.style.left=rawX+'px';timeTip.textContent=formatTime(t);
+    previewTip.style.left=safePreviewX+'px';previewTime.textContent=formatTime(t);
+    const sec=Math.max(0,Math.floor(t));
+    if(sec!==lastPreviewSecond){lastPreviewSecond=sec;previewImg.src=THUMB_SRC(sec);}
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  progress.addEventListener('click',seekFromEvent);
+  progress.addEventListener('pointermove',updateHoverPreview);
+  progress.addEventListener('pointerleave',()=>{lastPreviewSecond=-1;});
+  playBtn.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('play',updatePlay);video.addEventListener('pause',updatePlay);video.addEventListener('timeupdate',updateProgress);video.addEventListener('durationchange',updateProgress);
+  video.addEventListener('waiting',()=>{if(open&&!mediaReady)loader.classList.add('is-loading');});
+  video.addEventListener('canplay',()=>maybeReveal(window.__trailerOpenedAt||0));
+  function setVolumeFromPointer(e){
+    const r=volumeTrack.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(r.bottom-e.clientY)/r.height));
+    volumeValue=p;video.volume=p;if(p>0){lastAudibleVolume=p;userMuted=false;}else{userMuted=true;}video.muted=userMuted;updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  const volumeWrap=volumePop.parentElement;
+  const openVolume=()=>{clearTimeout(volumeHideTimer);volumeWrap.classList.add('volume-open');};
+  const scheduleVolumeClose=()=>{if(volumeDragging)return;clearTimeout(volumeHideTimer);volumeHideTimer=setTimeout(()=>volumeWrap.classList.remove('volume-open'),120);};
+  volumeWrap.addEventListener('pointerenter',openVolume);
+  volumeWrap.addEventListener('pointerleave',scheduleVolumeClose);
+  volumePop.addEventListener('pointerenter',openVolume);
+  volumePop.addEventListener('pointerleave',scheduleVolumeClose);
+  volumeTrack.addEventListener('pointerdown',e=>{openVolume();volumeDragging=true;volumePop.classList.add('is-active');volumeTrack.setPointerCapture?.(e.pointerId);setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointermove',e=>{if(volumeDragging)setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointerup',e=>{volumeDragging=false;volumePop.classList.remove('is-active');volumeTrack.releasePointerCapture?.(e.pointerId);scheduleVolumeClose();});
+  volumeTrack.addEventListener('pointercancel',()=>{volumeDragging=false;volumePop.classList.remove('is-active');scheduleVolumeClose();});
+  muteBtn.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();openVolume();
+    userMuted=!userMuted;
+    if(!userMuted&&video.volume===0){const restore=Math.max(.5,lastAudibleVolume||volumeValue||1);video.volume=restore;volumeValue=restore;}
+    if(!userMuted&&video.volume>0)lastAudibleVolume=video.volume;
+    video.muted=userMuted;
+    updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();scheduleVolumeClose();
+  });
+
+  function requestNativeFullscreen(el){
+    if(el.requestFullscreen)return el.requestFullscreen();
+    if(el.webkitRequestFullscreen)return el.webkitRequestFullscreen();
+    return Promise.reject(new Error('Fullscreen API unsupported'));
+  }
+  function exitNativeFullscreen(){
+    if(document.exitFullscreen)return document.exitFullscreen();
+    if(document.webkitExitFullscreen)return document.webkitExitFullscreen();
+    return Promise.resolve();
+  }
+  function currentFullscreenElement(){
+    return document.fullscreenElement||document.webkitFullscreenElement||null;
+  }
+  function enterCinematicFullscreen(){
+    if(cinematicFullscreen||fullscreenAnimating)return;
+    fullscreenAnimating=true;
+    wrap.classList.add('fs-instant');
+    Promise.resolve(requestNativeFullscreen(wrap)).catch(()=>{fullscreenAnimating=false;wrap.classList.remove('fs-instant');});
+  }
+  function exitCinematicFullscreen(){
+    if(currentFullscreenElement()!==wrap)return;
+    wrap.classList.add('fs-instant');
+    Promise.resolve(exitNativeFullscreen()).catch(()=>{});
+  }
+  function onFullscreenChange(){
+    cinematicFullscreen=(currentFullscreenElement()===wrap);
+    fullscreenAnimating=false;
+    wrap.classList.remove('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+    fsTip.textContent=cinematicFullscreen?'Exit full screen':'Fullscreen';
+    fsEnterGlyph.style.display=cinematicFullscreen?'none':'';
+    fsExitGlyph.style.display=cinematicFullscreen?'':'none';
+    if(cinematicFullscreen)showFullscreenControls();else if(open)showControls();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>wrap.classList.remove('fs-instant')));
+  }
+  document.addEventListener('fullscreenchange',onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange',onFullscreenChange);
+  fsBtn.addEventListener('click',()=>{cinematicFullscreen?exitCinematicFullscreen():enterCinematicFullscreen();});
+  wrap.addEventListener('pointermove',()=>{if(cinematicFullscreen)showFullscreenControls();else if(!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerdown',()=>{if(cinematicFullscreen)showFullscreenControls();});
+  wrap.addEventListener('pointerenter',()=>{if(!cinematicFullscreen&&!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerleave',()=>{if(!cinematicFullscreen&&!fullscreenAnimating){clearTimeout(controlsTimer);controlsTimer=setTimeout(()=>wrap.classList.remove('controls-active'),1300);}});
+  triggers.forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('click',openTrailer);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){openTrailer(e);}});});
+  closeBtn.addEventListener('click',closeTrailer);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open&&!cinematicFullscreen){closeTrailer();}});
+  updatePlay();updateVolumeIcon();
+})();
+</script>
+
+</body>
+</html>
