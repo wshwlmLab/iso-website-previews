@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Meter dentro il rettangolo — preview statica</title>
+<style>
+  html,body{margin:0;background:#c9c6c0;height:100%;display:flex;align-items:center;justify-content:center;font-family:sans-serif}
+  .demo-wrap{display:flex;gap:60px;flex-wrap:wrap;justify-content:center}
+  .demo{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .demo span{font:12px monospace;color:#333}
+
+  .box{
+    position:relative;
+    border:1.5px solid #141414;
+    border-radius:1px;
+    padding:9px 16px;
+    width:240px;
+    height:38px;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+  }
+  .label-text{
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:15px;
+    letter-spacing:.22em;
+    font-weight:700;
+    color:#141414;
+  }
+
+  /* meter occupying central 3/5 width, up to 2/3 height, centered */
+  .meter-zone{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:60%;
+    height:66%;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:4px;
+  }
+  .meter-col{
+    display:flex;
+    flex-direction:column-reverse;
+    gap:1px;
+    width:13px;
+  }
+  .meter-seg{
+    width:100%;
+    height:2px;
+    background:#141414;
+    border-radius:.5px;
+    opacity:.18;
+  }
+  /* static "on" pattern for preview only — no animation yet */
+  .meter-col:nth-child(1) .meter-seg:nth-child(-n+3){opacity:1}
+  .meter-col:nth-child(2) .meter-seg:nth-child(-n+6){opacity:1}
+  .meter-col:nth-child(3) .meter-seg:nth-child(-n+2){opacity:1}
+  .meter-col:nth-child(4) .meter-seg:nth-child(-n+8){opacity:1}
+  .meter-col:nth-child(5) .meter-seg:nth-child(-n+5){opacity:1}
+  .meter-col:nth-child(6) .meter-seg:nth-child(-n+7){opacity:1}
+  .meter-col:nth-child(7) .meter-seg:nth-child(-n+4){opacity:1}
+
+  /* guide lines to show the 3/5 x 2/3 zone (remove later) */
+  .guide{
+    position:absolute; inset:0; pointer-events:none;
+  }
+  .guide::before{
+    content:'';
+    position:absolute;
+    left:20%; right:20%; top:17%; bottom:17%;
+    border:1px dashed rgba(200,40,40,.55);
+  }
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+
+  <div class="demo">
+    <span>box + meter (con guida tratteggiata rossa = zona 3/5 x 2/3)</span>
+    <div class="box">
+      <div class="meter-zone">
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+        <div class="meter-col">
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span>
+          <span class="meter-seg"></span><span class="meter-seg"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <span>per confronto: il box con il testo</span>
+    <div class="box"><span class="label-text">ATTIVA L'AUDIO</span></div>
+  </div>
+
+</div>
+</body>
+</html>
