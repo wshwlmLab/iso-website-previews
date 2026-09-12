@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WORKS — variazione piena per stella (confronto finale)</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#050506;color:#fff;font-family:"Courier New",monospace}
+.wrap{padding:24px 16px 60px;max-width:1200px;margin:0 auto}
+h1{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;text-align:center;margin:0 0 28px}
+.row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.panel{flex:1 1 320px;max-width:380px}
+.panel canvas{width:100%;aspect-ratio:9/16;background:#050506;border-radius:4px;display:block;border:1px solid #222}
+.panel p{font-size:12px;color:#999;text-align:center;margin:10px 4px 0;line-height:1.5}
+.panel .label{font-size:13px;color:#fff;font-weight:bold;text-align:center;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WORKS — variazione piena: ogni stella pesca dallo spettro intero</h1>
+  <div class="row">
+    <div class="panel" style="max-width:480px">
+      <div class="label">Variazione piena — ogni stella e diversa dalle altre</div>
+      <canvas id="c6"></canvas>
+      <p>Non piu una singola intensita "media" per tutte: ogni stella pesca in modo indipendente da tutto lo spettro possibile. Alcune hanno punte lunghe e marcate (come la versione "cartone animato"), altre nessuna punta (come l'originale piatta), la maggior parte qualcosa in mezzo. Stesso discorso per dimensione del bagliore, forma e luminosita: e proprio questa disomogeneita a renderla naturale, non un valore intermedio uguale per tutte.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function renderFullVariance(canvasId){
+  const canvas = document.getElementById(canvasId);
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 320, H = W*16/9;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  const STAR_COUNT = 260;
+  const stars = Array.from({length: STAR_COUNT}, () => {
+    const magnitude = Math.pow(Math.random(), 2.4);
+    const r = 0.3 + magnitude*1.4;
+    const colorRoll = Math.random();
+    let tint;
+    if (colorRoll < 0.62) tint = [255,255,255];
+    else if (colorRoll < 0.82) tint = [200,215,255];
+    else tint = [255,214,160];
+    const hasGlow = Math.random() < (magnitude > 0.15 ? 0.9 : 0.25);
+
+    const glowSizeMix   = Math.random();
+    const glowPeakMix   = Math.random();
+    const shapeMix      = Math.random();
+    const spikeRoll     = Math.random();
+
+    const hasSpikes = magnitude > 0.6 && spikeRoll < 0.30;
+    const spikeIntensity = hasSpikes ? Math.random() : 0;
+
+    return {
+      x: Math.random()*W, y: Math.random()*H, r, tint,
+      alpha: 0.35 + magnitude*0.6,
+      hasGlow,
+      glowStrength: hasGlow ? Math.pow(magnitude,1.05) : 0,
+      glowSizeMix, glowPeakMix, shapeMix,
+      hasSpikes, spikeIntensity,
+      squash: 1 - shapeMix*0.42,
+      rot: Math.random()*Math.PI
+    };
+  });
+
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s => {
+    const [cr,cg,cb] = s.tint;
+    if (s.hasGlow){
+      const glowR = s.r*(4 + s.glowSizeMix*12);
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      ctx.scale(1, s.squash);
+      const grad = ctx.createRadialGradient(0,0,0, 0,0, glowR);
+      const peak = s.alpha*(0.5 + s.glowPeakMix*0.6)*s.glowStrength;
+      grad.addColorStop(0,    `rgba(${cr},${cg},${cb},${peak.toFixed(3)})`);
+      grad.addColorStop(0.18, `rgba(${cr},${cg},${cb},${(peak*0.55).toFixed(3)})`);
+      grad.addColorStop(0.45, `rgba(${cr},${cg},${cb},${(peak*0.18).toFixed(3)})`);
+      grad.addColorStop(1,    `rgba(${cr},${cg},${cb},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0,0, glowR, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (s.hasSpikes){
+      const spikeLen = s.r*(4 + s.spikeIntensity*14);
+      const spikeAlpha = s.alpha*(0.15 + s.spikeIntensity*0.5)*s.glowStrength;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot*0.4);
+      ctx.strokeStyle = `rgba(${cr},${cg},${cb},${spikeAlpha.toFixed(3)})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(-spikeLen,0); ctx.lineTo(spikeLen,0);
+      ctx.moveTo(0,-spikeLen); ctx.lineTo(0,spikeLen);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},${s.alpha.toFixed(3)})`;
+    ctx.fill();
+  });
+}
+
+window.addEventListener('load', () => {
+  renderFullVariance('c6');
+});
+</script>
+</body>
+</html>
