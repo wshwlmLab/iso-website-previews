@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WORKS — background starfield prototype v06 — piu glow + movimento visibile (ISOLATO)</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Book.otf") format("opentype");
+  font-style:normal;font-weight:400 500;font-display:swap;
+}
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Bold.otf") format("opentype");
+  font-style:normal;font-weight:600 900;font-display:swap;
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:"New Heterodox Mono","Courier New",monospace;overflow-x:hidden}
+body{min-height:100vh}
+
+/* Background layer: sits fixed behind everything, color-interpolated white -> night */
+#bg{
+  position:fixed;inset:0;z-index:0;
+  background:#ffffff;
+  pointer-events:none;
+}
+#starCanvas{
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:0; /* driven by JS */
+}
+
+.top-ui{
+  position:fixed;top:14px;left:0;right:0;z-index:1000;
+  display:flex;justify-content:center;
+  font-size:10px;letter-spacing:.08em;color:#000;
+  mix-blend-mode:difference;pointer-events:none;
+}
+
+/* Intro text — reveals like the title/director mask mechanism on real page */
+.intro{
+  position:relative;z-index:5;
+  min-height:92vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 8vw;
+  text-align:center;
+}
+.intro-mask{
+  overflow:hidden;
+}
+.intro-text{
+  font-size:clamp(22px,3.4vw,54px);
+  line-height:1.35;
+  font-weight:600;
+  letter-spacing:-.01em;
+  color:#111;
+  max-width:56ch;
+  transition:color 1.2s ease;
+}
+.intro-text.is-night{color:#f2f2f2}
+
+.topspace{height:6vh}
+.endspace{height:60vh}
+
+/* Placeholder clip blocks — same geometry language as the real page (large/medium/wide) */
+:root{
+  --side:5.55vw;
+  --large-w:88.9vw; --large-h:50.00625vw;
+  --medium-w:79vw; --medium-h:44.4375vw;
+  --wide-w:84vw; --wide-h:47.25vw;
+  --gap:7.5vh;
+}
+.project{
+  position:relative;z-index:5;width:100vw;margin-bottom:var(--gap);
+}
+.project.large{height:var(--large-h)}
+.project.medium{height:var(--medium-h)}
+.project.wide{height:var(--wide-h)}
+.placeholder{
+  position:absolute;top:0;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  background:#141414;
+  color:rgba(255,255,255,.35);
+  font-size:13px;letter-spacing:.08em;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
+}
+.large .placeholder{left:var(--side);width:var(--large-w);height:var(--large-h)}
+.medium .placeholder{width:var(--medium-w);height:var(--medium-h)}
+.medium.left .placeholder{left:var(--side)}
+.medium.right .placeholder{right:var(--side)}
+.wide .placeholder{width:var(--wide-w);height:var(--wide-h)}
+.wide.right .placeholder{right:var(--side)}
+
+@media(max-width:800px){
+  :root{
+    --side:5vw;
+    --large-w:90vw;--large-h:50.625vw;
+    --medium-w:82vw;--medium-h:46.125vw;
+    --wide-w:86vw;--wide-h:48.375vw;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<canvas id="starCanvas"></canvas>
+
+<div class="top-ui">WORKS — BACKGROUND STARFIELD PROTOTYPE v06 — PIU GLOW + MOVIMENTO VISIBILE</div>
+
+<div class="topspace"></div>
+
+<div class="intro">
+  <div class="intro-mask">
+    <div class="intro-text" id="introText">Questi sono i lavori a cui ho avuto l'onore di collaborare per la creazione del linguaggio sonoro.</div>
+  </div>
+</div>
+
+<section class="project large"><div class="placeholder">CLIP 1 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 2 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 3 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 4 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 5 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 6 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 7 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 8 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 9 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 10 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 11 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 12 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 13 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 14 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 15 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 16 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 17 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 18 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 19 — GRANDE</div></section>
+<section class="project medium left"><div class="placeholder">CLIP 20 — MEDIO SX</div></section>
+<section class="project wide right"><div class="placeholder">CLIP 21 — LARGO DX</div></section>
+<section class="project large"><div class="placeholder">CLIP 22 — GRANDE</div></section>
+
+<div class="endspace"></div>
+
+<script>
+(()=>{
+  const bg = document.getElementById('bg');
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  const introText = document.getElementById('introText');
+
+  let W, H, DPR;
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W*DPR; canvas.height = H*DPR;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // v05 — DEEP FIELD LOOK, per riferimento fotografico di William
+  // (Hubble/JWST deep field: moltissimi punti minuscoli, densissimi,
+  // per lo piu bianchi/azzurrini/aranciati, quasi nessun bagliore/alone —
+  // solo pochissime stelle con diffraction-spike-like glow).
+  const STAR_COUNT = 1100;
+  const stars = Array.from({length: STAR_COUNT}, () => {
+    const magnitude = Math.pow(Math.random(), 4.2);
+    const r = 0.18 + magnitude*1.1;
+    const colorRoll = Math.random();
+    let tint;
+    if (colorRoll < 0.62) tint = [255,255,255];
+    else if (colorRoll < 0.82) tint = [200,215,255]; // azzurrino
+    else tint = [255,214,160]; // arancio/oro, come nelle galassie piu lontane
+    return {
+      x: Math.random(), y: Math.random(),
+      r, tint,
+      baseAlpha: 0.22 + magnitude*0.7,
+      // v06 — GLOW GRADUATO: quasi tutte le stelle hanno un alone, ma
+      // l'intensita e proporzionale alla loro luminosita (magnitude),
+      // cosi alcune sono appena percettibili e altre chiaramente luminose,
+      // invece di un semplice on/off su poche stelle.
+      glowStrength: Math.pow(magnitude, 1.6),
+      scintillates: magnitude > 0.82 && Math.random() < 0.3,
+      phase: Math.random()*Math.PI*2,
+      speed: Math.random()*0.12 + 0.05,
+      // v06 — MOVIMENTO VISIBILE: drift molto piu marcato di v05 (era quasi
+      // impercettibile). Ogni stella si muove con la propria direzione e
+      // velocita casuale, in loop continuo sullo schermo.
+      driftX: (Math.random()-0.5)*0.00045,
+      driftY: (Math.random()-0.5)*0.00035,
+      order: Math.random()
+    };
+  });
+  stars.sort((a,b)=>a.order-b.order);
+
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const smooth = (a,b,x)=>{ const t=clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); };
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  const lerpColor = (c1,c2,t)=>[lerp(c1[0],c2[0],t),lerp(c1[1],c2[1],t),lerp(c1[2],c2[2],t)];
+  const toRgb = c => `rgb(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])})`;
+
+  // v05 — NIENTE PIU PALETTE TRAMONTO: William l'ha bocciata esplicitamente.
+  // Torniamo a un fade diretto e pulito: bianco -> nero (quasi puro, con
+  // una punta di blu scurissimo per non essere un nero "piatto" da schermo).
+  const DAY = [255,255,255];
+  const NIGHT = [3,3,5];
+
+  // v05 — ONE-WAY RATCHET (confermato, invariato da v04): una volta scurito,
+  // non si torna mai piu chiaro risalendo con lo scroll.
+  let maxDark = 0;
+  let maxStar = 0;
+
+  function computeProgress(){
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+    const clips = document.querySelectorAll('.project');
+    if(!clips.length) return {dark:0, star:0};
+
+    const firstClip = clips[0];
+    const darkAnchorIndex = Math.max(0, Math.min(clips.length-1, Math.round(clips.length*0.25)));
+    const starAnchorIndex = Math.max(0, Math.min(clips.length-1, Math.round(clips.length*0.55)));
+    const darkAnchor = clips[darkAnchorIndex];
+    const starAnchor = clips[starAnchorIndex];
+
+    const darkStartY = firstClip.offsetTop - vh*0.10;
+    const darkEndY   = darkAnchor.offsetTop + darkAnchor.offsetHeight*0.15;
+    const rawDark = smooth(darkStartY, darkEndY, y);
+
+    const starStartY = darkStartY + (darkEndY-darkStartY)*0.55;
+    const starEndY   = starAnchor.offsetTop + starAnchor.offsetHeight*0.6;
+    const rawStar = smooth(starStartY, starEndY, y);
+
+    maxDark = Math.max(maxDark, rawDark);
+    maxStar = Math.max(maxStar, rawStar);
+
+    return {dark:maxDark, star:maxStar};
+  }
+
+  function frame(now){
+    const {dark, star} = computeProgress();
+
+    bg.style.background = toRgb(lerpColor(DAY, NIGHT, dark));
+    introText.classList.toggle('is-night', dark > 0.5);
+
+    canvas.style.opacity = star;
+
+    ctx.clearRect(0,0,W,H);
+
+    const visibleCount = Math.round(STAR_COUNT * smooth(0, 1, star));
+
+    for(let i=0;i<visibleCount;i++){
+      const s = stars[i];
+      s.x += s.driftX; s.y += s.driftY;
+      if(s.x<0)s.x+=1; if(s.x>1)s.x-=1;
+      if(s.y<0)s.y+=1; if(s.y>1)s.y-=1;
+
+      let alpha = s.baseAlpha;
+      if (s.scintillates){
+        const tw = 0.5 + 0.5*Math.sin(now*0.001*s.speed + s.phase);
+        alpha = s.baseAlpha * (0.8 + 0.2*tw);
+      }
+
+      const px = s.x*W, py = s.y*H;
+      const [cr,cg,cb] = s.tint;
+
+      // v06 — every star gets some glow, scaled by its own glowStrength,
+      // so bright stars bloom noticeably and faint ones barely do.
+      if (s.glowStrength > 0.03){
+        ctx.save();
+        ctx.shadowColor = `rgba(${cr},${cg},${cb},${(alpha*0.75*s.glowStrength).toFixed(3)})`;
+        ctx.shadowBlur = s.r*(2.5 + s.glowStrength*6);
+      }
+
+      ctx.beginPath();
+      ctx.arc(px, py, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha.toFixed(3)})`;
+      ctx.fill();
+
+      if (s.glowStrength > 0.03) ctx.restore();
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
