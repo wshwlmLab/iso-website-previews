@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WORKS — via di mezzo tra originale e raffinata (confronto statico)</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#050506;color:#fff;font-family:"Courier New",monospace}
+.wrap{padding:24px 16px 60px;max-width:1200px;margin:0 auto}
+h1{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;text-align:center;margin:0 0 28px}
+.row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.panel{flex:1 1 320px;max-width:380px}
+.panel canvas{width:100%;aspect-ratio:9/16;background:#050506;border-radius:4px;display:block;border:1px solid #222}
+.panel p{font-size:12px;color:#999;text-align:center;margin:10px 4px 0;line-height:1.5}
+.panel .label{font-size:13px;color:#fff;font-weight:bold;text-align:center;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WORKS — tre versioni: originale / raffinata / via di mezzo</h1>
+  <div class="row">
+    <div class="panel">
+      <div class="label">C — originale (troppo piatta)</div>
+      <canvas id="c3"></canvas>
+      <p>Bagliore uniforme, sempre uguale a se stesso: piatto ma pulito.</p>
+    </div>
+    <div class="panel">
+      <div class="label">C-raffinata (troppo "cartone animato")</div>
+      <canvas id="c4"></canvas>
+      <p>Punte di diffrazione marcate e forma molto irregolare: troppo accentuato, sembra disegnato.</p>
+    </div>
+    <div class="panel">
+      <div class="label">C-mezzo — proposta bilanciata</div>
+      <canvas id="c5"></canvas>
+      <p>Gradiente radiale piu naturale (come la raffinata) ma punte di diffrazione molto piu rare, corte e discrete; forma quasi perfettamente rotonda, solo un pizzico di variazione.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function renderOriginalC(canvasId){
+  const canvas = document.getElementById(canvasId);
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 320, H = W*16/9;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  const STAR_COUNT = 260;
+  const stars = Array.from({length: STAR_COUNT}, () => {
+    const magnitude = Math.pow(Math.random(), 2.4);
+    const r = 0.3 + magnitude*1.4;
+    const colorRoll = Math.random();
+    let tint;
+    if (colorRoll < 0.62) tint = [255,255,255];
+    else if (colorRoll < 0.82) tint = [200,215,255];
+    else tint = [255,214,160];
+    const hasGlow = Math.random() < (magnitude > 0.15 ? 0.9 : 0.25);
+    return { x: Math.random()*W, y: Math.random()*H, r, tint,
+      alpha: 0.35 + magnitude*0.6, hasGlow,
+      glowStrength: hasGlow ? Math.pow(magnitude,1.05) : 0 };
+  });
+
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s => {
+    const [cr,cg,cb] = s.tint;
+    if (s.hasGlow){
+      ctx.save();
+      ctx.shadowColor = `rgba(${cr},${cg},${cb},${(s.alpha*1.1*s.glowStrength).toFixed(3)})`;
+      ctx.shadowBlur = s.r*9*s.glowStrength;
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},${s.alpha.toFixed(3)})`;
+    ctx.fill();
+    if (s.hasGlow) ctx.restore();
+  });
+}
+
+function renderRefinedC(canvasId){
+  const canvas = document.getElementById(canvasId);
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 320, H = W*16/9;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  const STAR_COUNT = 260;
+  const stars = Array.from({length: STAR_COUNT}, () => {
+    const magnitude = Math.pow(Math.random(), 2.4);
+    const r = 0.3 + magnitude*1.4;
+    const colorRoll = Math.random();
+    let tint;
+    if (colorRoll < 0.62) tint = [255,255,255];
+    else if (colorRoll < 0.82) tint = [200,215,255];
+    else tint = [255,214,160];
+    const hasGlow = Math.random() < (magnitude > 0.15 ? 0.9 : 0.25);
+    const isBright = magnitude > 0.78 && Math.random() < 0.5;
+    return {
+      x: Math.random()*W, y: Math.random()*H, r, tint,
+      alpha: 0.35 + magnitude*0.6,
+      hasGlow, isBright,
+      glowStrength: hasGlow ? Math.pow(magnitude,1.05) : 0,
+      squash: 0.82 + Math.random()*0.36,
+      rot: Math.random()*Math.PI
+    };
+  });
+
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s => {
+    const [cr,cg,cb] = s.tint;
+    if (s.hasGlow){
+      const glowR = s.r*(6 + s.glowStrength*7);
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      ctx.scale(1, s.squash);
+      const grad = ctx.createRadialGradient(0,0,0, 0,0, glowR);
+      const peak = s.alpha*0.95*s.glowStrength;
+      grad.addColorStop(0,    `rgba(${cr},${cg},${cb},${peak.toFixed(3)})`);
+      grad.addColorStop(0.18, `rgba(${cr},${cg},${cb},${(peak*0.55).toFixed(3)})`);
+      grad.addColorStop(0.45, `rgba(${cr},${cg},${cb},${(peak*0.18).toFixed(3)})`);
+      grad.addColorStop(1,    `rgba(${cr},${cg},${cb},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0,0, glowR, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (s.isBright){
+      const spikeLen = s.r*(10 + s.glowStrength*8);
+      const spikeAlpha = s.alpha*0.5*s.glowStrength;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot*0.4);
+      ctx.strokeStyle = `rgba(${cr},${cg},${cb},${spikeAlpha.toFixed(3)})`;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(-spikeLen,0); ctx.lineTo(spikeLen,0);
+      ctx.moveTo(0,-spikeLen); ctx.lineTo(0,spikeLen);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},${s.alpha.toFixed(3)})`;
+    ctx.fill();
+  });
+}
+
+function renderMiddleC(canvasId){
+  const canvas = document.getElementById(canvasId);
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width || 320, H = W*16/9;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+
+  const STAR_COUNT = 260;
+  const stars = Array.from({length: STAR_COUNT}, () => {
+    const magnitude = Math.pow(Math.random(), 2.4);
+    const r = 0.3 + magnitude*1.4;
+    const colorRoll = Math.random();
+    let tint;
+    if (colorRoll < 0.62) tint = [255,255,255];
+    else if (colorRoll < 0.82) tint = [200,215,255];
+    else tint = [255,214,160];
+    const hasGlow = Math.random() < (magnitude > 0.15 ? 0.9 : 0.25);
+    const isBright = magnitude > 0.90 && Math.random() < 0.22;
+    return {
+      x: Math.random()*W, y: Math.random()*H, r, tint,
+      alpha: 0.35 + magnitude*0.6,
+      hasGlow, isBright,
+      glowStrength: hasGlow ? Math.pow(magnitude,1.05) : 0,
+      squash: 0.94 + Math.random()*0.12,
+      rot: Math.random()*Math.PI
+    };
+  });
+
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s => {
+    const [cr,cg,cb] = s.tint;
+    if (s.hasGlow){
+      const glowR = s.r*(6 + s.glowStrength*7);
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      ctx.scale(1, s.squash);
+      const grad = ctx.createRadialGradient(0,0,0, 0,0, glowR);
+      const peak = s.alpha*0.75*s.glowStrength;
+      grad.addColorStop(0,    `rgba(${cr},${cg},${cb},${peak.toFixed(3)})`);
+      grad.addColorStop(0.18, `rgba(${cr},${cg},${cb},${(peak*0.55).toFixed(3)})`);
+      grad.addColorStop(0.45, `rgba(${cr},${cg},${cb},${(peak*0.18).toFixed(3)})`);
+      grad.addColorStop(1,    `rgba(${cr},${cg},${cb},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0,0, glowR, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (s.isBright){
+      const spikeLen = s.r*(5 + s.glowStrength*3);
+      const spikeAlpha = s.alpha*0.28*s.glowStrength;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.strokeStyle = `rgba(${cr},${cg},${cb},${spikeAlpha.toFixed(3)})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(-spikeLen,0); ctx.lineTo(spikeLen,0);
+      ctx.moveTo(0,-spikeLen); ctx.lineTo(0,spikeLen);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},${s.alpha.toFixed(3)})`;
+    ctx.fill();
+  });
+}
+
+window.addEventListener('load', () => {
+  renderOriginalC('c3');
+  renderRefinedC('c4');
+  renderMiddleC('c5');
+});
+</script>
+</body>
+</html>
