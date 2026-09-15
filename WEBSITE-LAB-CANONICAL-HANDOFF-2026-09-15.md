@@ -37,9 +37,16 @@ Vincoli consolidati dall'ultimo feedback:
 
 Le immagini provate finora sono riferimenti di iterazione, non asset approvati: la prima aveva colori e riflessi convincenti ma troppe forme e una linea orizzontale; le successive erano piu' piatte ma troppo opache.
 
+## Pagina Soglia
+
+Status: **APPROVED / FROZEN / PRIMARY**
+
+- Checkpoint: [SOGLIA-v62-FROZEN-CHECKPOINT-2026-09-15.md](./SOGLIA-v62-FROZEN-CHECKPOINT-2026-09-15.md)
+- Baseline: [Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html](./Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html)
+- Regola: ogni nuova prova sulla Soglia deve partire da questa v62 e diventare una candidate separata.
+
 ## Altre baseline conservate nel repository
 
-- Soglia: `Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html`.
 - Home storica halftone: `Il-Suono-Organizzato-HOME-v10-HALFTONE-FROZEN-2026-09-10.html`; conservata come archivio, **non** e' la baseline corrente della HOME 1.
 - Le versioni `works-*`, `v*.html` e `*-candidate.html` sono prototipi/candidate: non considerarli automaticamente approvati senza un checkpoint esplicito.
 
@@ -54,3 +61,5 @@ Le immagini provate finora sono riferimenti di iterazione, non asset approvati: 
 ## Prompt minimo per la nuova chat
 
 > Continuiamo Il Suono Organizzato — Website Lab. Leggi nel repository `wshwlmLab/iso-website-previews` il file `WEBSITE-LAB-CANONICAL-HANDOFF-2026-09-15.md` e i checkpoint che indica. Non modificare le versioni frozen: crea candidate separate. Ripartiamo dall'esplorazione aperta della HOME 2.
+
+Per lavorare sulla Pagina Soglia, usare invece il prompt minimo contenuto in `SOGLIA-v62-FROZEN-CHECKPOINT-2026-09-15.md`.
