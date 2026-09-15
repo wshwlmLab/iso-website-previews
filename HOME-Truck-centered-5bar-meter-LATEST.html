@@ -1,14 +1,699 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Il Suono Organizzato — HOME Truck — latest candidate</title>
-<meta http-equiv="refresh" content="0;url=https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/?effect=halftone-deeper-darks-meter-alive">
-<link rel="canonical" href="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/?effect=halftone-deeper-darks-meter-alive">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Il Suono Organizzato — HOME Truck Meter 01</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23efeeeb'/%3E%3Cpath d='M16 6v20M6 16h20' stroke='%23141414' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cousine:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #efeeeb; }
+    button { font: inherit; }
+    .stage { position: fixed; inset: 0; overflow: hidden; background: #efeeeb; }
+    .plastic-base, .plastic-sheen { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+    .plastic-base { z-index: 0; }
+    .plastic-sheen { z-index: 2; opacity: .06; mix-blend-mode: screen; }
+    .pink-wash {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: #ff78d7; mix-blend-mode: multiply; opacity: 0;
+      transition: opacity 2.6s cubic-bezier(.22,.7,.22,1);
+    }
+    .stage.pink-final .pink-wash { opacity: .38; }
+    .design { position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(108vw, 162vh); aspect-ratio: 3 / 2; pointer-events: none; }
+    .piece { position: absolute; display: block; height: auto; opacity: 0; user-select: none; -webkit-user-drag: none; }
+    .piece.is-visible { opacity: 1; }
+    .title { left: 27.2%; top: 7%; width: 45.6%; }
+    .truck { left: 24%; top: 19.1%; width: 51.6%; }
+    .food { left: 29.8%; top: 61.5%; width: 40.4%; }
+    .price { left: 33.1%; top: 81%; width: 33.9%; }
+    .tribal { position: absolute; z-index: 1; top: 50%; width: clamp(54px, 7vw, 108px); height: auto; opacity: 0; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+    .tribal.is-visible { opacity: 1; }
+    .tribal-left { left: calc(25vw - min(14.04vw, 21.06vh)); transform: translate(-50%, -50%); }
+    .tribal-right { right: calc(25vw - min(14.04vw, 21.06vh)); transform: translate(50%, -50%); }
+    .pixel-canvas { opacity: 1 !important; transition: none !important; }
+    .page-halftone { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; opacity: 0; }
+    .stage.blue-final .pixel-canvas {
+      filter: brightness(0) saturate(100%) invert(57%) sepia(88%) saturate(1266%) hue-rotate(176deg) brightness(98%) contrast(94%);
+      transition: filter 1.8s ease !important;
+    }
+    .stage.blue-final .audio-label { color: #259ee8; border-color: #259ee8; transition: color 1.8s ease, border-color 1.8s ease; }
+    .stage.blue-final .meter-seg, .stage.blue-final .meter::after { background: #259ee8; transition: background 1.8s ease, opacity .08s linear; }
+    .stage.blue-composite-final .plastic-sheen { z-index: 5; opacity: .09; mix-blend-mode: screen; }
+    .stage.blue-composite-final .audio-label, .stage.blue-composite-final .meter-hit { z-index: 6; }
+    .stage.blue-composite-final .plus { z-index: 7; }
+    .advance { position: absolute; inset: 0; z-index: 3; border: 0; padding: 0; background: transparent; cursor: pointer; }
+    .stage.is-start .advance, .advance[disabled] { pointer-events: none; cursor: default; }
+    :root {
+      /* Unico controllo audio, centrato nella banda alta 6.52vh di Soglia. */
+      --top-band-height: 6.52vh;
+      --audio-control-y: calc(var(--top-band-height) / 2);
+    }
+    .audio-label, .meter, .meter-hit {
+      position: absolute; left: 50%; top: var(--audio-control-y); transform: translate(-50%, -50%);
+      color: #141414; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .audio-label {
+      z-index: 5;
+      font-family: 'Cousine', 'Courier New', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: clamp(13px, 1.5vw, 18px); letter-spacing: .22em; font-weight: 400;
+      background: none; border: 1.5px solid #141414; border-radius: 1px;
+      padding: 9px 16px; margin: 0; line-height: 1; white-space: nowrap; cursor: pointer;
+    }
+    .audio-label.is-hidden { display: none; }
+    .meter { z-index: 1; display: none; border: none; padding: 0; background: none; pointer-events: none; }
+    .meter.active { display: block; }
+    .meter-hit { z-index: 5; display: none; border: 0; border-radius: 0; padding: 0; background: transparent; cursor: pointer; }
+    .meter-hit.active { display: block; }
+    .meter.pixel-enter { animation: meterFadeIn 2.9s cubic-bezier(.2,.7,.25,1) both; }
+    .meter.pixel-enter .meter-seg {
+      position: relative;
+      animation: meterPixelIn 2.55s cubic-bezier(.18,.72,.2,1) both;
+      animation-delay: var(--pixel-delay, 0ms);
+      transform-origin: center;
+    }
+    .meter.pixel-enter .meter-seg::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: 1px; height: 5px;
+      background: currentColor; transform: translate(-50%, -50%);
+      animation: meterPixelVertical 2.55s ease both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    @keyframes meterFadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes meterPixelIn {
+      0% { transform: translate(var(--pixel-x), var(--pixel-y)) scale(.18); }
+      62% { transform: translate(0, 0) scale(.82); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes meterPixelVertical {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      45% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+    .meter-zone {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 66.666%; height: 66.666%; padding: 1px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 9%;
+    }
+    .meter-col {
+      flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column-reverse;
+      justify-content: flex-start; align-items: stretch; gap: 2.4%;
+    }
+    .meter-seg {
+      width: 100%; min-height: 1px; flex: 1 1 0; background: #141414; opacity: .075;
+      border-radius: 0; transform: scaleY(.72); transition: opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: var(--diag-len, 100%); height: 2px;
+      background: #141414; transform: translate(-50%, -50%) rotate(var(--diag-angle, -20deg)) scaleX(0);
+      transform-origin: center; transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(var(--diag-angle, -20deg)) scaleX(1); }
+    .meter.paused .meter-seg { opacity: .075 !important; }
+    .plus {
+      position: absolute; z-index: 5; right: clamp(22px, 2.2vw, 42px); bottom: clamp(20px, 2.2vh, 38px);
+      width: clamp(81px, 6.6vw, 111px); aspect-ratio: 1; pointer-events: auto; cursor: pointer;
+    }
+    .plus::before, .plus::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: 62%; height: 6px;
+      background: #141414; transform: translate(-50%, -50%); transform-origin: center;
+    }
+    .plus::after { transform: translate(-50%, -50%) rotate(90deg); }
+    @media (max-width: 700px) {
+      .design { width: 180vw; top: 39%; }
+      .audio-label { font-size: clamp(11px, 3.6vw, 15px); letter-spacing: .16em; padding: 7px 12px; }
+      .plus { right: 18px; bottom: 18px; width: 87px; }
+      .tribal { width: clamp(42px, 12vw, 58px); }
+      .tribal-left { left: 8px; transform: translateY(-50%); }
+      .tribal-right { right: 8px; transform: translateY(-50%); }
+    }
+  </style>
 </head>
+<!-- GitHub checkpoint: Sites version 5, source commit c5ae234aace9e78b8a9c448dedefe83e61083a14. Meter visual reduced to 66.666%, centered; hit area unchanged. -->
 <body>
-<p><a href="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/?effect=halftone-deeper-darks-meter-alive">Apri HOME Truck — latest candidate</a></p>
-<!-- Source checkpoint: Sites appgprj_6aa7c474b4c4819189125639a5c81df8 commit 40fa40cd202ba44f467e2d312931c84949ae1db9. Meter Cloud: 5x16 segmented, centered in persistent button rectangle, aligned to Soglia top band 6.52vh. -->
+  <main class="stage is-start">
+    <img class="plastic-base" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/plastic.webp" alt="" draggable="false">
+    <section class="design" aria-live="polite">
+      <img class="piece title" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/title-v4.png" alt="Menu Truck">
+      <img class="piece truck" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/truck.png" alt="Camion rosso">
+      <img class="piece food" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/food.png" alt="Primi del giorno: pasta, insalata verde, un litro di acqua e caffè">
+      <img class="piece price" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/price.png" alt="Dodici euro">
+    </section>
+    <img class="tribal tribal-left" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/tribal-left.png" alt="" draggable="false">
+    <img class="tribal tribal-right" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/tribal-right.png" alt="" draggable="false">
+    <span class="pink-wash" aria-hidden="true"></span>
+    <img class="plastic-sheen" src="https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/assets/plastic.webp" alt="" draggable="false">
+    <button class="advance" type="button" aria-label="Avanza nella presentazione"></button>
+    <button class="audio-label" type="button">ATTIVA L'AUDIO</button>
+    <span class="meter" aria-hidden="true"><span class="meter-zone"></span></span>
+    <button class="meter-hit" type="button" aria-label="Ferma il meter" aria-pressed="false"></button>
+    <span class="plus" aria-hidden="true"></span>
+  </main>
+  <script>
+    (() => {
+      const stage = document.querySelector('.stage');
+      const advanceButton = document.querySelector('.advance');
+      const prompt = document.querySelector('.audio-label');
+      const meter = document.querySelector('.meter');
+      const meterHit = document.querySelector('.meter-hit');
+      const meterZone = meter.querySelector('.meter-zone');
+      const meterCols = Array.from({ length: 5 }, () => {
+        const col = document.createElement('span');
+        col.className = 'meter-col';
+        for (let index = 0; index < 16; index++) {
+          const segment = document.createElement('i');
+          segment.className = 'meter-seg';
+          col.appendChild(segment);
+        }
+        meterZone.appendChild(col);
+        return col;
+      });
+      let meterPaused = false, meterFrame = null;
+      let meterMaster = .28, meterPulse = 0, meterNextEvent = performance.now(), meterPrevious = performance.now();
+      const meterValues = [.31, .42, .36, .28, .24];
+      const meterTargets = meterValues.slice();
+      const meterWeights = [.88, 1.12, .96, .78, .68];
+      const meterDrift = new Float32Array(5);
+      const groups = [['.title'], ['.food'], ['.truck'], ['.price'], ['.tribal-left', '.tribal-right']]
+        .map(group => group.map(selector => document.querySelector(selector)));
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const effect = new URLSearchParams(location.search).get('effect') || 'halftone-deeper-darks-meter-alive';
+      const compositeBlueMode = effect === 'halftone-ultra-blue-composite';
+      const ultraBWMode = effect === 'halftone-ultra-bw';
+      const livingPixelsMode = effect === 'halftone-deeper-darks-meter-alive';
+      const meterPixelMode = effect === 'halftone-deeper-darks-meter' || livingPixelsMode;
+      const deeperDarksMode = effect === 'halftone-deeper-darks' || meterPixelMode;
+      const halftoneMode = effect === 'halftone' || effect === 'halftone-contrast-blue' || compositeBlueMode || ultraBWMode || deeperDarksMode;
+      const contrastBlueMode = effect === 'halftone-contrast-blue' || compositeBlueMode;
+      const pinkFinalMode = livingPixelsMode;
+      let step = 0, locked = false;
+      const totalSteps = groups.length + ((contrastBlueMode || pinkFinalMode) ? 1 : 0);
+
+      function meterEvent(now) {
+        const accent = Math.random() < .22;
+        const quiet = Math.random() < .19;
+        meterPulse = quiet ? .08 + Math.random() * .14 : accent ? .68 + Math.random() * .28 : .28 + Math.random() * .42;
+        meterMaster = Math.max(.13, Math.min(.98, meterMaster * .34 + meterPulse * .82));
+        meterCols.forEach((col, ci) => {
+          meterDrift[ci] = meterDrift[ci] * .32 + (Math.random() - .5) * .20;
+          const neighbourShape = 1 - Math.abs(ci - 1.4) * .055;
+          meterTargets[ci] = Math.max(.10, Math.min(.98, meterMaster * meterWeights[ci] * neighbourShape + meterDrift[ci] + .045 * Math.random()));
+        });
+        meterNextEvent = now + 68 + Math.random() * 118 + (quiet ? Math.random() * 100 : 0);
+      }
+      function meterDraw(now) {
+        const dt = Math.min(40, now - meterPrevious);
+        meterPrevious = now;
+        if (!meterPaused && now >= meterNextEvent) meterEvent(now);
+        meterCols.forEach((col, ci) => {
+          if (!meterPaused) {
+            const delta = meterTargets[ci] - meterValues[ci];
+            const rate = delta > 0 ? .038 : .0105;
+            meterValues[ci] += delta * (1 - Math.exp(-rate * dt));
+            meterTargets[ci] = Math.max(.09, meterTargets[ci] - dt * (.00013 + ci * .000007));
+          }
+          const exact = meterValues[ci] * 16;
+          Array.from(col.children).forEach((seg, index) => {
+            const distance = exact - index;
+            seg.style.opacity = distance >= 1 ? '.98' : distance > .03 ? '.48' : '.075';
+            seg.style.transform = distance > .03 ? 'scaleY(1)' : 'scaleY(.72)';
+          });
+        });
+        meterFrame = requestAnimationFrame(meterDraw);
+      }
+      function startMeter() {
+        if (meterFrame) return;
+        meterPrevious = performance.now();
+        meterNextEvent = meterPrevious;
+        meterFrame = requestAnimationFrame(meterDraw);
+      }
+      function stopMeter() {
+        if (meterFrame) { cancelAnimationFrame(meterFrame); meterFrame = null; }
+      }
+      function activateMeter() {
+        const rect = prompt.getBoundingClientRect();
+        const meterWidth = rect.height * 1.18;
+        meter.style.width = meterWidth + 'px';
+        meter.style.height = rect.height + 'px';
+        meterHit.style.width = meterWidth + 'px';
+        meterHit.style.height = rect.height + 'px';
+        const diagonal = Math.sqrt(meterWidth * meterWidth + rect.height * rect.height) * .82;
+        const angle = -Math.atan2(rect.height, meterWidth) * (180 / Math.PI);
+        meter.style.setProperty('--diag-len', diagonal + 'px');
+        meter.style.setProperty('--diag-angle', angle + 'deg');
+        prompt.classList.add('is-hidden');
+        meter.classList.add('active');
+        meterHit.classList.add('active');
+        meter.querySelectorAll('.meter-seg').forEach(seg => {
+          seg.style.setProperty('--pixel-delay', `${Math.round(Math.random() * 620)}ms`);
+          seg.style.setProperty('--pixel-x', `${((Math.random() - .5) * 13).toFixed(1)}px`);
+          seg.style.setProperty('--pixel-y', `${((Math.random() - .5) * 9).toFixed(1)}px`);
+        });
+        meter.classList.add('pixel-enter');
+        startMeter();
+        setTimeout(() => meter.classList.remove('pixel-enter'), reduced ? 0 : 3250);
+      }
+
+      const shuffle = list => {
+        for (let i = list.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [list[i], list[j]] = [list[j], list[i]];
+        }
+        return list;
+      };
+
+      function keepPixelsAlive(canvas, ctx, cells, pitch, sourcePerCss) {
+        const living = cells.map(c => ({
+          ...c,
+          phase: Math.random() * Math.PI * 2,
+          speed: .0012 + Math.random() * .0018,
+          amplitude: (.55 + Math.random() * 1.35) * sourcePerCss,
+          breathe: .045 + Math.random() * .065
+        }));
+        if (!living.length) return;
+        let lastPaint = 0;
+        let motionStarted;
+        let previousTime;
+        let motionTime = 0;
+        let speedScale = 1;
+
+        function plusPath(target, x, y, size) {
+          const arm = size * .56;
+          target.beginPath();
+          target.moveTo(x - arm, y);
+          target.lineTo(x + arm, y);
+          target.moveTo(x, y - arm);
+          target.lineTo(x, y + arm);
+          target.stroke();
+        }
+
+        function idle(time) {
+          requestAnimationFrame(idle);
+          if (document.hidden || time - lastPaint < 72) return;
+          motionStarted ??= time;
+          lastPaint = time;
+          const elapsed = time - motionStarted;
+          const frameDelta = previousTime == null ? 0 : Math.min(120, time - previousTime);
+          previousTime = time;
+          const targetSpeed = stage.classList.contains('pink-final') ? .12 : 1;
+          const speedEase = 1 - Math.exp(-frameDelta / 1050);
+          speedScale += (targetSpeed - speedScale) * speedEase;
+          motionTime += frameDelta * speedScale;
+          const entrance = Math.min(1, elapsed / 1650);
+          const motionBlend = entrance * entrance * (3 - 2 * entrance);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          for (const c of living) {
+            const size = c.lastSize || c.toneSize;
+            const lineWidth = c.lastLineWidth || Math.max(.38 * sourcePerCss, size * .16);
+            const phase = c.phase + motionTime * c.speed;
+            const originX = c.lastX ?? c.x;
+            const originY = c.lastY ?? c.y;
+            const dx = originX + Math.sin(phase) * c.amplitude * motionBlend;
+            const dy = originY + Math.cos(phase * .83) * c.amplitude * .72 * motionBlend;
+            const breathing = size * (1 + Math.sin(phase * .71) * c.breathe * motionBlend);
+
+            ctx.strokeStyle = c.lastColor || `rgb(${c.gray} ${c.gray} ${c.gray})`;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'square';
+            const originAlpha = c.lastAlpha ?? 1;
+            ctx.globalAlpha = originAlpha + (1 - originAlpha) * motionBlend;
+            plusPath(ctx, dx, dy, breathing);
+          }
+          ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(idle);
+      }
+
+      function reveal(image, duration = 3100) {
+        if (reduced) {
+          image.classList.add('is-visible');
+          return Promise.resolve();
+        }
+        return new Promise(resolve => {
+          const canvas = document.createElement('canvas');
+          canvas.className = `${image.className} pixel-canvas`;
+          canvas.setAttribute('aria-hidden', 'true');
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          image.after(canvas);
+          const ctx = canvas.getContext('2d', { alpha: true });
+          if (!ctx) { canvas.remove(); image.classList.add('is-visible'); resolve(); return; }
+          const photoMode = image.classList.contains('truck');
+
+          const renderedWidth = Math.max(1, image.getBoundingClientRect().width);
+          const sourcePerCss = image.naturalWidth / renderedWidth;
+          const pitch = Math.max(2, (halftoneMode ? 3.05 : 3.2) * sourcePerCss);
+          const sample = document.createElement('canvas');
+          sample.width = image.naturalWidth;
+          sample.height = image.naturalHeight;
+          const sampleCtx = sample.getContext('2d', { willReadFrequently: true });
+          sampleCtx.drawImage(image, 0, 0);
+          const pixels = sampleCtx.getImageData(0, 0, sample.width, sample.height).data;
+          const cells = [];
+
+          for (let y = pitch * .5; y < canvas.height; y += pitch) {
+            for (let x = pitch * .5; x < canvas.width; x += pitch) {
+              const sx = Math.min(canvas.width - 1, Math.round(x));
+              const sy = Math.min(canvas.height - 1, Math.round(y));
+              const index = (sy * canvas.width + sx) * 4;
+              const alpha = pixels[index + 3] / 255;
+              if (alpha < .02) continue;
+              const r = pixels[index], g = pixels[index + 1], b = pixels[index + 2];
+              const sourceGray = Math.round(r * .2126 + g * .7152 + b * .0722);
+              const contrastAmount = (compositeBlueMode || ultraBWMode) ? 4 : 2;
+              let gray = contrastBlueMode
+                ? Math.max(0, Math.min(255, Math.round((sourceGray - 128) * contrastAmount + 128)))
+                : sourceGray;
+              // Selective dark-tone curve: values at/above the knee remain exactly
+              // unchanged, while existing shadows deepen progressively toward black.
+              if (deeperDarksMode && sourceGray < 155) {
+                gray = Math.round(155 * Math.pow(sourceGray / 155, 1.6));
+              }
+              const light = gray / 255;
+              const diagonal = (x + y * .73) / (canvas.width + canvas.height * .73);
+              const waves = Math.sin(x / (pitch * 6.5)) * .075 + Math.sin(y / (pitch * 9)) * .055;
+              const activation = Math.max(0, Math.min(1, diagonal + waves + (Math.random() - .5) * .32));
+              const variation = halftoneMode
+                ? .82 + (Math.random() - .5) * .34
+                : .16 + Math.pow(Math.random(), .68) * 1.52;
+              const halftoneTone = photoMode
+                ? Math.pow(1 - light, .72)
+                : Math.pow(alpha * (1 - light * .35), .68);
+              const toneSize = halftoneMode
+                ? pitch * Math.min(1.34, Math.max(.08, (.05 + halftoneTone * 1.18) * variation))
+                : pitch * Math.min(1.42, (.26 + (1 - light) * .66) * Math.sqrt(alpha) * variation);
+              const angle = Math.random() * Math.PI * 2;
+              const travel = pitch * (.2 + Math.random() * 2.7);
+              cells.push({
+                x, y, r, g, b, gray, alpha, activation, toneSize,
+                fromX: Math.cos(angle) * travel,
+                fromY: Math.sin(angle) * travel,
+                wobble: .25 + Math.random() * 1.9,
+                sliceScale: .2 + Math.random() * .18,
+                seed: Math.random() * Math.PI * 2
+              });
+            }
+          }
+          cells.sort((a, b) => a.activation - b.activation);
+          image.style.opacity = '0';
+
+          let started;
+          function frame(time) {
+            started ??= time;
+            const p = Math.min(1, (time - started) / duration);
+            const front = p * 1.38 - .16;
+            const fusion = halftoneMode ? 0 : Math.max(0, Math.min(1, (p - .68) / .32));
+            const organicFill = fusion * fusion * (3 - 2 * fusion);
+            image.style.opacity = String(organicFill);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const sliceA = (p * 1.55) % 1.35 - .16;
+            const sliceB = (p * 1.18 + .46) % 1.4 - .2;
+            const colorFront = p * 1.45 - .18;
+
+            for (const c of cells) {
+              const local = (front - c.activation) / (.11 + c.wobble * .028);
+              if (local <= 0) break;
+              const born = Math.min(1, local);
+              const settle = born * born * (3 - 2 * born);
+              const driftFade = (1 - settle) * (1 - organicFill);
+              const yNorm = c.y / canvas.height;
+              const bandA = Math.max(0, 1 - Math.abs(yNorm - sliceA) / .115);
+              const bandB = Math.max(0, 1 - Math.abs(yNorm - sliceB) / .075);
+              const slice = Math.max(bandA, bandB * .78);
+              const sliceDirection = Math.sin(c.seed + Math.floor(c.y / (pitch * 4)) * 1.7);
+              const horizontalSlice = photoMode
+                ? sliceDirection * pitch * (1.2 + c.wobble) * slice * (1 - organicFill)
+                : 0;
+              const tremble = Math.sin(p * (13 + c.wobble * 8) + c.seed) * pitch * .18 * driftFade;
+              const dx = c.x + c.fromX * driftFade + tremble + horizontalSlice;
+              const dy = c.y + c.fromY * driftFade + Math.cos(p * 17 + c.seed) * pitch * .13 * driftFade;
+              const pulse = .52 + .48 * Math.sin(c.seed + p * (9 + c.wobble * 6));
+              let size = c.toneSize * (.13 + .87 * settle) * (.72 + pulse * .48);
+              if (photoMode) size *= 1 + slice * c.sliceScale;
+              size += (pitch * (1.01 + Math.sin(c.seed) * .06) - size) * organicFill;
+              if (size < .25) continue;
+
+              const colorMix = halftoneMode ? 0 : photoMode
+                ? Math.max(0, Math.min(1, (colorFront - yNorm) / .17 + .5 + slice * .42))
+                : 1;
+              const rr = Math.round(c.gray + (c.r - c.gray) * colorMix);
+              const gg = Math.round(c.gray + (c.g - c.gray) * colorMix);
+              const bb = Math.round(c.gray + (c.b - c.gray) * colorMix);
+              ctx.globalAlpha = Math.min(1, (halftoneMode ? 1 : c.alpha) * (.16 + settle * .84) * (1 - organicFill));
+              c.lastAlpha = ctx.globalAlpha;
+              const color = `rgb(${rr} ${gg} ${bb})`;
+              const arm = size * .56;
+              ctx.strokeStyle = color;
+              ctx.lineWidth = Math.max(.38 * sourcePerCss, size * .16);
+              c.lastSize = size;
+              c.lastLineWidth = ctx.lineWidth;
+              c.lastColor = color;
+              c.lastX = dx;
+              c.lastY = dy;
+              ctx.lineCap = 'square';
+              ctx.beginPath();
+              ctx.moveTo(dx - arm, dy);
+              ctx.lineTo(dx + arm, dy);
+              ctx.moveTo(dx, dy - arm);
+              ctx.lineTo(dx, dy + arm);
+              ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+
+            if (p < 1) requestAnimationFrame(frame);
+            else {
+              if (halftoneMode) {
+                image.style.opacity = '0';
+                canvas.dataset.finalHalftone = 'true';
+                if (livingPixelsMode) keepPixelsAlive(canvas, ctx, cells, pitch, sourcePerCss);
+              } else {
+                image.style.opacity = '1';
+                image.classList.add('is-visible');
+                requestAnimationFrame(() => canvas.remove());
+              }
+              resolve();
+            }
+          }
+          requestAnimationFrame(frame);
+        });
+      }
+
+      const ready = Promise.all(groups.flat().map(img => img.decode().catch(() => {
+        if (!img.complete) throw new Error(`Asset non caricato: ${img.src}`);
+      })));
+
+      function revealBluePage(duration = 2200) {
+        if (compositeBlueMode) return revealBlueComposite(duration);
+        return new Promise(resolve => {
+          const canvas = document.createElement('canvas');
+          canvas.className = 'page-halftone';
+          canvas.width = Math.max(1, Math.round(innerWidth * devicePixelRatio));
+          canvas.height = Math.max(1, Math.round(innerHeight * devicePixelRatio));
+          stage.append(canvas);
+          const ctx = canvas.getContext('2d');
+          const pitch = Math.max(5, 4.2 * devicePixelRatio);
+          const cells = [];
+          for (let y = pitch * .5; y < canvas.height; y += pitch) {
+            for (let x = pitch * .5; x < canvas.width; x += pitch) {
+              const wave = Math.sin(x / (pitch * 11)) * .08 + Math.sin(y / (pitch * 8)) * .06;
+              const activation = (x + y * .68) / (canvas.width + canvas.height * .68) + wave + (Math.random() - .5) * .24;
+              cells.push({
+                x, y, activation,
+                size: pitch * (.12 + Math.pow(Math.random(), .72) * .54),
+                seed: Math.random() * Math.PI * 2
+              });
+            }
+          }
+          cells.sort((a, b) => a.activation - b.activation);
+          stage.classList.add('blue-final');
+          canvas.style.opacity = '1';
+          let started;
+          function frame(time) {
+            started ??= time;
+            const p = Math.min(1, (time - started) / duration);
+            const front = p * 1.34 - .12;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(37,158,232,.48)';
+            ctx.lineCap = 'square';
+            for (const c of cells) {
+              const local = (front - c.activation) / .12;
+              if (local <= 0) break;
+              const born = Math.min(1, local);
+              const settle = born * born * (3 - 2 * born);
+              const pulse = .9 + Math.sin(c.seed + p * 10) * .1 * (1 - settle);
+              const arm = c.size * settle * pulse;
+              if (arm < .25) continue;
+              ctx.lineWidth = Math.max(.7 * devicePixelRatio, arm * .22);
+              ctx.beginPath();
+              ctx.moveTo(c.x - arm, c.y); ctx.lineTo(c.x + arm, c.y);
+              ctx.moveTo(c.x, c.y - arm); ctx.lineTo(c.x, c.y + arm);
+              ctx.stroke();
+            }
+            if (p < 1) requestAnimationFrame(frame);
+            else resolve();
+          }
+          requestAnimationFrame(frame);
+        });
+      }
+
+      function revealBlueComposite(duration = 2400) {
+        return new Promise(resolve => {
+          const scale = Math.min(devicePixelRatio || 1, 1.5);
+          const canvas = document.createElement('canvas');
+          canvas.className = 'page-halftone';
+          canvas.width = Math.max(1, Math.round(innerWidth * scale));
+          canvas.height = Math.max(1, Math.round(innerHeight * scale));
+          stage.append(canvas);
+          const ctx = canvas.getContext('2d');
+          const sample = document.createElement('canvas');
+          sample.width = canvas.width;
+          sample.height = canvas.height;
+          const sampleCtx = sample.getContext('2d', { willReadFrequently: true });
+
+          sampleCtx.fillStyle = '#f7f7f4';
+          sampleCtx.fillRect(0, 0, sample.width, sample.height);
+
+          const plastic = document.querySelector('.plastic-base');
+          const sourceRatio = plastic.naturalWidth / plastic.naturalHeight;
+          const targetRatio = sample.width / sample.height;
+          let drawW, drawH, drawX, drawY;
+          if (sourceRatio > targetRatio) {
+            drawH = sample.height;
+            drawW = drawH * sourceRatio;
+            drawX = (sample.width - drawW) / 2;
+            drawY = 0;
+          } else {
+            drawW = sample.width;
+            drawH = drawW / sourceRatio;
+            drawX = 0;
+            drawY = (sample.height - drawH) / 2;
+          }
+          sampleCtx.globalAlpha = .48;
+          sampleCtx.drawImage(plastic, drawX, drawY, drawW, drawH);
+          sampleCtx.globalAlpha = 1;
+
+          groups.flat().forEach(image => {
+            const rect = image.getBoundingClientRect();
+            sampleCtx.drawImage(
+              image,
+              rect.left * scale,
+              rect.top * scale,
+              rect.width * scale,
+              rect.height * scale
+            );
+          });
+
+          const pixels = sampleCtx.getImageData(0, 0, sample.width, sample.height).data;
+          const pitch = Math.max(4.8, 3.6 * scale);
+          const cells = [];
+          for (let y = pitch * .5; y < canvas.height; y += pitch) {
+            for (let x = pitch * .5; x < canvas.width; x += pitch) {
+              const sx = Math.min(canvas.width - 1, Math.round(x));
+              const sy = Math.min(canvas.height - 1, Math.round(y));
+              const index = (sy * canvas.width + sx) * 4;
+              const sourceGray = pixels[index] * .2126 + pixels[index + 1] * .7152 + pixels[index + 2] * .0722;
+              const gray = Math.max(0, Math.min(255, (sourceGray - 128) * 4 + 128));
+              const darkness = 1 - gray / 255;
+              const wave = Math.sin(x / (pitch * 12)) * .055 + Math.sin(y / (pitch * 9)) * .04;
+              cells.push({
+                x, y,
+                activation: (x + y * .7) / (canvas.width + canvas.height * .7) + wave + (Math.random() - .5) * .2,
+                size: pitch * Math.min(1.28, .045 + Math.pow(darkness, .66) * 1.14) * (.88 + Math.random() * .24),
+                seed: Math.random() * Math.PI * 2
+              });
+            }
+          }
+          cells.sort((a, b) => a.activation - b.activation);
+          stage.classList.add('blue-final', 'blue-composite-final');
+          let started;
+          function frame(time) {
+            started ??= time;
+            const p = Math.min(1, (time - started) / duration);
+            const smooth = p * p * (3 - 2 * p);
+            const front = p * 1.34 - .12;
+            canvas.style.opacity = String(Math.min(1, smooth * 1.18));
+            ctx.fillStyle = '#edf8ff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#168fd2';
+            ctx.lineCap = 'square';
+            for (const c of cells) {
+              const local = (front - c.activation) / .105;
+              if (local <= 0) break;
+              const born = Math.min(1, local);
+              const settle = born * born * (3 - 2 * born);
+              const pulse = .94 + Math.sin(c.seed + p * 9) * .06 * (1 - settle);
+              const arm = c.size * settle * pulse;
+              if (arm < .22) continue;
+              ctx.lineWidth = Math.max(.68 * scale, arm * .2);
+              ctx.beginPath();
+              ctx.moveTo(c.x - arm, c.y); ctx.lineTo(c.x + arm, c.y);
+              ctx.moveTo(c.x, c.y - arm); ctx.lineTo(c.x, c.y + arm);
+              ctx.stroke();
+            }
+            if (p < 1) requestAnimationFrame(frame);
+            else resolve();
+          }
+          requestAnimationFrame(frame);
+        });
+      }
+
+      async function advance() {
+        if (locked || step >= totalSteps) return;
+        locked = true;
+        try {
+          await ready;
+          stage.classList.remove('is-start');
+          if (contrastBlueMode && step === groups.length) {
+            step++;
+            await revealBluePage();
+            advanceButton.disabled = true;
+            return;
+          }
+          if (pinkFinalMode && step === groups.length) {
+            step++;
+            stage.classList.add('pink-final');
+            await new Promise(resolve => setTimeout(resolve, reduced ? 0 : 2600));
+            advanceButton.disabled = true;
+            return;
+          }
+          const current = step++;
+          await Promise.all(groups[current].map(img => reveal(img, 3100)));
+          advanceButton.disabled = step >= totalSteps;
+        } catch (error) {
+          console.error('Unable to reveal assets', error);
+        } finally { locked = false; }
+      }
+
+      prompt.addEventListener('click', event => {
+        event.stopPropagation();
+        activateMeter();
+        advance();
+      });
+      meterHit.addEventListener('click', event => {
+        event.stopPropagation();
+        meterPaused = !meterPaused;
+        meter.classList.toggle('paused', meterPaused);
+        meterHit.setAttribute('aria-pressed', String(meterPaused));
+        meterHit.setAttribute('aria-label', meterPaused ? 'Riavvia il meter' : 'Ferma il meter');
+        if (meterPaused) stopMeter(); else startMeter();
+      });
+      advanceButton.addEventListener('click', () => { if (step > 0) advance(); });
+
+      if (new URLSearchParams(location.search).get('state') === 'final') {
+        ready.then(() => {
+          step = groups.length;
+          groups.flat().forEach(img => img.classList.add('is-visible'));
+          stage.classList.remove('is-start');
+          activateMeter();
+          advanceButton.disabled = true;
+        }).catch(console.error);
+      }
+    })();
+  </script>
 </body>
 </html>
