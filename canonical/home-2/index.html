@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061314">
+  <title>Il Suono Organizzato — HOME TERRA VIVA LOOP 01</title>
+  <meta name="description" content="HOME TERRA VIVA — paesaggio forestale in un movimento organico continuo.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cousine:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23061314'/%3E%3Cpath d='M8 34c8-15 16 15 24 0s16 15 24 0' fill='none' stroke='%237c9b69' stroke-width='5'/%3E%3C/svg%3E">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #fff; }
+    body { min-height: 100svh; }
+    .scene { position: fixed; inset: 0; overflow: hidden; background: #fff; }
+    .fallback, canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .depth-map { display: none; }
+    .fallback { object-fit: cover; object-position: center; transform: scale(1.055); filter: saturate(.98) contrast(1.02); opacity: 0; }
+    canvas { display: block; opacity: 0; transition: opacity 1.2s ease; }
+    .scene.is-ready canvas { opacity: 1; }
+    .scene.is-ready .fallback { opacity: 0; transition: opacity 1.2s ease; }
+    button { font: inherit; }
+    :root { --top-band-height: 6.52vh; --audio-control-y: calc(var(--top-band-height) / 2); }
+    .audio-label, .meter, .meter-hit {
+      position: absolute; left: 50%; top: var(--audio-control-y); transform: translate(-50%, -50%);
+      box-sizing: border-box; color: #141414; -webkit-tap-highlight-color: transparent;
+      transition: color 1.6s ease, border-color 1.6s ease, opacity 1.4s ease;
+    }
+    .audio-label {
+      z-index: 5; font-family: 'Cousine', 'Courier New', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(13px, 1.5vw, 18px);
+      letter-spacing: .22em; font-weight: 500; line-height: 1; white-space: nowrap;
+      background: none; border: 1.5px solid currentColor; border-radius: 1px; padding: 9px 16px; margin: 0; cursor: pointer;
+    }
+    .audio-label.is-hidden { display: none; }
+    .meter { z-index: 5; display: none; border: none; padding: 0; background: none; pointer-events: none; opacity: .52; }
+    .meter.active { display: block; }
+    .meter-hit { z-index: 6; display: none; border: 0; padding: 0; background: transparent; cursor: pointer; }
+    .meter-hit.active { display: block; }
+    .meter.pixel-enter { animation: meterFadeIn 2.9s cubic-bezier(.2,.7,.25,1) both; }
+    .meter.pixel-enter .meter-seg { position: relative; animation: meterPixelIn 2.55s cubic-bezier(.18,.72,.2,1) both; animation-delay: var(--pixel-delay, 0ms); transform-origin: center; }
+    .meter.pixel-enter .meter-seg::after { content: ''; position: absolute; left: 50%; top: 50%; width: 1px; height: 5px; background: currentColor; transform: translate(-50%, -50%); animation: meterPixelVertical 2.55s ease both; animation-delay: var(--pixel-delay, 0ms); }
+    @keyframes meterFadeIn { from { opacity: 0; } to { opacity: .52; } }
+    @keyframes meterPixelIn { 0% { transform: translate(var(--pixel-x), var(--pixel-y)) scale(.18); } 62% { transform: translate(0,0) scale(.82); } 100% { transform: translate(0,0) scale(1); } }
+    @keyframes meterPixelVertical { 0% { opacity: 0; transform: translate(-50%,-50%) scale(.2); } 45% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1); } }
+    .meter-zone {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 66.666%; height: 66.666%; display: flex; align-items: flex-end; justify-content: space-between; gap: 9%;
+    }
+    .meter-col { flex: 1 1 0; height: 100%; display: flex; flex-direction: column-reverse; gap: 2.4%; }
+    .meter-seg {
+      flex: 1 1 0; min-height: 1px; width: 100%; background: currentColor; opacity: .08;
+      transform: scaleY(.72); transition: opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: 80%; height: 2px; background: currentColor;
+      transform: translate(-50%, -50%) rotate(-20deg) scaleX(0); transition: transform .2s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-20deg) scaleX(1); }
+    .meter.paused .meter-seg { opacity: .08 !important; }
+    .plus { position: absolute; z-index: 7; right: clamp(22px, 2.2vw, 42px); bottom: clamp(20px, 2.2vh, 38px); width: clamp(128px, 10.4vw, 176px); aspect-ratio: 1; color: #141414; opacity: 1; transition: color 1.6s ease, opacity 1.6s ease; }
+    .plus::before, .plus::after { content: ''; position: absolute; left: 50%; top: 50%; width: 62%; height: 5px; background: currentColor; transform: translate(-50%, -50%); }
+    .plus::after { transform: translate(-50%, -50%) rotate(90deg); }
+    .scene.landscape-visible .audio-label, .scene.landscape-visible .meter, .scene.landscape-visible .plus { color: #fff; }
+    .scene.landscape-visible .plus { opacity: .52; }
+    @media (max-width: 700px) {
+      .audio-label { font-size: clamp(11px, 3.6vw, 15px); letter-spacing: .16em; padding: 7px 12px; }
+      .plus { right: 18px; bottom: 18px; width: 136px; }
+    }
+  </style>
+</head>
+<!-- FROZEN 2026-09-15 | HOME 2 TERRA VIVA | Sites v20 | source 8c46e6436bb6b43a76f50f3f048324e415e06e0c -->
+<body>
+  <main class="scene" aria-label="Terra Viva: paesaggio forestale in movimento">
+    <img class="fallback" src="assets/terra-viva-reference-01-approved.png" alt="Paesaggio forestale monumentale visto dall'alto">
+    <img class="depth-map" src="assets/terra-viva-terrain-depth.png" alt="">
+    <canvas aria-hidden="true"></canvas>
+    <button class="audio-label" type="button">ATTIVA L'AUDIO</button>
+    <span class="meter" aria-hidden="true"><span class="meter-zone"></span></span>
+    <button class="meter-hit" type="button" aria-label="Ferma il meter" aria-pressed="false"></button>
+    <span class="plus" aria-hidden="true"></span>
+  </main>
+  <script>
+    (() => {
+      const scene = document.querySelector('.scene');
+      const canvas = document.querySelector('canvas');
+      const image = document.querySelector('.fallback');
+      const depthImage = document.querySelector('.depth-map');
+      const prompt = document.querySelector('.audio-label');
+      const meter = document.querySelector('.meter');
+      const meterHit = document.querySelector('.meter-hit');
+      const meterZone = document.querySelector('.meter-zone');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' });
+      if (!gl) return;
+
+      const vertexSource = `
+        attribute vec2 a_position;
+        varying vec2 v_uv;
+        void main() {
+          v_uv = a_position * .5 + .5;
+          gl_Position = vec4(a_position, 0.0, 1.0);
+        }
+      `;
+      const fragmentSource = `
+        precision highp float;
+        varying vec2 v_uv;
+        uniform sampler2D u_image;
+        uniform sampler2D u_depth;
+        uniform vec2 u_resolution;
+        uniform vec2 u_imageSize;
+        uniform float u_loopPhase;
+        uniform float u_reveal;
+
+        vec2 cameraUV(vec2 uv) {
+          float screenAspect = u_resolution.x / u_resolution.y;
+          float imageAspect = u_imageSize.x / u_imageSize.y;
+          if (screenAspect > imageAspect) uv.y = (uv.y - .5) * (imageAspect / screenAspect) + .5;
+          else uv.x = (uv.x - .5) * (screenAspect / imageAspect) + .5;
+          return (uv - .5) * .945 + .5;
+        }
+
+        void main() {
+          vec2 uv = cameraUV(v_uv);
+          float terrain = texture2D(u_depth, uv).r;
+          float mass = .10 + .90 * smoothstep(.12, .72, terrain);
+          float depthStep = .008;
+          float slopeX = texture2D(u_depth, uv + vec2(depthStep, 0.0)).r
+                       - texture2D(u_depth, uv - vec2(depthStep, 0.0)).r;
+          float slopeY = texture2D(u_depth, uv + vec2(0.0, depthStep)).r
+                       - texture2D(u_depth, uv - vec2(0.0, depthStep)).r;
+          vec2 slope = normalize(vec2(slopeX * 2.2, slopeY * 1.45 + .025) + vec2(.0001));
+
+          // Un ciclo completo equivale esattamente a 2 PI: anche velocità e
+          // direzione coincidono alla giunzione, senza reset visibile.
+          float phase = v_uv.x * 4.65 + v_uv.y * .72 + (terrain - .5) * 1.15 - u_loopPhase;
+          float wave = sin(phase) + .22 * sin(phase * 2.0 + 1.1) + .08 * sin(phase * 3.0 - .6);
+          wave /= 1.30;
+          float edge = min(min(v_uv.x, 1.0-v_uv.x), min(v_uv.y, 1.0-v_uv.y));
+          float edgeAnchor = smoothstep(0.0, .12, edge);
+          vec2 displacement = slope * wave * .0165 * mass * edgeAnchor;
+          vec2 detailDrift = vec2(cos(phase * 3.0 + terrain * 2.4), sin(phase * 3.0 + terrain * 2.4));
+          displacement += detailDrift * .00055 * mass * edgeAnchor;
+          vec2 sampleUV = clamp(uv + displacement, .002, .998);
+          vec3 color = texture2D(u_image, sampleUV).rgb;
+          gl_FragColor = vec4(mix(vec3(1.0), color, u_reveal), 1.0);
+        }
+      `;
+
+      function compile(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+        return shader;
+      }
+
+      let program;
+      try {
+        program = gl.createProgram();
+        gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexSource));
+        gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentSource));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+      } catch (error) { console.error(error); return; }
+
+      gl.useProgram(program);
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+      const position = gl.getAttribLocation(program, 'a_position');
+      gl.enableVertexAttribArray(position);
+      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      function createTexture(unit) {
+        const texture = gl.createTexture();
+        gl.activeTexture(unit);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        return texture;
+      }
+      const texture = createTexture(gl.TEXTURE0);
+      const depthTexture = createTexture(gl.TEXTURE1);
+
+      const resolution = gl.getUniformLocation(program, 'u_resolution');
+      const imageSize = gl.getUniformLocation(program, 'u_imageSize');
+      const loopPhase = gl.getUniformLocation(program, 'u_loopPhase');
+      const revealUniform = gl.getUniformLocation(program, 'u_reveal');
+      gl.uniform1i(gl.getUniformLocation(program, 'u_image'), 0);
+      gl.uniform1i(gl.getUniformLocation(program, 'u_depth'), 1);
+
+      function resize() {
+        const dpr = Math.min(devicePixelRatio || 1, 1.6);
+        const width = Math.max(1, Math.round(innerWidth * dpr));
+        const height = Math.max(1, Math.round(innerHeight * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width; canvas.height = height; gl.viewport(0, 0, width, height);
+        }
+        gl.uniform2f(resolution, width, height);
+      }
+
+      function start() {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, depthImage);
+        gl.uniform2f(imageSize, image.naturalWidth, image.naturalHeight);
+        resize();
+        addEventListener('resize', resize, { passive: true });
+        addEventListener('orientationchange', () => { setTimeout(resize, 120); setTimeout(resize, 480); }, { passive: true });
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', resize, { passive: true });
+        const origin = performance.now();
+        let revealStart = null;
+        const loopSeconds = 14;
+        function frame(now) {
+          const seconds = (now - origin) / 1000;
+          const phase = reduced ? 0 : ((seconds % loopSeconds) / loopSeconds) * Math.PI * 2;
+          gl.uniform1f(loopPhase, phase);
+          let reveal = 0;
+          if (revealStart !== null) {
+            const raw = Math.min(1, (now - revealStart) / (reduced ? 1 : 3200));
+            reveal = raw * raw * (3 - 2 * raw);
+            if (raw > .38) scene.classList.add('landscape-visible');
+          }
+          gl.uniform1f(revealUniform, reveal);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+          if (!scene.classList.contains('is-ready')) requestAnimationFrame(() => scene.classList.add('is-ready'));
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+
+        const cols = Array.from({ length: 5 }, () => {
+          const col = document.createElement('span'); col.className = 'meter-col';
+          for (let i = 0; i < 16; i++) { const seg = document.createElement('i'); seg.className = 'meter-seg'; col.append(seg); }
+          meterZone.append(col); return col;
+        });
+        const values = [.31,.42,.36,.28,.24], targets = values.slice(), weights = [.88,1.12,.96,.78,.68];
+        let paused = false, nextEvent = 0, previous = performance.now(), master = .28;
+        function meterDraw(now) {
+          const dt = Math.min(40, now - previous); previous = now;
+          if (!paused && now >= nextEvent) {
+            const accent = Math.random() < .22, quiet = Math.random() < .19;
+            const pulse = quiet ? .08 + Math.random()*.14 : accent ? .68 + Math.random()*.28 : .28 + Math.random()*.42;
+            master = Math.max(.13, Math.min(.98, master*.34 + pulse*.82));
+            targets.forEach((_, i) => targets[i] = Math.max(.1, Math.min(.98, master*weights[i] + (Math.random()-.5)*.18)));
+            nextEvent = now + 68 + Math.random()*118;
+          }
+          cols.forEach((col, ci) => {
+            if (!paused) {
+              const rate = targets[ci] > values[ci] ? .038 : .0105;
+              values[ci] += (targets[ci]-values[ci]) * (1-Math.exp(-rate*dt));
+            }
+            const exact = values[ci]*16;
+            Array.from(col.children).forEach((seg,i) => { const d=exact-i; seg.style.opacity=d>=1?'.98':d>.03?'.48':'.08'; seg.style.transform=d>.03?'scaleY(1)':'scaleY(.72)'; });
+          });
+          requestAnimationFrame(meterDraw);
+        }
+        requestAnimationFrame(meterDraw);
+        prompt.addEventListener('click', event => {
+          event.stopPropagation();
+          const rect = prompt.getBoundingClientRect();
+          const meterWidth = rect.height * 1.18;
+          meter.style.width = meterWidth + 'px'; meter.style.height = rect.height + 'px';
+          meterHit.style.width = meterWidth + 'px'; meterHit.style.height = rect.height + 'px';
+          meter.querySelectorAll('.meter-seg').forEach(seg => {
+            seg.style.setProperty('--pixel-delay', `${Math.round(Math.random()*620)}ms`);
+            seg.style.setProperty('--pixel-x', `${((Math.random()-.5)*13).toFixed(1)}px`);
+            seg.style.setProperty('--pixel-y', `${((Math.random()-.5)*9).toFixed(1)}px`);
+          });
+          prompt.classList.add('is-hidden'); meter.classList.add('active','pixel-enter'); meterHit.classList.add('active'); revealStart = performance.now();
+          setTimeout(() => meter.classList.remove('pixel-enter'), reduced ? 0 : 3250);
+        });
+        meterHit.addEventListener('click', event => {
+          event.stopPropagation(); paused = !paused; meter.classList.toggle('paused', paused); meterHit.setAttribute('aria-pressed', String(paused));
+        });
+      }
+      Promise.all([image, depthImage].map(asset => asset.complete && asset.naturalWidth
+        ? Promise.resolve()
+        : new Promise(resolve => asset.addEventListener('load', resolve, { once: true }))
+      )).then(start);
+    })();
+  </script>
+</body>
+</html>
