@@ -63,3 +63,10 @@ Status: **APPROVED / FROZEN / PRIMARY**
 > Continuiamo Il Suono Organizzato — Website Lab. Leggi nel repository `wshwlmLab/iso-website-previews` il file `WEBSITE-LAB-CANONICAL-HANDOFF-2026-09-15.md` e i checkpoint che indica. Non modificare le versioni frozen: crea candidate separate. Ripartiamo dall'esplorazione aperta della HOME 2.
 
 Per lavorare sulla Pagina Soglia, usare invece il prompt minimo contenuto in `SOGLIA-v62-FROZEN-CHECKPOINT-2026-09-15.md`.
+
+## Infrastructure update — 2026-09-16
+
+- Operational handoff: [WEBSITE-LAB-INFRASTRUCTURE-HANDOFF-2026-09-16.md](./WEBSITE-LAB-INFRASTRUCTURE-HANDOFF-2026-09-16.md)
+- Stable workflow: [WEBSITE-LAB-STABLE-WORKFLOW-2026-09-16.md](./WEBSITE-LAB-STABLE-WORKFLOW-2026-09-16.md)
+- HOME 2 portable canonical: [canonical/home-2/index.html](./canonical/home-2/index.html)
+- HOME 2 assets are now stored in GitHub with relative references; Vercel remains blocked because the connected team exposes zero projects.
