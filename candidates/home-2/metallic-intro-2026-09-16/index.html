@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Il Suono Organizzato — HOME 2 candidate metallic intro</title>
+  <style>
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
+    iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#fff}
+  </style>
+</head>
+<body>
+  <iframe id="home2" src="../../../canonical/home-2/index.html" title="HOME 2 Terra Viva candidate"></iframe>
+  <script>
+    (() => {
+      const frame = document.getElementById('home2');
+      frame.addEventListener('load', () => {
+        const doc = frame.contentDocument;
+        if (!doc) return;
+        const scene = doc.querySelector('.scene');
+        const prompt = doc.querySelector('.audio-label');
+        if (!scene || !prompt) return;
+
+        const style = doc.createElement('style');
+        style.textContent = `
+          .candidate-metallic-intro {
+            position:absolute; inset:0; z-index:4; pointer-events:none;
+            opacity:1; transition:opacity 3.2s cubic-bezier(.2,.7,.25,1);
+            background:
+              radial-gradient(ellipse at 18% 12%, rgba(255,255,255,.98) 0%, rgba(210,255,232,.52) 8%, rgba(255,255,255,0) 25%),
+              radial-gradient(ellipse at 76% 20%, rgba(248,255,177,.48) 0%, rgba(255,255,255,0) 28%),
+              radial-gradient(ellipse at 72% 72%, rgba(94,226,255,.48) 0%, rgba(255,255,255,0) 30%),
+              radial-gradient(ellipse at 30% 76%, rgba(255,123,209,.28) 0%, rgba(255,255,255,0) 26%),
+              linear-gradient(112deg,#083d2d 0%,#126445 15%,#56a879 31%,#1d7251 47%,#8acb98 61%,#1b6247 78%,#062d23 100%);
+            box-shadow: inset 0 0 110px rgba(255,255,255,.12), inset 0 0 240px rgba(0,0,0,.22);
+          }
+          .candidate-metallic-intro::before {
+            content:''; position:absolute; inset:-8%;
+            background:
+              linear-gradient(104deg,transparent 8%,rgba(255,255,255,.06) 18%,rgba(255,255,255,.72) 26%,rgba(255,255,255,.08) 34%,transparent 44%),
+              linear-gradient(78deg,transparent 48%,rgba(156,255,218,.28) 58%,rgba(255,246,183,.24) 65%,transparent 76%);
+            filter: blur(18px); mix-blend-mode:screen; opacity:.9;
+          }
+          .candidate-metallic-intro::after {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.05));
+            mix-blend-mode:soft-light;
+          }
+          .candidate-metallic-intro.is-hidden { opacity:0; }
+        `;
+        doc.head.appendChild(style);
+
+        const intro = doc.createElement('div');
+        intro.className = 'candidate-metallic-intro';
+        intro.setAttribute('aria-hidden','true');
+        scene.insertBefore(intro, prompt);
+
+        prompt.addEventListener('click', () => {
+          intro.classList.add('is-hidden');
+          setTimeout(() => intro.remove(), 3400);
+        }, { once:true });
+      });
+    })();
+  </script>
+</body>
+</html>
