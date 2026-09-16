@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
   const sourceUrl = 'https://iso-home-truck-meter-01.willy-washburn.chatgpt.site/';
+  const sourceOrigin = new URL(sourceUrl).origin;
+
   try {
     const upstream = await fetch(sourceUrl, { cache: 'no-store' });
     if (!upstream.ok) {
@@ -8,6 +10,16 @@ export default async function handler(req, res) {
     }
 
     let html = await upstream.text();
+
+    // The approved live page uses some root-relative asset paths. When its HTML
+    // is served from the Vercel candidate origin those would otherwise point to
+    // Vercel, leaving only CSS-drawn elements such as the meter and + visible.
+    // Rewrite only those paths back to the approved live source origin.
+    html = html
+      .replace(/(src|href)=(['"])\/(?!\/)/g, `$1=$2${sourceOrigin}/`)
+      .replace(/url\((['"]?)\/(?!\/)/g, `url($1${sourceOrigin}/`)
+      .replace(/fetch\((['"])\/(?!\/)/g, `fetch($1${sourceOrigin}/`);
+
     const injection = `
       <base href="${sourceUrl}">
       <style id="candidate-home1-plus-home2-size">
