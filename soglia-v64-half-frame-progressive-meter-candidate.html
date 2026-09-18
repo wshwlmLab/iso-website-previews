@@ -115,7 +115,7 @@
   </style>
 </head>
 <body>
-  <iframe id="soglia" title="Pagina Soglia interattiva" src="Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html"></iframe>
+  <iframe id="soglia" title="Pagina Soglia interattiva" data-source="Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html"></iframe>
   <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
   <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
 
@@ -236,6 +236,19 @@
         try { frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw'); } catch (_) {}
       });
 
+      async function loadFrozenSoglia() {
+        const localSource = frame.dataset.source;
+        const remoteSource = 'https://raw.githubusercontent.com/wshwlmLab/iso-website-previews/main/Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html';
+        try {
+          let response = await fetch(localSource, { cache: 'no-store' });
+          if (!response.ok) response = await fetch(remoteSource, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Soglia source unavailable: ${response.status}`);
+          frame.srcdoc = await response.text();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
       meterHit.addEventListener('click', event => {
         event.stopPropagation();
         meterPaused = !meterPaused;
@@ -250,6 +263,7 @@
         get paused() { return meterPaused; }
       };
 
+      loadFrozenSoglia();
       requestAnimationFrame(draw);
     })();
   </script>
