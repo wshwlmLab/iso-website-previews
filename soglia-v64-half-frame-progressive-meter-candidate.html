@@ -25,7 +25,7 @@
       padding: 0;
       background: transparent;
       pointer-events: none;
-      opacity: 0;
+      opacity: 1;
     }
     .meter-hit {
       border: 0;
@@ -66,7 +66,7 @@
       min-height: 1px;
       flex: 1 1 0;
       background: #f1f1f1;
-      opacity: .025;
+      opacity: .055;
       border-radius: 0;
       transform: scaleY(.72);
       transform-origin: center;
@@ -158,14 +158,6 @@
       function startMeterEntrance() {
         if (meterStarted) return;
         meterStarted = true;
-        meterHit.classList.add('active');
-        meter.querySelectorAll('.meter-seg').forEach(segment => {
-          segment.style.setProperty('--pixel-delay', `${Math.round(Math.random() * 620)}ms`);
-          segment.style.setProperty('--pixel-x', `${((Math.random() - .5) * 13).toFixed(1)}px`);
-          segment.style.setProperty('--pixel-y', `${((Math.random() - .5) * 9).toFixed(1)}px`);
-        });
-        meter.classList.add('pixel-enter');
-        setTimeout(() => meter.classList.remove('pixel-enter'), 3250);
       }
 
       function sampleRevealProgress(now) {
@@ -211,7 +203,6 @@
         meterPrevious = now;
         sampleRevealProgress(now);
         revealLevel += (targetRevealLevel - revealLevel) * (1 - Math.exp(-.0055 * dt));
-        meter.style.opacity = String(clamp(revealLevel * 2.35));
 
         if (!meterPaused && now >= meterNextEvent) meterEvent(now);
         columns.forEach((column, columnIndex) => {
@@ -224,7 +215,7 @@
           const exact = meterValues[columnIndex] * revealLevel * 16;
           Array.from(column.children).forEach((segment, index) => {
             const distance = exact - index;
-            const offOpacity = .018 + revealLevel * .045;
+            const offOpacity = .055 + revealLevel * .025;
             segment.style.opacity = meterPaused ? '.06' : distance >= 1 ? String(.22 + revealLevel * .76) : distance > .03 ? String(.12 + revealLevel * .40) : String(offOpacity);
             segment.style.transform = !meterPaused && distance > .03 ? 'scaleY(1)' : 'scaleY(.72)';
           });
@@ -263,6 +254,7 @@
         get paused() { return meterPaused; }
       };
 
+      meterHit.classList.add('active');
       loadFrozenSoglia();
       requestAnimationFrame(draw);
     })();
