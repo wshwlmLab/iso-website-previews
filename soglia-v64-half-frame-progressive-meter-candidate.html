@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Il Suono Organizzato — Soglia v64 — half frame progressive meter candidate</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #soglia { display: block; width: 100%; height: 100%; border: 0; }
+
+    .meter, .meter-hit {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: calc(6.52vh / 2);
+      width: clamp(38px, 3.25vw, 48px);
+      height: clamp(32px, 2.85vw, 41px);
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meter {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .meter-hit {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .meter-hit.active { pointer-events: auto; }
+    .meter-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 66.666%;
+      height: 66.666%;
+      padding: 1px 0;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 9%;
+    }
+    .meter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 2.4%;
+    }
+    .meter-seg {
+      position: relative;
+      width: 100%;
+      min-height: 1px;
+      flex: 1 1 0;
+      background: #f1f1f1;
+      opacity: .025;
+      border-radius: 0;
+      transform: scaleY(.72);
+      transform-origin: center;
+      transition: opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      height: 1px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+    .meter.paused .meter-seg { opacity: .06 !important; transform: scaleY(.72) !important; }
+    .meter.pixel-enter .meter-seg {
+      animation: meterPixelIn 2.55s cubic-bezier(.18,.72,.2,1) both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    .meter.pixel-enter .meter-seg::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1px;
+      height: 5px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%);
+      animation: meterPixelVertical 2.55s ease both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    @keyframes meterPixelIn {
+      0% { transform: translate(var(--pixel-x), var(--pixel-y)) scale(.18); }
+      62% { transform: translate(0, 0) scale(.82); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes meterPixelVertical {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      45% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="soglia" title="Pagina Soglia interattiva" src="Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html"></iframe>
+  <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
+  <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
+
+  <script>
+    (() => {
+      const frame = document.getElementById('soglia');
+      const meter = document.getElementById('meter');
+      const meterHit = document.getElementById('meterHit');
+      const meterZone = document.getElementById('meterZone');
+      const columns = Array.from({ length: 5 }, () => {
+        const column = document.createElement('span');
+        column.className = 'meter-col';
+        for (let index = 0; index < 16; index++) {
+          const segment = document.createElement('i');
+          segment.className = 'meter-seg';
+          column.appendChild(segment);
+        }
+        meterZone.appendChild(column);
+        return column;
+      });
+
+      let meterPaused = false;
+      let meterStarted = false;
+      let revealLevel = 0;
+      let targetRevealLevel = 0;
+      let meterMaster = .28;
+      let meterPulse = 0;
+      let meterNextEvent = performance.now();
+      let meterPrevious = performance.now();
+      let samplePrevious = 0;
+      const meterValues = [.31, .42, .36, .28, .24];
+      const meterTargets = meterValues.slice();
+      const meterWeights = [.88, 1.12, .96, .78, .68];
+      const meterDrift = new Float32Array(5);
+
+      function clamp(value, min = 0, max = 1) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function startMeterEntrance() {
+        if (meterStarted) return;
+        meterStarted = true;
+        meterHit.classList.add('active');
+        meter.querySelectorAll('.meter-seg').forEach(segment => {
+          segment.style.setProperty('--pixel-delay', `${Math.round(Math.random() * 620)}ms`);
+          segment.style.setProperty('--pixel-x', `${((Math.random() - .5) * 13).toFixed(1)}px`);
+          segment.style.setProperty('--pixel-y', `${((Math.random() - .5) * 9).toFixed(1)}px`);
+        });
+        meter.classList.add('pixel-enter');
+        setTimeout(() => meter.classList.remove('pixel-enter'), 3250);
+      }
+
+      function sampleRevealProgress(now) {
+        if (now - samplePrevious < 90) return;
+        samplePrevious = now;
+        try {
+          const debug = frame.contentWindow.__eraseDebug;
+          if (!debug) return;
+          const white = clamp(debug.whiteErasedRatio || 0);
+          const second = clamp(debug.layer2DiscoveredRatio || 0);
+          let third = 0;
+          const states = debug.photoState;
+          if (states && states.length) {
+            const stride = Math.max(1, Math.floor(states.length / 4096));
+            let total = 0;
+            let thirdCount = 0;
+            for (let index = 0; index < states.length; index += stride) {
+              total++;
+              if (states[index] === 3) thirdCount++;
+            }
+            third = total ? thirdCount / total : 0;
+          }
+          targetRevealLevel = clamp(white * .50 + second * .30 + third * .20);
+          if (targetRevealLevel > .001) startMeterEntrance();
+        } catch (_) {}
+      }
+
+      function meterEvent(now) {
+        const accent = Math.random() < .22;
+        const quiet = Math.random() < .19;
+        meterPulse = quiet ? .08 + Math.random() * .14 : accent ? .68 + Math.random() * .28 : .28 + Math.random() * .42;
+        meterMaster = clamp(meterMaster * .34 + meterPulse * .82, .13, .98);
+        columns.forEach((column, columnIndex) => {
+          meterDrift[columnIndex] = meterDrift[columnIndex] * .32 + (Math.random() - .5) * .20;
+          const neighbourShape = 1 - Math.abs(columnIndex - 1.4) * .055;
+          meterTargets[columnIndex] = clamp(meterMaster * meterWeights[columnIndex] * neighbourShape + meterDrift[columnIndex] + .045 * Math.random(), .10, .98);
+        });
+        meterNextEvent = now + 68 + Math.random() * 118 + (quiet ? Math.random() * 100 : 0);
+      }
+
+      function draw(now) {
+        const dt = Math.min(40, now - meterPrevious);
+        meterPrevious = now;
+        sampleRevealProgress(now);
+        revealLevel += (targetRevealLevel - revealLevel) * (1 - Math.exp(-.0055 * dt));
+        meter.style.opacity = String(clamp(revealLevel * 2.35));
+
+        if (!meterPaused && now >= meterNextEvent) meterEvent(now);
+        columns.forEach((column, columnIndex) => {
+          if (!meterPaused) {
+            const delta = meterTargets[columnIndex] - meterValues[columnIndex];
+            const rate = delta > 0 ? .038 : .0105;
+            meterValues[columnIndex] += delta * (1 - Math.exp(-rate * dt));
+            meterTargets[columnIndex] = Math.max(.09, meterTargets[columnIndex] - dt * (.00013 + columnIndex * .000007));
+          }
+          const exact = meterValues[columnIndex] * revealLevel * 16;
+          Array.from(column.children).forEach((segment, index) => {
+            const distance = exact - index;
+            const offOpacity = .018 + revealLevel * .045;
+            segment.style.opacity = meterPaused ? '.06' : distance >= 1 ? String(.22 + revealLevel * .76) : distance > .03 ? String(.12 + revealLevel * .40) : String(offOpacity);
+            segment.style.transform = !meterPaused && distance > .03 ? 'scaleY(1)' : 'scaleY(.72)';
+          });
+        });
+        requestAnimationFrame(draw);
+      }
+
+      frame.addEventListener('load', () => {
+        try { frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw'); } catch (_) {}
+      });
+
+      meterHit.addEventListener('click', event => {
+        event.stopPropagation();
+        meterPaused = !meterPaused;
+        meter.classList.toggle('paused', meterPaused);
+        meterHit.setAttribute('aria-pressed', String(meterPaused));
+        meterHit.setAttribute('aria-label', meterPaused ? "Riattiva l'audio" : "Disattiva l'audio");
+      });
+
+      window.__sogliaMeterDebug = {
+        get revealLevel() { return revealLevel; },
+        get targetRevealLevel() { return targetRevealLevel; },
+        get paused() { return meterPaused; }
+      };
+
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>
