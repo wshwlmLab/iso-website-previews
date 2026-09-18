@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Il Suono Organizzato — Soglia — confronto cornice laterale</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+iframe{display:block;width:100%;height:100%;border:0}
+.controls{
+  position:fixed;z-index:10;top:12px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:4px;padding:4px;
+  background:rgba(0,0,0,.78);color:#fff;
+  font-family:"Courier New",monospace;font-size:10px;letter-spacing:.04em;
+}
+button{
+  appearance:none;border:1px solid #555;background:#000;color:#aaa;
+  font:inherit;padding:5px 8px;cursor:pointer;
+}
+button:hover{color:#fff;border-color:#888}
+button[aria-pressed="true"]{background:#fff;color:#000;border-color:#fff}
+.hint{color:#777;padding:0 5px;white-space:nowrap}
+@media(max-width:640px){
+  .controls{top:8px}
+  .hint{display:none}
+  button{padding:5px 6px}
+}
+</style>
+</head>
+<body>
+<div class="controls" role="group" aria-label="Larghezza delle bande laterali">
+  <button type="button" data-side="2" aria-pressed="true">ORIGINALE</button>
+  <button type="button" data-side="1" aria-pressed="false">METÀ</button>
+  <button type="button" data-side="0" aria-pressed="false">NESSUNA</button>
+  <span class="hint">tasti 1 · 2 · 3</span>
+</div>
+<iframe id="soglia" title="Pagina Soglia interattiva" src="Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html"></iframe>
+<script>
+const frame=document.getElementById('soglia');
+const buttons=[...document.querySelectorAll('button[data-side]')];
+let side=new URLSearchParams(location.search).get('side');
+if(!['2','1','0'].includes(side)) side='2';
+function apply(){
+  const root=frame.contentDocument&&frame.contentDocument.documentElement;
+  if(!root) return;
+  root.style.setProperty('--frame-side',side+'vw');
+  buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.side===side)));
+  const url=new URL(location.href);
+  url.searchParams.set('side',side);
+  history.replaceState(null,'',url);
+}
+frame.addEventListener('load',apply);
+buttons.forEach(b=>b.addEventListener('click',()=>{side=b.dataset.side;apply()}));
+addEventListener('keydown',e=>{
+  if(e.key==='1') side='2';
+  else if(e.key==='2') side='1';
+  else if(e.key==='3') side='0';
+  else return;
+  apply();
+});
+</script>
+</body>
+</html>
