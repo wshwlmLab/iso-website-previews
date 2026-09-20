@@ -35,13 +35,24 @@
               font-weight: 300 700;
               font-display: swap;
             }
-            .identity {
+            .identity,
+            .menu .word,
+            #motionStage .word,
+            #motionStage .glyph,
+            #dispersionLayer .exit-char {
               font-family: "Cormorant Garamond Test", "Times New Roman", serif !important;
               font-weight: 300 !important;
               letter-spacing: .20em !important;
               text-transform: uppercase !important;
             }
           `;
+          if (new URLSearchParams(location.search).get('view') === 'menu') {
+            style.textContent += `
+              #motionBridge { display: none !important; }
+              .menu { display: block !important; }
+              .menu .char { opacity: 1 !important; }
+            `;
+          }
           sogliaDocument.head.appendChild(style);
           await sogliaDocument.fonts.load('300 32px "Cormorant Garamond Test"');
           await sogliaDocument.fonts.ready;
