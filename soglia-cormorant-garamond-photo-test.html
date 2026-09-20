@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Pagina Soglia — prova fotografica Cormorant Garamond Light</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #preview { display: block; width: 100%; height: 100%; border: 0; opacity: 0; }
+    body.ready #preview { opacity: 1; }
+  </style>
+</head>
+<body>
+  <iframe id="preview" title="Pagina Soglia con Cormorant Garamond Light" src="soglia-v64-half-frame-progressive-meter-candidate.html"></iframe>
+  <script>
+    (() => {
+      const preview = document.getElementById('preview');
+      let attempts = 0;
+
+      async function applyFontTest() {
+        attempts++;
+        try {
+          const candidateDocument = preview.contentDocument;
+          const sogliaFrame = candidateDocument && candidateDocument.getElementById('soglia');
+          const sogliaDocument = sogliaFrame && sogliaFrame.contentDocument;
+          if (!sogliaDocument || !sogliaDocument.querySelector('.identity')) throw new Error('Soglia non pronta');
+
+          const style = sogliaDocument.createElement('style');
+          style.textContent = `
+            @font-face {
+              font-family: "Cormorant Garamond Test";
+              src: url("https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/cormorantgaramond/CormorantGaramond%5Bwght%5D.ttf") format("truetype");
+              font-style: normal;
+              font-weight: 300 700;
+              font-display: swap;
+            }
+            .identity {
+              font-family: "Cormorant Garamond Test", "Times New Roman", serif !important;
+              font-weight: 300 !important;
+              letter-spacing: .20em !important;
+              text-transform: uppercase !important;
+            }
+          `;
+          sogliaDocument.head.appendChild(style);
+          await sogliaDocument.fonts.load('300 32px "Cormorant Garamond Test"');
+          await sogliaDocument.fonts.ready;
+          document.body.classList.add('ready');
+          window.__fontPhotoReady = true;
+        } catch (_) {
+          if (attempts < 120) setTimeout(applyFontTest, 100);
+        }
+      }
+
+      preview.addEventListener('load', applyFontTest);
+      applyFontTest();
+    })();
+  </script>
+</body>
+</html>
