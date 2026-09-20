@@ -46,7 +46,8 @@
               text-transform: uppercase !important;
             }
           `;
-          if (new URLSearchParams(location.search).get('view') === 'menu') {
+          const menuView = new URLSearchParams(location.search).get('view') === 'menu' || location.hash === '#menu';
+          if (menuView) {
             style.textContent += `
               #motionBridge { display: none !important; }
               .menu { display: block !important; }
