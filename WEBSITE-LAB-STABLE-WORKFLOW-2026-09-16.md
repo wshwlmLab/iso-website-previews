@@ -4,6 +4,22 @@
 
 Repository: `wshwlmLab/iso-website-previews`
 
+## Binding production target
+
+This repository and its previews are the shared **design and prototyping environment**. The final website will be **rebuilt and hosted in Webflow** once architecture, visual language, motion, and interactions are approved.
+
+Platform roles:
+
+- ChatGPT Sites: rapid internal iteration;
+- GitHub: durable shared candidates, checkpoints, and frozen/canonical baselines;
+- Vercel: non-production candidate previews and verification;
+- Webflow: final build and production hosting;
+- Cloudflare R2: public audio and heavy-asset delivery;
+- Cloudflare Stream: video and trailer delivery;
+- Google Drive: original/master media archive.
+
+Every approved behavior should be designed with Webflow reproducibility in mind. Use Webflow custom code later where native Webflow interactions are insufficient. Do not treat the current Vercel or Sites deployments as the final production website.
+
 Current canonical baselines:
 
 - HOME 1: `Il-Suono-Organizzato-HOME-1-TRUCK-FROZEN-2026-09-15.html`
