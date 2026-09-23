@@ -8,6 +8,20 @@ Status: **GITHUB READY / VERCEL PREVIEW LOOP WORKING / HOME 1 + HOME 2 RECOVERAB
 - Default branch: `main`
 - Stable workflow: [WEBSITE-LAB-STABLE-WORKFLOW-2026-09-16.md](./WEBSITE-LAB-STABLE-WORKFLOW-2026-09-16.md)
 
+## Final production architecture — binding project decision
+
+The current Website Lab is for architecture, visual design, motion, interaction design, prototyping, review, and approved checkpoints. It is **not** the final production hosting stack.
+
+- **ChatGPT Sites**: fast internal experimentation and working previews.
+- **GitHub**: shared source of truth for candidates, checkpoints, and frozen/canonical baselines so another chat can continue the work safely.
+- **Vercel**: non-production candidate previews and device/browser verification during the design phase.
+- **Webflow**: the final website must be rebuilt and hosted in Webflow after the architecture and design are approved.
+- **Cloudflare R2**: delivery/storage layer for website audio, field recordings, sound works, artist files, and other heavy assets.
+- **Cloudflare Stream**: delivery layer for video and trailers.
+- **Google Drive**: archive for original/master media files; it is not the public delivery layer.
+
+Design and interaction decisions made in the Lab must therefore remain reproducible in Webflow. Complex behaviors may require Webflow custom code, but no current prototype should silently redefine Vercel or ChatGPT Sites as the final production host.
+
 ## Canonical baselines
 
 ### HOME 1 — Truck
