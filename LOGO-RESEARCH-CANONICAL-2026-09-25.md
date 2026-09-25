@@ -51,8 +51,11 @@ Reaction:
 Implication:
 - Do not prioritize this formal direction in future ISO logo development.
 
-### 02 — AIR Studios / SPIN
+### 01 — Sounds Like These / SPIN
 Status: VERY STRONG POSITIVE FOR TYPOGRAPHY
+
+Correction:
+- The user's strong positive reaction about the font/type treatment referred to Sounds Like These / SPIN, NOT AIR Studios.
 
 What the user likes:
 - The typeface/typographic character very strongly.
