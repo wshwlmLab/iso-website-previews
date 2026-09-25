@@ -62,6 +62,28 @@ Design question to preserve:
 - Determine whether the effect can come from licensing an existing typeface, custom lettering for the ISO wordmark/selected glyphs, or a limited custom display alphabet.
 - Do not assume a complete bespoke font is necessary unless the identity genuinely needs a full character set.
 
+### 18 — MUBI / SPIN
+Status: POSITIVE FOR SYSTEM FLEXIBILITY, NOT SPECIFIC LOGO FORM
+
+What the user likes:
+- The ability to interchange colors.
+- The ability to vary some shapes/forms.
+- Despite those variations, the identity remains coordinated and recognizably part of the same visual language.
+
+Implication for ISO:
+- Explore an identity system with controlled variables rather than a single fixed composition.
+- Color and form can change if a stable grammar keeps the system coherent.
+- This is relevant to the broader identity system more than to choosing a specific logo form.
+
+### 19 — Film Independent / Pentagram
+Status: NEGATIVE / NO USEFUL LEAD
+
+Reaction:
+- The user did not find anything interesting in this reference.
+
+Implication:
+- Do not prioritize this direction in future ISO identity development.
+
 ### 20 — Church / PORTO ROCHA
 Status: STRONG POSITIVE FOR MOTION + PALETTE / NEGATIVE FOR LOGO
 
@@ -88,6 +110,7 @@ The strongest live leads are not templates to copy. They suggest:
 - a controlled typographic field can coexist with one lively path/gesture;
 - the identity should feel intentional, confident, and contemporary;
 - custom lettering can be enough: a complete font is not automatically necessary;
-- website motion can communicate concept through short changing language without requiring a logo animation.
+- website motion can communicate concept through short changing language without requiring a logo animation;
+- controlled variation in color/form can coexist with a stable visual grammar.
 
 These remain hypotheses among the broader research corpus, not the final direction.
