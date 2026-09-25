@@ -8,6 +8,7 @@ Last updated: 2026-09-25
 - Do not turn every reaction into a new logo proposal.
 - Preserve positive, negative, and mixed reactions as research data.
 - Do not generate new logo concepts unless the user explicitly asks to move from research into design.
+- Distinguish logo references from broader website/motion/identity references.
 
 ## Reference reactions
 
@@ -50,12 +51,43 @@ Reaction:
 Implication:
 - Do not prioritize this formal direction in future ISO logo development.
 
+### 02 — AIR Studios / SPIN
+Status: VERY STRONG POSITIVE FOR TYPOGRAPHY
+
+What the user likes:
+- The typeface/typographic character very strongly.
+- The user would like to explore something with a comparable degree of typographic distinctiveness.
+
+Design question to preserve:
+- Determine whether the effect can come from licensing an existing typeface, custom lettering for the ISO wordmark/selected glyphs, or a limited custom display alphabet.
+- Do not assume a complete bespoke font is necessary unless the identity genuinely needs a full character set.
+
+### 20 — Church / PORTO ROCHA
+Status: STRONG POSITIVE FOR MOTION + PALETTE / NEGATIVE FOR LOGO
+
+What the user likes:
+- The motion system where a short fixed phrase becomes a framework for changing words/short statements that explain the concept in very few words.
+- This is specifically interesting as inspiration for the ISO website, not primarily for the logo.
+- The high-impact acid yellow/lime + black palette is strong and beautiful.
+- The combination feels energetic and immediate.
+
+What the user does NOT like:
+- The Church logo itself is not appealing.
+
+Possible ISO website hypothesis to preserve, NOT yet a design:
+- Use a fixed verbal anchor plus changing short phrases to reveal facets of what Il Suono Organizzato is.
+- Keep the movement concise: a few words at a time rather than long copy.
+- Consider whether a strong accent color can appear episodically within the otherwise black/white site.
+- Do not copy the Church logo or its exact animation; extract the principle of concise moving language and high-confidence contrast.
+
 ## Important distinction
-The current strongest live lead is NOT “copy Tokyo Creative Salon.”
-It is:
+The strongest live leads are not templates to copy. They suggest:
 - a long-name identity can become a spatial composition;
 - selected letters/fragments may carry identity;
+- typography itself can be a major identity carrier;
 - a controlled typographic field can coexist with one lively path/gesture;
-- typography and the path treatment must feel intentional, confident, and contemporary.
+- the identity should feel intentional, confident, and contemporary;
+- custom lettering can be enough: a complete font is not automatically necessary;
+- website motion can communicate concept through short changing language without requiring a logo animation.
 
-This remains one hypothesis among the broader research corpus, not the final direction.
+These remain hypotheses among the broader research corpus, not the final direction.
