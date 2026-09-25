@@ -131,3 +131,20 @@ Implication for ISO:
 - Preserve this as an important benchmark for symbol design: a small number of elements, a clear generative rule, and high recognizability.
 - A future ISO symbol should be able to feel strong without complexity, illustration, or effects.
 - The reference is valuable for the principle of construction, not as a form to imitate.
+
+
+### 02 — AIR Studios / SPIN
+Status: STRONG POSITIVE FOR SYSTEM / MIXED FOR OVERALL IMAGERY
+
+What the user likes:
+- The system built from lines that keep generating different forms.
+- The identity feels alive because the same simple ingredients can produce multiple configurations.
+- The user finds the overall idea very beautiful.
+
+What the user is less convinced by:
+- The specific AIR imagery feels somewhat too rigid as an overall visual world.
+
+Implication for ISO:
+- Preserve the idea of a simple linear grammar capable of producing many related forms.
+- The system should remain flexible and alive, avoiding an overly rigid or technical feel.
+- This is a strong reference for generative/systemic behavior, not necessarily for AIR's exact visual tone.
