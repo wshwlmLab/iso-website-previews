@@ -114,3 +114,17 @@ The strongest live leads are not templates to copy. They suggest:
 - controlled variation in color/form can coexist with a stable visual grammar.
 
 These remain hypotheses among the broader research corpus, not the final direction.
+
+
+### 15 — MIT Press / Muriel Cooper
+Status: VERY STRONG POSITIVE
+
+What the user likes:
+- The underlying idea is extremely simple.
+- Despite that simplicity, the symbol is very strong and memorable.
+- The strength comes from reduction and structure rather than decoration.
+
+Implication for ISO:
+- Preserve this as an important benchmark for symbol design: a small number of elements, a clear generative rule, and high recognizability.
+- A future ISO symbol should be able to feel strong without complexity, illustration, or effects.
+- The reference is valuable for the principle of construction, not as a form to imitate.
