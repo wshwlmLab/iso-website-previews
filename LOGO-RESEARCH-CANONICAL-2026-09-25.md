@@ -164,3 +164,67 @@ Implication for ISO:
 - Favor systems whose motion emerges naturally from the same rule that generates the static form.
 - Explore transformable/animated identity only when the rule is conceptually earned, not as a generic motion effect.
 - This is a strong benchmark for integrating symbol, system, variation, and animation.
+
+
+### 10 — Kunsthalle Basel / PORTO ROCHA
+Status: VERY STRONG POSITIVE
+
+What the user likes:
+- The logo itself is beautiful.
+- Especially compelling is how the mark can be graphically manipulated and reused across very different contexts.
+- The strength is not just in the static logo but in its capacity to behave as a flexible graphic device.
+
+Implication for ISO:
+- Strong benchmark for a mark that remains recognizable while being transformed, cropped, layered, or integrated into images.
+- Preserve the principle of one strong core form with multiple contextual behaviors.
+
+### 09 — Whitechapel Gallery / SPIN
+Status: POSITIVE FOR CONSISTENCY / MIXED FOR TYPEFACE
+
+What the user likes:
+- The user does not especially love the specific typeface.
+- What matters is that the typeface/graphic language has strong character and is reused consistently throughout the identity.
+- The repetition creates recognition and cohesion.
+
+Implication for ISO:
+- A distinctive typographic voice can become an identity asset through disciplined reuse.
+- The exact Whitechapel type style is not a reference to copy; the consistency principle is.
+
+### 08 — Nakanoshima Museum of Art, Osaka
+Status: STRONG POSITIVE
+
+What the user likes:
+- Very Japanese, very minimal, and appealing.
+- The typography is fundamentally simple, but subtle scale changes or enlarged letters introduce a particularity.
+- The result feels simple, clean, effective, curious, and non-banal.
+
+Implication for ISO:
+- Strong benchmark for restrained typography with one subtle anomaly.
+- Interest can come from a very small intervention rather than from complexity.
+- Preserve the balance: minimal + precise + curious.
+
+### 07 — PAC NYC / PORTO ROCHA
+Status: STRONG POSITIVE FOR TYPOGRAPHY / BLACK-WHITE FIT
+
+What the user likes:
+- The typography/lettering works very well, especially in black and white.
+- In the viewed image, the type feels perfectly integrated with the monochrome visual language.
+- The user suspects this may require custom construction rather than an off-the-shelf font.
+
+Implication for ISO:
+- Keep custom lettering or a limited bespoke display treatment as a realistic route.
+- Black/white can still feel highly distinctive if the letterforms themselves carry enough character.
+- Do not assume a complete custom font is required; custom wordmark/selected glyphs may be sufficient.
+
+### 03 — Kobalt / SPIN
+Status: VERY STRONG POSITIVE FOR SYMBOL + IMAGE INTERACTION
+
+What the user likes:
+- The symbol is very simple and strong.
+- Especially compelling is how the mark interacts with photographic/background imagery rather than sitting separately on top.
+- In the supplied screenshot, the K-like mark acts almost as a framing/masking/interference device over the image, creating a dynamic relationship between symbol and content.
+
+Implication for ISO:
+- Strong benchmark for a simple symbol that can become an active compositional tool.
+- Explore the possibility that an ISO mark could cut, mask, reveal, overlap, or reorganize imagery while remaining recognizable.
+- The value is not decorative overlay but interaction between mark and content.
