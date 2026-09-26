@@ -32,3 +32,26 @@ Nippon Design Center's official project page credits art direction to Yoshiaki I
 
 ## Candidate created in this conversation
 ISO-26-03.1: new two-curve, grid-sampled path study, reusing the exact letter paths of 03. First view preserves all letter/name positions and scale; second view tests another spatial arrangement with the same construction rule. Status: candidate awaiting user feedback; no approval implied. Rendered outputs, SVGs and manifest are attached in the conversation under iso_logo_03_study_v2.
+
+## Subsequent review - 2026-09-26
+This chronological update supersedes the earlier awaiting-feedback status and next-study constraints where they conflict.
+
+### Wavy path and retained visual trial
+- The user subsequently rejected the undulating path of 03.1 and preferred investigating jagged connections and scattered letters or letter groups.
+- Through later trials, the user asked to retain the composition shown in `poster_tipografico_minimalista_in_bianco_e_nero.png` as a provisional trial, not as a final approved logo. This is the visual with large O, A, R, Z and T, smaller letters/groups, and the small O, G and Z reduced.
+- The image reference in this conversation is file_00000000ecb48210b6abbde6b36c2215. The filename is an identification aid, not proof that a sandbox path remains available.
+- Preserve its visual composition; do not substitute a reconstructed HTML diagram and describe that reconstruction as the frozen original. Exact use of the website font still requires separate verification; an image-generated approximation is not proof of font fidelity.
+
+### Ten connection-grammar studies
+Status: ALL TEN OUTPUTS REJECTED.
+Exact user feedback: "Sono tutte completamente da buttare queste prove."
+Affected outputs:
+- iso_logo_10_grammatiche_v1.html
+- iso_logo_10_grammatiche_STATIC_iPhone.html
+
+Operational consequence:
+- No candidate from this batch is selected; do not polish or recycle these outputs as if accepted.
+- The rejection does not replace or invalidate the provisional visual trial retained before the batch, and does not discard the wider reference research.
+- Do not infer additional reasons or permanent rejection of every conceptual category from this sentence alone.
+- No new design generation is authorized by this rejection alone.
+- This record classifies the studies as rejected; it does not delete any user files or modify the website.
