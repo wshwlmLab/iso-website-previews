@@ -148,3 +148,19 @@ Implication for ISO:
 - Preserve the idea of a simple linear grammar capable of producing many related forms.
 - The system should remain flexible and alive, avoiding an overly rigid or technical feel.
 - This is a strong reference for generative/systemic behavior, not necessarily for AIR's exact visual tone.
+
+
+### 11 — Fundación Proa / SPIN
+Status: VERY STRONG POSITIVE FOR SYSTEM + MOTION
+
+What the user likes:
+- The identity is conceptually tied to the iron bridge/joint structures associated with the context, so the formal logic feels relevant rather than arbitrary.
+- The user finds the way the forms are played with and transformed very interesting.
+- The possibility for the mark/system to change, move, and animate is especially compelling.
+- The motion feels like an extension of the construction logic, not a decorative layer added afterward.
+
+Implication for ISO:
+- Preserve the principle that a strong identity can begin from a structural idea specific to the subject/context.
+- Favor systems whose motion emerges naturally from the same rule that generates the static form.
+- Explore transformable/animated identity only when the rule is conceptually earned, not as a generic motion effect.
+- This is a strong benchmark for integrating symbol, system, variation, and animation.
