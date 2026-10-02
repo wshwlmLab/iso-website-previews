@@ -84,3 +84,25 @@ Correct method:
 - where the descending ribbon connects beneath the horizontal form, close its hidden edge behind the foreground form so no invented seam is visible.
 
 New work must restart from this vector/path-based decomposition.
+
+
+## First isolated motion study — 2026-10-02
+
+First element selected by William: **left night landscape panel only**.
+
+Requested behavior for the first test:
+
+- replace the three unequal celestial marks with **three identical four-point stars**;
+- the three stars move slowly on independent continuous closed paths;
+- the river moves continuously at a visibly faster rate than the stars;
+- the crescent moon, mountains, panel frame, and all surrounding architecture remain fixed;
+- one click/tap starts the loop, which then continues without stopping;
+- work on one conceptual element at a time; do not pre-extract the other marked areas.
+
+Internal Sites candidate:
+
+- [TOTIP — Night Landscape Motion Study](https://totip-night-landscape-motion.area-di-lavo-9208.chatgpt.site)
+- project ID: `appgprj_6abfb769593c8191a743da9b2cd54980`
+- status: **MOTION CANDIDATE / AWAITING WILLIAM REVIEW / NOT A HOME BASELINE**
+
+Implementation note: this test does not reuse the rejected polygon cutouts. The river motion is confined to its original bed using a second impression of the clean source image; the artwork outside that internal region remains static. The three stars are one reusable identical SVG symbol with three separate slow trajectories.
