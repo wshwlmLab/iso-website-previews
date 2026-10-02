@@ -51,6 +51,6 @@ The clean raster source is `BEBBY.jpg` (1448 × 2048 px JPEG). William marked fi
 2. left night landscape panel;
 3. right sun-and-water landscape panel;
 4. central suspended blue form;
-5. lower striped base / lower architectural frame.
+5. lower vertical striped band only.
 
-This five-area selection supersedes the earlier preliminary seven-part proposal. Do not animate the speaker grilles, checkerboard band, or other unmarked symbols unless William later adds them explicitly. The exact boundary of the lower selected area should be confirmed during motion design.
+This five-area selection supersedes the earlier preliminary seven-part proposal. Do not animate the speaker grilles, checkerboard band, or other unmarked symbols unless William later adds them explicitly. The lower selection is limited strictly to the vertical striped band: do not include the lateral curves or the rest of the lower architectural frame.
