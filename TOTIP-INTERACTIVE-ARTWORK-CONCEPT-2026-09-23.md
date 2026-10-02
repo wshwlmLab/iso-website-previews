@@ -54,3 +54,19 @@ The clean raster source is `BEBBY.jpg` (1448 × 2048 px JPEG). William marked fi
 5. lower vertical striped band only.
 
 This five-area selection supersedes the earlier preliminary seven-part proposal. Do not animate the speaker grilles, checkerboard band, or other unmarked symbols unless William later adds them explicitly. The lower selection is limited strictly to the vertical striped band: do not include the lateral curves or the rest of the lower architectural frame.
+
+## Layer extraction checkpoint — 2026-10-02
+
+A first non-animated decomposition package has been created from `BEBBY.jpg`:
+
+- package: `BEBBY-home-animation-layers-v01.zip`;
+- full canvas: 1448 × 2048 px;
+- transparent layers: face, night landscape, sun/water landscape, descending ribbon only, and lower blue stripes only;
+- verification sheet: `decomposition-check.png`;
+- the connected horizontal blue form is explicitly excluded from the ribbon layer;
+- curves and the rest of the lower frame are explicitly excluded from the stripe layer.
+
+Status: **EXTRACTED FOR REVIEW / NO MOTION YET / NO HOME BASELINE MODIFIED**.
+
+Next sequence: approve extraction → test one movement at a time → approve each loop → combine the five visual loops → connect one musical stem to each activation.
+
