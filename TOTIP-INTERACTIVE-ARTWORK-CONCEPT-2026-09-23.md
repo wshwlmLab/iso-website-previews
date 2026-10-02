@@ -42,3 +42,15 @@ These should be designed as coordinated loops, not seven unrelated effects.
 ## Technical direction
 
 A zero-license-cost implementation is possible with separated transparent raster layers and/or SVG, HTML/CSS/Canvas, Web Audio API, and animation code. The prototype can be developed in the Website Lab and must remain reproducible in the final Webflow build, using custom code where needed. Audio assets follow the project architecture: masters in Google Drive, public audio delivery through Cloudflare R2.
+
+## Selected animation areas — update 2026-10-02
+
+The clean raster source is `BEBBY.jpg` (1448 × 2048 px JPEG). William marked five current animation areas on `BEBBY copia.jpg`:
+
+1. upper central face with eyes and double V;
+2. left night landscape panel;
+3. right sun-and-water landscape panel;
+4. central suspended blue form;
+5. lower striped base / lower architectural frame.
+
+This five-area selection supersedes the earlier preliminary seven-part proposal. Do not animate the speaker grilles, checkerboard band, or other unmarked symbols unless William later adds them explicitly. The exact boundary of the lower selected area should be confirmed during motion design.
