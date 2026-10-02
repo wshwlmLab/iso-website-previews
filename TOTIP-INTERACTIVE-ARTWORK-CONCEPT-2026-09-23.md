@@ -66,7 +66,21 @@ A first non-animated decomposition package has been created from `BEBBY.jpg`:
 - the connected horizontal blue form is explicitly excluded from the ribbon layer;
 - curves and the rest of the lower frame are explicitly excluded from the stripe layer.
 
-Status: **EXTRACTED FOR REVIEW / NO MOTION YET / NO HOME BASELINE MODIFIED**.
+Status: **REJECTED EXTRACTION / DO NOT USE / NO HOME BASELINE MODIFIED**.
 
 Next sequence: approve extraction → test one movement at a time → approve each loop → combine the five visual loops → connect one musical stem to each activation.
 
+
+## Extraction correction — 2026-10-02
+
+The raster polygon-cutout approach in `BEBBY-home-animation-layers-v01.zip` was rejected by William because its boundaries were arbitrary and did not follow the artwork. **Do not use v01 for animation or implementation.**
+
+Correct method:
+
+- vectorize the original one-colour artwork into SVG paths;
+- use the marked circles only to identify conceptual animation groups, never as clipping boundaries;
+- keep panel frames and static architecture fixed;
+- separate only the real internal forms that will move (for example eyes/V, celestial elements/reflections, exact ribbon contour, exact stripe shapes);
+- where the descending ribbon connects beneath the horizontal form, close its hidden edge behind the foreground form so no invented seam is visible.
+
+New work must restart from this vector/path-based decomposition.
