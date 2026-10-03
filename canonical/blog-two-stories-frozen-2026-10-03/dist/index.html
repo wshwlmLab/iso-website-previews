@@ -117,13 +117,26 @@ body.has-moved .hint{opacity:0}
 body.article-active .stage,body.article-active .card-shell,body.article-active .index,body.article-active .hint{visibility:hidden;pointer-events:none}
 @media(max-width:760px){.card-shell{width:76cqw;height:129px}.card-face{padding:12px 13px 11px}.card-title{font-size:18.75px}.card-meta{font-size:9.375px;column-gap:8px}}
 @media(max-aspect-ratio:4/3){:root{--identity-size:clamp(18px,4.25vw,30px);--micro-size:clamp(8px,1.7vw,10px)}.micro{width:46vw}}
+
+/* === GLOBAL NAV TEST B: inside image, chromatic inversion === */
+.global-nav-overlay{
+  position:absolute;z-index:35;left:50%;top:13px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:clamp(14px,1.5cqw,28px);
+  font-size:clamp(8px,.62cqw,10px);line-height:1;letter-spacing:.075em;
+  text-transform:uppercase;white-space:nowrap;
+  color:#fff;mix-blend-mode:difference;isolation:auto;pointer-events:none;
+}
+.global-nav-overlay .nav-item{opacity:.48}
+.global-nav-overlay .nav-item.is-active{opacity:1}
 </style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
   <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
   <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
   <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
 
  <span class="meter" aria-hidden="true"><span class="meter-zone"><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span></span></span>
-<main class="page-window" aria-label="BLOG — Sound Horeg e Gumleaf">
+<main class="page-window" aria-label="BLOG — Sound Horeg e Gumleaf"><nav class="global-nav-overlay" aria-label="Navigazione globale">
+    <span class="nav-item">INDEX</span><span class="nav-item">HOME</span><span class="nav-item">WORKS</span><span class="nav-item is-active">BLOG</span><span class="nav-item">ABOUT</span>
+  </nav>
 <iframe class="story-frame" title="Una festa che deve tremare" src="sound-horeg/index.html" aria-hidden="true"></iframe>
 <iframe class="story-frame" title="Gumleaf" src="gumleaf/index.html" aria-hidden="true"></iframe>
 <div class="stage"><div class="pane pane-left"><div class="layer base"></div></div><div class="pane pane-right"><div class="layer base"></div></div></div>
