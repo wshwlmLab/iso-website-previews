@@ -1,19 +1,18 @@
-# Il Suono Organizzato — regola di ingresso nelle esperienze
+# Il Suono Organizzato — continuità delle esperienze
 
-Una pagina interattiva inizia soltanto quando tutte le risorse necessarie alla sua esperienza sono scaricate, verificate e preparate. William ha stabilito questa regola il 3 ottobre 2026, a seguito delle interruzioni durante la cartolina Soglia. La stessa regola vale per le successive modifiche alle altre pagine, inclusa Works.
+Aggiornamento di William, 3 ottobre 2026: prima risolvere e misurare le performance; progettare poi dove e quando mostrare un'eventuale attesa. La schermata con percentuale della precedente prova Soglia è stata rifiutata e rimossa. Non introdurre automaticamente percentuali, spinner, blocchi a tutto schermo o pannelli di caricamento nelle altre pagine.
 
-Prima dell'ingresso:
+Le risorse necessarie allo svelamento manuale devono essere preparate prima di abilitarlo. In Soglia, l'ingresso tipografico approvato resta visibile e interattivo mentre immagini e audio vengono preparati in parallelo. La transizione verso la cartolina viene completata solo quando tutti i layer sono pronti. Dopo che inizia l'eraser, nessun caricamento deve interromperlo o sostituirlo con un indicatore.
 
-- Scaricare integralmente tutte le immagini e tutti gli audio della cartolina, anche quelli che saranno svelati nei giri successivi. Dichiarare l'intero elenco delle risorse all'inizio, senza caricare nuovi layer durante l'interazione.
-- Verificare la risposta HTTP e la completezza; verificare SHA-256 quando il manifest contiene l'impronta del file.
-- Decodificare gli audio, preparare le giunzioni dei loop e conservare i buffer in memoria. Decodificare le immagini e preparare i canvas dell'eraser. Attendere i font e preparare la geometria delle animazioni.
-- Tenere bloccati puntatore, tastiera, meter e animazione introduttiva finché manca anche una sola risorsa necessaria. Mostrare soltanto “Caricamento…” con il progresso reale. Il 100% è riservato alla disponibilità dell'intera esperienza, inclusa la preparazione.
-- Se un download fallisce, scade o è incompleto, mantenere chiuso l'ingresso e mostrare “Riprova”. Conservare i file validi e recuperare quelli mancanti; non avviare una versione parziale.
+Regole di implementazione:
 
-Dopo l'ingresso, l'eraser e i loop devono usare esclusivamente le risorse già preparate: nessun nuovo download, nessuna nuova decodifica e nessun riavvio dei loop nei passaggi fra foto o nel mute. Lo sblocco dell'audio avviene nel primo gesto dell'utente, come richiesto dal browser; non è un'attesa di rete. Eventuali video necessari all'esperienza devono avere una strategia equivalente di preparazione completa, prima di abilitare l'ingresso: `preload="auto"` o `canplay` da soli non garantiscono questo requisito.
+- Dichiarare e scaricare tutti i layer della cartolina, anche quelli dei giri successivi. Verificare risposta HTTP, completezza e SHA-256 quando presente nel manifest.
+- Separare la preparazione dei dati audio dall'apertura del dispositivo. Usare un decoder offline a 48 kHz; aprire e sbloccare il contesto di riproduzione nel primo gesto reale dell'utente, anche durante l'introduzione.
+- Conservare in memoria i buffer audio, le immagini decodificate e i canvas. I loop partono insieme una volta sola, inizialmente a volume zero, e non vengono riavviati durante svelamento, cambio foto o mute.
+- Riutilizzare le risorse già valide negli eventuali recuperi; non ricaricare la pagina visibile e non ripetere l'introduzione. Non ripiegare silenziosamente su vecchi audio o file incompleti.
+- Evitare letture della geometria SVG/DOM dopo scritture a ogni campione del mouse. Misurare il costo del motore, confrontare il comportamento prima/dopo e preservare soglie, forme e guard rail approvati.
+- Conservare diagnostica locale di risorse, preparazione, stato audio e operazioni lunghe, senza inviarla a servizi esterni. Un'eventuale attesa visibile è una scelta successiva da progettare con William, non la soluzione al carico del motore.
 
-Implementazione riutilizzabile: [`shared/experience-loader.js`](shared/experience-loader.js). La cartolina attuale la usa in [`soglia-v73-audio-candidate/dist/experience-loader.js`](soglia-v73-audio-candidate/dist/experience-loader.js), con un'unica cache condivisa fra la pagina e il suo iframe. Il loader non contiene credenziali. I media restano su Cloudflare R2 e le cartoline sono versionate per evitare sovrascritture accidentali.
+Il loader riutilizzabile è in [shared/experience-loader.js](shared/experience-loader.js). Non crea alcuna interfaccia di caricamento. La regola è applicata alla prova audio della Soglia basata sulla v73; le altre pagine la adotteranno nei successivi interventi. Le versioni FROZEN approvate restano intatte.
 
-Verifiche minime per adottare il meccanismo in una nuova pagina: connessione lenta, ultimo file ritardato, font in attesa, risposta incompleta, errore iniziale del manifest, recupero con “Riprova”, interazione senza rete dopo l'ingresso. Le verifiche automatiche della Soglia si trovano in `soglia-v73-audio-candidate/qa/verify-preload.mjs` e `qa/verify-v73-audio.mjs`.
-
-La regola è già applicata alla prova audio della Soglia basata sulla v73. Le versioni FROZEN approvate restano intatte; le altre pagine adotteranno lo stesso controllo nei successivi interventi.
+Prima di dichiarare risolta un'interruzione sonora, distinguere i test automatici dal riscontro nel browser reale. Il rapporto della prova attuale si trova in [soglia-v73-audio-candidate/PERFORMANCE.md](soglia-v73-audio-candidate/PERFORMANCE.md).

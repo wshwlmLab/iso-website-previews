@@ -1,4 +1,4 @@
-# Soglia v73 — cartolina R2 con caricamento completo, fade e crossfade
+# Soglia v73 — prova audio e performance senza schermata di caricamento
 
 Prova basata sulla v73 approvata, commit Sites originale `d0a0349082d954425ff6356b5306c164ad014135`. La v73 definitiva resta intatta nel ramo GitHub `frozen/soglia-v73`, commit `1fd73843345ae54ccc74e3ed259c0f626883ebf3`.
 
@@ -22,11 +22,11 @@ Cartolina attuale: `soglia-prova`, versione `v1`. Manifest pubblico: https://pub
 | 2 | Endless Ascent |
 | 3 | EXT Sciola |
 
-L'ingresso è bloccato da una schermata “Caricamento…” con progresso reale. Tutte e tre le immagini e tutti e tre gli audio vengono scaricati integralmente e verificati prima dell'ingresso. La pagina aspetta anche la decodifica delle immagini, i font, i canvas dell'eraser e la geometria dell'animazione. Il 100% compare solo quando l'intera esperienza è pronta; l'animazione introduttiva parte in quel momento, senza consumarsi dietro l'attesa. Puntatore, tastiera e meter sono bloccati fino a quel momento.
+La precedente schermata di caricamento con percentuale è stata rifiutata e rimossa. La scritta e l'introduzione approvate restano visibili e interattive mentre tutti i media vengono scaricati, verificati e preparati. La transizione manuale verso la cartolina attende le risorse pronte prima dello svelamento; nessun indicatore compare durante l'eraser.
 
-Un solo loader e una sola cache sono condivisi fra pagina e iframe; anche il manifest viene richiesto una volta sola. Il progresso segue i byte ricevuti e la preparazione dei singoli media, senza timer che simulano l'avanzamento. Errori HTTP, risposte incomplete, impronte SHA-256 diverse dal manifest o 45 secondi senza nuovi dati mantengono chiuso l'ingresso. “Riprova” conserva i media validi e scarica nuovamente quelli mancanti o danneggiati. Non esiste un ripiego silenzioso sui vecchi file di prova.
+Un solo loader e una sola cache sono condivisi fra pagina e iframe. La preparazione audio usa un decoder offline a 48 kHz. Il contesto che riproduce il suono viene aperto e sbloccato nel primo gesto dell'introduzione; i buffer preparati partono insieme a volume zero e continuano in loop, senza riavviarsi nei cambi foto o nel mute. Dopo l'ingresso nella cartolina non ci sono nuovi download o decodifiche.
 
-I tre audio vengono scaricati in parallelo e decodificati uno alla volta mentre l'ingresso è ancora chiuso. Il primo gesto sblocca l'audio; i tre buffer già preparati partono allo stesso istante e continuano in loop, anche quando la foto è invisibile o il meter è in mute. Non vengono riavviati durante l'eraser. Dopo l'ingresso non ci sono altri download o decodifiche per queste risorse.
+Il confronto rigido dell'URL dell'iframe è stato rimosso: un URL normalizzato non deve impedire il caricamento delle immagini. Il loader verifica HTTP, completezza e SHA-256; un recupero conserva le risorse valide senza ricaricare l'introduzione. La diagnostica è locale, senza interfaccia aggiuntiva o invio a servizi esterni.
 
 Il volume obiettivo di ogni file resta la frazione esatta dei pixel visibili della sua foto. Ogni cambiamento usa una rampa di un secondo, continua anche quando il mouse cambia velocemente direzione. Due foto che si sostituiscono producono due rampe complementari. Il mute mantiene il fade di un secondo e non arresta i loop.
 
@@ -36,13 +36,13 @@ Per aggiungere una cartolina, caricare una nuova cartella con immagini, audio e 
 
 Il dominio pubblico R2 attuale è quello di prova già configurato. Quando sarà collegato un dominio media definitivo, cambiare soltanto `origin` in `cartolina-config.js` e mantenere CORS per GET/HEAD. Nessuna credenziale Cloudflare è presente nella pagina.
 
-Le fotografie caricate sono estratte senza modifiche dalla v73. La grafica, la cornice e il movimento della scritta restano quelli approvati; cambia il momento di avvio, subordinato al caricamento completo. Le soglie dell'eraser restano 99,5% per il primo velo e 90% per i passaggi successivi; il guard rail resta 60 px.
+Le fotografie caricate sono estratte senza modifiche dalla v73. La grafica e il movimento della scritta restano quelli approvati. La cornice mantiene lo stesso percorso e la stessa velocità con calcoli aritmetici; il motore eraser elimina lavoro inutile senza cambiare pixel o decisioni del guard rail. I font identici agli originali sono serviti dal sito, con la licenza OFL. Le soglie dell'eraser restano 99,5% per il primo velo e 90% per i passaggi successivi; il guard rail resta 60 px.
 
-Verifiche: sintassi JavaScript; CSS approvato e movimento della scritta invariati; almeno tre giri completi con tre e cinque layer; conteggi dei pixel confrontati con tutte le celle del viewport; fade di un secondo; continuità fra i campioni alla chiusura dei loop; avvio simultaneo e nessun riavvio al mute. I test del nuovo ingresso usano il codice reale del loader, dell'audio e della preparazione dell'iframe in un ambiente simulato: download lento, ultima immagine non ancora decodificata, font in attesa, file HTTP-200 incompleto, recupero del solo file danneggiato, errore e recupero del manifest, dieci interazioni dopo aver disabilitato la rete. I sei media pubblici R2 sono stati riletti e confrontati byte per byte tramite SHA-256 durante il precedente upload; tipi MIME e CORS sono corretti. Non è stato possibile eseguire una prova del browser/ascolto in questo ambiente; la preview è disponibile per l'ascolto manuale di William.
+Le verifiche e i limiti della diagnosi sono in [PERFORMANCE.md](PERFORMANCE.md): formati MP3 e integrità R2 controllati, decodifica integrale senza errori, riproduzione della condizione che può fermare la vecchia percentuale al 50%, equivalenza pixel per pixel con 3/5 layer, stress del motore, giunzioni e fade, preparazione indipendente dall'autoplay, recupero e assenza di rete durante l'eraser. I test usano Node/V8 e DOM simulato; non rappresentano un ascolto nel browser di William.
 
-Nel progetto Sites: `node qa/verify-v73-audio.mjs dist` e `node qa/verify-preload.mjs dist`.
+Nel progetto Sites: `node qa/verify-v73-audio.mjs dist`, `node qa/verify-preload.mjs dist` e `node qa/verify-eraser-performance.mjs dist`.
 
-La regola comune per il resto del sito è salvata in `SITE_EXPERIENCE_RULES.md`, con `shared/experience-loader.js` riutilizzabile per le altre pagine. Per ora è applicata alla Soglia candidata; le altre pagine la adotteranno nei successivi interventi.
+La regola comune del sito in `SITE_EXPERIENCE_RULES.md` è aggiornata alla decisione di William: prima performance e continuità, poi progettazione di eventuali attese; nessuna percentuale o spinner automatico. `shared/experience-loader.js` è riutilizzabile e non crea interfacce. Le altre pagine adotteranno la regola nei successivi interventi.
 
 La procedura n8n di upload e verifica è nel progetto personale di William, alla radice: `ISO — Cartoline R2 — upload e verifica`. È inattiva e viene eseguita manualmente tramite il collegamento n8n; nessun webhook di produzione è stato pubblicato. L'importazione integrale di Endless Ascent è stata eseguita con una procedura separata esclusivamente manuale, con sorgente e chiave R2 fisse.
 

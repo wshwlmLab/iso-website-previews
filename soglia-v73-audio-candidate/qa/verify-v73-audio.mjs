@@ -23,7 +23,7 @@ function verifyEraser(layers) {
   const window={addEventListener(){}};
   const context=vm.createContext({document,window,Uint8Array,Uint32Array,Float32Array,Uint8ClampedArray,Math,Infinity,Array,requestAnimationFrame:()=>1,cancelAnimationFrame(){}});
   const begin=inner.indexOf('const moduleEl=document.getElementById');
-  const end=inner.indexOf('document.body.inert=true;',begin);
+  const end=inner.indexOf('let prepared=null;',begin);
   vm.runInContext(inner.slice(begin,end),context);
   vm.runInContext(`imgs=Array.from({length:${layers}},()=>({width:420,height:240}));size();`,context);
   const debug=window.__eraseDebug;
@@ -94,13 +94,13 @@ async function verifyAudio() {
   const frameEvents={},meterEvents={},innerEvents={};
   const innerDocument={documentElement:{style:{setProperty(){}}},addEventListener:(key,cb)=>innerEvents[key]=cb,querySelectorAll:()=>[]};
   const ratios=[0,0,0];
-  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-preload'},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
+  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-performance'},__showSogliaIntro:async()=>{},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
   const meterHit={classList:classList(),setAttribute(){},addEventListener:(key,cb)=>meterEvents[key]=cb};
   const meter={classList:classList()};
   const loadingElements=Object.fromEntries(['loadingGate','loadingLabel','loadingProgress','loadingBar','loadingRetry'].map(id=>[id,{hidden:false,addEventListener(){}}]));
   const document={body:{dataset:{}},getElementById:id=>({soglia:frame,meter,meterHit,meterZone:{appendChild(){}},...loadingElements})[id],querySelectorAll:()=>[],createElement:()=>({className:'',children:[],style:{},appendChild(child){this.children.push(child)}})};
   const base='https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev/cartoline/soglia-prova/v1/';
-  const window={AudioContext,location:{search:'?cartolina=soglia-prova',href:'https://test.invalid/?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
+  const window={AudioContext,OfflineAudioContext:class{decodeAudioData(){return Promise.resolve(new Buffer(2,400,100))}},location:{search:'?cartolina=soglia-prova',href:'https://test.invalid/?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
   window.ISOCartolina={load:()=>window.ISOCartolinaReady};
   window.ISOExperienceLoader={bytes:async()=>new ArrayBuffer(8),prepare:(key,operation)=>operation(),snapshot:()=>({error:null}),subscribe(){},retry(){},preparing(){},ready(){},fail(error){throw error}};
   let draw;
@@ -131,7 +131,7 @@ async function verifyAudio() {
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-preload');
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-performance');
   await frameEvents.load();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(window.ISOAudioMeter.experienceReady,true);

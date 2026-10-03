@@ -29,10 +29,15 @@
     }
     const total = resources.size;
     const percent = status === 'ready' ? 100 : Math.min(99, total ? Math.floor(progress / total * 100) : 0);
-    return { status, phase, error, total, completed, percent };
+    const assets = Array.from(resources.values(), resource => {
+      const download = downloads.get(resource.url);
+      return { key: resource.key, url: resource.url, state: resource.state, bytes: download?.loaded || 0, expectedBytes: download?.total || 0, error: resource.error || null };
+    });
+    return { status, phase, error, total, completed, percent, assets };
   }
 
   function publish() {
+    if (!listeners.size) return;
     const state = snapshot();
     listeners.forEach(listener => listener(state));
   }
@@ -96,6 +101,7 @@
         } catch (cause) {
           if (downloads.get(url) === download) downloads.delete(url);
           failedURLs.add(url);
+          resources.forEach(resource => { if (resource.url === url) { resource.error = cause.message; resource.state = 'failed'; } });
           throw cause.name === 'AbortError' ? new Error('Caricamento in attesa da troppo tempo') : cause;
         } finally {
           clearTimeout(timeout);
@@ -110,12 +116,14 @@
     if (!resource) return Promise.reject(new Error('Risorsa non dichiarata'));
     if (resource.promise) return resource.promise;
     resource.state = 'preparing';
+    resource.error = null;
     resource.promise = Promise.resolve().then(operation).then(value => {
       resource.state = 'ready';
       publish();
       return value;
     }).catch(cause => {
       resource.state = 'failed';
+      resource.error = cause.message;
       resource.promise = null;
       // A corrupt/undecodable response must be downloaded again on retry.
       downloads.delete(resource.url);

@@ -1,4 +1,9 @@
 (() => {
+  function createDecoder() {
+    const Decoder = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!Decoder) throw new Error('Decodifica audio non disponibile');
+    return new Decoder(2, 1, 48000);
+  }
   // Bake the head/tail overlap once. Web Audio then repeats the finished PCM
   // buffer without a timer, a new request or a decoder restart at the seam.
   function makeSeamlessLoop(context, original, seconds = 1) {
@@ -42,5 +47,5 @@
     parameter.linearRampToValueAtTime(target, now + seconds);
   }
 
-  window.ISOLoopAudio = { makeSeamlessLoop, load, fade };
+  window.ISOLoopAudio = { createDecoder, makeSeamlessLoop, load, fade };
 })();
