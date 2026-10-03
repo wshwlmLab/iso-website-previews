@@ -1,0 +1,284 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Il Suono Organizzato — BLOG — Due storie</title><style>:root{
+  --frame-top:6.52vh;
+  --frame-side:2vw;
+  --menu-size:clamp(54px,7vw,112px);
+  --identity-size:clamp(19px,2.25vw,36px);
+  --micro-size:clamp(8px,.708vw,11px);
+  --psyop-tracking:.055em;
+}
+.identity{position:absolute;z-index:5;font-size:var(--identity-size);line-height:1;letter-spacing:var(--psyop-tracking);white-space:nowrap;user-select:none;cursor:default;transition:none}
+.id-il{left:.65vw;top:calc(var(--frame-top)/2);transform:translateY(-50%)}
+.id-suono{right:.72vw;top:calc(var(--frame-top)/2);transform:translateY(-50%)}
+.id-organizzato{right:.70vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%)}
+.identity-inner{display:block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(-1);will-change:transform;pointer-events:none}
+.identity.identity-flipped .identity-inner{transform:scaleY(1)}
+.micro{position:absolute;left:.65vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%);font-size:var(--micro-size);display:flex;width:25vw;justify-content:space-between;gap:0;white-space:nowrap}
+.micro .clock-group{display:inline-flex;align-items:baseline;gap:.55em}
+.micro .tz{color:#777;font-size:.92em}    .meter, .meter-hit {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: calc(6.52vh / 2);
+      width: clamp(52px, 4.2vw, 62px);
+      height: clamp(32px, 2.85vw, 41px);
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meter {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+      opacity: 1;
+    }
+    .meter-hit {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .meter-hit.active { pointer-events: auto; }
+    .meter-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 50%;
+      height: 80%;
+      padding: 1px 0;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(4px, .35vw, 6px);
+    }
+    .meter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 0;
+    }
+    .meter-seg {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      flex: 0 0 1px;
+      background: #343434;
+      opacity: 1;
+      border-radius: 0;
+      transform: scaleY(1);
+      transform-origin: center;
+      transition: background 56ms linear, opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      height: 2px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+    .meter.paused .meter-seg { background: #343434 !important; opacity: 1 !important; transform: scaleY(1) !important; }
+
+@font-face{font-family:"New Heterodox Mono";src:url("NewHeterodoxMono-Book.otf") format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"New Heterodox Mono";src:url("NewHeterodoxMono-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:"New Heterodox Mono",monospace;overscroll-behavior:none}
+.frame-stage{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+:root{--frame-side:1vw}
+.page-window{position:absolute;left:var(--frame-side);right:var(--frame-side);top:var(--frame-top);bottom:var(--frame-top);overflow:hidden;background:#000;transform:translateZ(0);isolation:isolate;container-type:size}
+.stage{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;background:#000;touch-action:none}
+.pane{position:relative;overflow:hidden;background:#000}
+.layer{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(1) saturate(0) contrast(var(--photo-contrast,1.08));will-change:transform;backface-visibility:hidden}
+.pane-right .layer{background-position:var(--right-position,83% center)}
+.layer.incoming{z-index:2}
+.card-shell{position:absolute;left:50%;top:50%;width:clamp(360px,43cqw,760px);height:clamp(138px,15.75cqh,177px);transform:translate(-50%,-50%);z-index:20;overflow:hidden;cursor:pointer;transform-origin:center;will-change:opacity;border:0;padding:0;background:transparent;text-align:left;font:inherit}
+.card-face{position:absolute;inset:0;padding:14px 17px 13px;display:grid;grid-template-rows:1fr auto;transform:translate3d(0,0,0);will-change:transform}
+.card-face.incoming{z-index:2}
+.card-title{align-self:start;font-size:clamp(21.25px,1.8125cqw,33.75px);line-height:.95;letter-spacing:-.02em;font-weight:700;text-transform:uppercase}
+.card-meta{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;column-gap:18px;font-size:clamp(10px,.825cqw,13.75px);line-height:1;letter-spacing:.035em;text-transform:uppercase}
+.card-meta span:nth-child(2){justify-self:center}.card-meta span:nth-child(3){justify-self:end}
+.index{position:absolute;top:13px;right:15px;z-index:30;color:#fff;font-size:9px;letter-spacing:.06em;mix-blend-mode:difference;pointer-events:none}
+.hint{position:absolute;bottom:13px;left:50%;transform:translateX(-50%);z-index:30;font-size:9px;letter-spacing:.08em;color:#fff;mix-blend-mode:difference;pointer-events:none;white-space:nowrap;opacity:.65}
+body.has-moved .hint{opacity:0}
+.story-frame{position:absolute;inset:0;width:100%;height:100%;border:0;visibility:hidden;pointer-events:none;background:#000}
+.story-frame.active{visibility:visible;pointer-events:auto;z-index:40}
+body.article-active .stage,body.article-active .card-shell,body.article-active .index,body.article-active .hint{visibility:hidden;pointer-events:none}
+@media(max-width:760px){.card-shell{width:76cqw;height:129px}.card-face{padding:12px 13px 11px}.card-title{font-size:18.75px}.card-meta{font-size:9.375px;column-gap:8px}}
+@media(max-aspect-ratio:4/3){:root{--identity-size:clamp(18px,4.25vw,30px);--micro-size:clamp(8px,1.7vw,10px)}.micro{width:46vw}}
+</style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
+  <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
+  <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
+  <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
+
+ <span class="meter" aria-hidden="true"><span class="meter-zone"><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span></span></span>
+<main class="page-window" aria-label="BLOG — Sound Horeg e Gumleaf">
+<iframe class="story-frame" title="Una festa che deve tremare" src="sound-horeg/index.html" aria-hidden="true"></iframe>
+<iframe class="story-frame" title="Gumleaf" src="gumleaf/index.html" aria-hidden="true"></iframe>
+<div class="stage"><div class="pane pane-left"><div class="layer base"></div></div><div class="pane pane-right"><div class="layer base"></div></div></div>
+<button class="card-shell" type="button"><span class="card-face base"><span class="card-title"></span><span class="card-meta"><span></span><span></span><span></span></span></span></button>
+<div class="index" aria-hidden="true"></div><div class="hint">SCROLL ↑ ↓ · APRI LA STORIA</div>
+</main></div><script src="iso-meter-response.js?v=20261003-1"></script><script>
+const STORIES=[{"left": "sound-horeg/assets/foto_22.jpg", "right": "sound-horeg/assets/sound-horeg-woman-right-extended-v1.png", "card": "#ff351d", "text": "#090909", "title": "Una festa che deve tremare", "metaLeft": "Blog / Storia", "metaCenter": "01 / 02", "metaRight": "Giava Orientale", "contrast": 1.08, "rightPosition": "66% center"}, {"left": "gumleaf/assets/gumleaf-164.jpg", "right": "gumleaf/assets/gumleaf-portrait-expanded-v1.png", "card": "#72b94b", "text": "#090909", "title": "Gumleaf", "metaLeft": "Blog / Storia", "metaCenter": "02 / 02", "metaRight": "Australia", "contrast": 1.3, "rightPosition": "center top"}];
+const DURATION=700;let current=0,locked=false,articleOpen=false,wheelAccumulator=0,wheelResetTimer=null,touchStartY=null;
+const leftPane=document.querySelector('.pane-left'),rightPane=document.querySelector('.pane-right');
+const leftBase=leftPane.querySelector('.base'),rightBase=rightPane.querySelector('.base');
+const cardShell=document.querySelector('.card-shell'),cardBase=cardShell.querySelector('.base'),indexEl=document.querySelector('.index');
+const frames=[...document.querySelectorAll('.story-frame')];
+const url=p=>`url("${p}")`;
+const frameReady=frames.map(f=>new Promise(resolve=>{f.addEventListener('load',resolve,{once:true})}));
+function fillCard(el,s){el.style.background=s.card;el.style.color=s.text;el.querySelector('.card-title').textContent=s.title;const spans=el.querySelectorAll('.card-meta span');spans[0].textContent=s.metaLeft;spans[1].textContent=s.metaCenter;spans[2].textContent=s.metaRight}
+function setBase(i){const s=STORIES[i];leftBase.style.backgroundImage=url(s.left);rightBase.style.backgroundImage=url(s.right);[leftBase,rightBase].forEach(el=>el.style.setProperty('--photo-contrast',s.contrast));rightBase.style.setProperty('--right-position',s.rightPosition);fillCard(cardBase,s);indexEl.textContent=`${String(i+1).padStart(2,'0')} / 02`;cardShell.setAttribute('aria-label',`Apri ${s.title}`)}
+function makeImageLayer(pane,image,startY){const el=document.createElement('div');el.className='layer incoming';el.style.backgroundImage=url(image);el.style.transform=`translate3d(0,${startY}%,0)`;const next=STORIES[1-current];el.style.setProperty('--photo-contrast',next.contrast);el.style.setProperty('--right-position',next.rightPosition);pane.appendChild(el);return el}
+function makeCard(s,startY){const el=document.createElement('div');el.className='card-face incoming';el.innerHTML='<div class="card-title"></div><div class="card-meta"><span></span><span></span><span></span></div>';fillCard(el,s);el.style.transform=`translate3d(0,${startY}%,0)`;cardShell.appendChild(el);return el}
+ function twoStageProgress(t,midpointSpeed=.8,waveStrength=.4){
+   // Keep only 40% of the double-wave modulation (5 -> 2) over a broad base
+   // easing. The midpoint breath remains, but no longer breaks the main flow.
+   const doubleWave=1-midpointSpeed/2;
+   const fullWave=midpointSpeed/2;
+   const waveProgress=t-doubleWave*Math.sin(4*Math.PI*t)/(4*Math.PI)-fullWave*Math.sin(2*Math.PI*t)/(2*Math.PI);
+   const baseProgress=.5-.5*Math.cos(Math.PI*t);
+   return baseProgress+(waveProgress-baseProgress)*waveStrength;
+ }
+ function pageTurnFrames(startY,arc=2.15,tilt=.62){
+   // Two continuous acceleration waves share one gesture. Velocity drops almost
+   // to zero at the midpoint, rises again, then eases into the final position.
+   const samples=Array.from({length:129},(_,i)=>i/128);
+   const lateralSign=-Math.sign(startY||1);
+   const motionStrength=.4;
+   return samples.map(t=>{
+     const progress=twoStageProgress(t);
+     const wave=Math.sin(Math.PI*progress);
+     const x=lateralSign*arc*motionStrength*wave;
+     const y=startY*(1-progress);
+     const angle=lateralSign*tilt*motionStrength*wave;
+     const scale=1+.009*motionStrength*wave;
+     return {offset:t,transform:`translate3d(${x.toFixed(3)}%,${y.toFixed(3)}%,0) rotateZ(${angle.toFixed(3)}deg) scale3d(${scale.toFixed(4)},${scale.toFixed(4)},1)`};
+   });
+ }
+ function go(direction){
+   if(locked||articleOpen)return;
+   const target=(current+direction+STORIES.length)%STORIES.length;
+   locked=true;document.body.classList.add('has-moved');
+   const next=STORIES[target];
+   const leftIncoming=makeImageLayer(leftPane,next.left,direction>0?-100:100);
+   const rightIncoming=makeImageLayer(rightPane,next.right,direction>0?100:-100);
+   const cardIncoming=makeCard(next,direction>0?-100:100);
+   // Remove CSS transitions from these temporary layers: WAAPI owns one compositor timeline.
+   [leftIncoming,rightIncoming,cardIncoming].forEach(el=>el.style.transition='none');
+   const startL=direction>0?-100:100;
+   const startR=-startL;
+   const opts={duration:DURATION,easing:'linear',fill:'forwards'};
+   const a1=leftIncoming.animate(pageTurnFrames(startL),opts);
+   const a2=rightIncoming.animate(pageTurnFrames(startR),opts);
+   const a3=cardIncoming.animate(pageTurnFrames(startL,.48,.16),opts);
+   Promise.all([a1.finished,a2.finished,a3.finished]).then(()=>{
+     current=target;setBase(current);
+     leftIncoming.remove();rightIncoming.remove();cardIncoming.remove();
+     locked=false;wheelAccumulator=0;
+   });
+ }
+
+async function openArticle(){
+ if(locked||articleOpen)return;locked=true;
+ const frame=frames[current];await frameReady[current];
+ try{await Promise.allSettled([...frame.contentDocument.querySelectorAll('.entry-inset img,.entry-right')].map(im=>im.decode?.()))}catch(_){}
+ articleOpen=true;frame.classList.add('active');frame.setAttribute('aria-hidden','false');
+ document.body.classList.add('article-active');
+ frame.contentWindow.postMessage({type:'iso-blog-open'},location.origin);
+ frame.contentWindow.focus();locked=false;
+}
+function closeArticle(){
+ if(!articleOpen)return;
+ const frame=frames[current];frame.contentWindow.postMessage({type:'iso-blog-close'},location.origin);
+ frame.classList.remove('active');frame.setAttribute('aria-hidden','true');articleOpen=false;locked=false;
+ document.body.classList.remove('article-active');wheelAccumulator=0;touchStartY=null;cardShell.focus({preventScroll:true});
+}
+addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==frames[current].contentWindow)return;if(e.data?.type==='iso-blog-return')closeArticle()});
+function onWheel(e){if(articleOpen)return;e.preventDefault();if(locked)return;wheelAccumulator+=e.deltaY;clearTimeout(wheelResetTimer);wheelResetTimer=setTimeout(()=>wheelAccumulator=0,120);if(Math.abs(wheelAccumulator)>=18){const dir=wheelAccumulator>0?1:-1;wheelAccumulator=0;go(dir)}}
+function onKey(e){if(articleOpen){if(e.key==='Escape')closeArticle();return}if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(1)}else if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(-1)}else if(e.key==='Enter'){e.preventDefault();openArticle()}}
+function onTouchStart(e){if(articleOpen)return;touchStartY=e.touches?.[0]?.clientY??null}
+function onTouchEnd(e){if(locked||articleOpen||touchStartY===null)return;const dy=(e.changedTouches?.[0]?.clientY??touchStartY)-touchStartY;touchStartY=null;if(Math.abs(dy)>=28)go(dy<0?1:-1)}
+cardShell.addEventListener('click',openArticle);
+cardShell.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();openArticle()}});
+setBase(0);addEventListener('wheel',onWheel,{passive:false});addEventListener('keydown',onKey);addEventListener('touchstart',onTouchStart,{passive:true});addEventListener('touchend',onTouchEnd,{passive:true});
+// Decode both covers before the first gesture: no image-loading gaps in the turn.
+Promise.allSettled(STORIES.flatMap(s=>[s.left,s.right]).map(src=>{const im=new Image();im.src=src;return im.decode?.()}));
+const identities=[...document.querySelectorAll('.identity')];
+identities.forEach(el=>{
+  let inside=false;
+  let flipped=false;
+  el.addEventListener('pointerenter',()=>{
+    if(inside) return;
+    inside=true;
+    flipped=!flipped;
+    el.classList.toggle('identity-flipped',flipped);
+  });
+  el.addEventListener('pointerleave',()=>{
+    inside=false;
+  });
+});
+
+// ---------- optical flip axis ----------
+// scaleY(-1) around the CSS line-box center can look like a vertical jump,
+// because the font's real uppercase ink is not vertically centered inside
+// that line box. Measure the actual glyph ink and rotate around its optical
+// centre instead, so the visible top/bottom margins stay fixed in both states.
+function setOpticalFlipAxes(){
+  const canvas=document.createElement('canvas');
+  const ctx=canvas.getContext('2d');
+  const targets=[...document.querySelectorAll('.word-inner,.identity-inner,.char-flip')];
+
+  targets.forEach(el=>{
+    const parent=el.parentElement;
+    const cs=getComputedStyle(parent);
+    const fs=parseFloat(cs.fontSize)||16;
+    const lhRaw=parseFloat(cs.lineHeight);
+    const lh=Number.isFinite(lhRaw)?lhRaw:fs;
+    const weight=cs.fontWeight||'400';
+    const family=cs.fontFamily||'monospace';
+    ctx.font=`${weight} ${fs}px ${family}`;
+
+    const m=ctx.measureText(el.textContent||'H');
+    const actualA=m.actualBoundingBoxAscent||fs*.72;
+    const actualD=m.actualBoundingBoxDescent||fs*.02;
+
+    let baselineY;
+    if(Number.isFinite(m.fontBoundingBoxAscent) && Number.isFinite(m.fontBoundingBoxDescent)){
+      const fA=m.fontBoundingBoxAscent, fD=m.fontBoundingBoxDescent;
+      baselineY=(lh-(fA+fD))/2+fA;
+    }else{
+      // Fallback close to CSS font metrics; only used in older browsers.
+      baselineY=lh*.78;
+    }
+
+    const inkCenterY=baselineY+(actualD-actualA)/2;
+    el.style.setProperty('--optical-axis-y',`${inkCenterY.toFixed(3)}px`);
+    parent.style.setProperty('--optical-axis-y',`${inkCenterY.toFixed(3)}px`);
+  });
+}
+
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(setOpticalFlipAxes);
+}else{
+  requestAnimationFrame(setOpticalFlipAxes);
+}
+window.addEventListener('resize',setOpticalFlipAxes,{passive:true});
+
+// ---------- clock ----------
+function clock(){const n=new Date();document.getElementById('clock').textContent=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false}).format(n);document.getElementById('year').textContent=n.getFullYear()}
+clock();setInterval(clock,15000);
+
+
+</script></body></html>

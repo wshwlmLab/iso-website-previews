@@ -1,0 +1,224 @@
+{
+  "status": "LATEST APPROVED / FROZEN",
+  "approved_at": "2026-10-03",
+  "title": "BLOG — Sound Horeg + Gumleaf — Official Frozen",
+  "site_project_id": "appgprj_6ac0e7e2ec8081918e435018405d487a",
+  "site_version": 9,
+  "site_version_id": "appgprj_6ac0e7e2ec8081918e435018405d487a~appgver_f892546874c48191a4ceb95604d92cbd",
+  "source_commit": "02ca0ea5763685c84e99c9d0cc8aa6fb8293c570",
+  "public_url": "https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site",
+  "entrypoint": "dist/index.html",
+  "policy": "Never overwrite. All subsequent design work must be a separate candidate.",
+  "files": [
+    {
+      "path": "dist/NewHeterodoxMono-Bold.otf",
+      "bytes": 53040,
+      "sha256": "36e6794fa058d02d3f4a25fdd0d5ff66797ecbbfe55961f8e87b9e65f9a99bd2",
+      "git_blob_sha": "595926171b9c57d6897f1a96634625dcc7c0560e"
+    },
+    {
+      "path": "dist/NewHeterodoxMono-Book.otf",
+      "bytes": 56648,
+      "sha256": "56df2b2c5bc6ee3913714162435dea2195d5de8ad6e4c9fb0477851cac6c9f2a",
+      "git_blob_sha": "d4a4ef069fb78c774b9d257a9b74ca4a076eb667"
+    },
+    {
+      "path": "dist/gumleaf/NewHeterodoxMono-Bold.otf",
+      "bytes": 53040,
+      "sha256": "36e6794fa058d02d3f4a25fdd0d5ff66797ecbbfe55961f8e87b9e65f9a99bd2",
+      "git_blob_sha": "595926171b9c57d6897f1a96634625dcc7c0560e"
+    },
+    {
+      "path": "dist/gumleaf/NewHeterodoxMono-Book.otf",
+      "bytes": 56648,
+      "sha256": "56df2b2c5bc6ee3913714162435dea2195d5de8ad6e4c9fb0477851cac6c9f2a",
+      "git_blob_sha": "d4a4ef069fb78c774b9d257a9b74ca4a076eb667"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-007.jpg",
+      "bytes": 86353,
+      "sha256": "92e253984b972d36451787ad1c03819029aff33040985d525902614b73cf2204",
+      "git_blob_sha": "06d4b2e53f629bbbc6c9f489ced8cf7d6730a655"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-021.jpg",
+      "bytes": 148948,
+      "sha256": "c5b90641c36ae313ee427f778f5e60c6f548f19ce274a17131f6a33e4af686ce",
+      "git_blob_sha": "15be9289d4b98c2450370a981d77adba24f7faec"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-061.jpg",
+      "bytes": 170344,
+      "sha256": "e975f4a7f302bf06c4fa3fc18709feac45c71cd0e19105aa09341ef9fbc52bb4",
+      "git_blob_sha": "f91474f598325a4d76ae71da7099709af3f1fa7e"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-070.jpg",
+      "bytes": 788160,
+      "sha256": "98144952d16d288b81a988d501898150a1cfb07ac8e15b5c3cb12f3beb3364ce",
+      "git_blob_sha": "db9a3bed705ee8dd4e081507f951a32418eb6281"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-121.jpg",
+      "bytes": 411842,
+      "sha256": "6cb5dd13f60e8d45221e17138dd8d26d5bf0b16c27543f846a336d7b8b833771",
+      "git_blob_sha": "34cfe7b04a76046e5cb15222c22ca587c47f0ed0"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-127.jpg",
+      "bytes": 62621,
+      "sha256": "63cc402780b496069d5e385f5ff2be877e6b05b4810488327f546e902891b047",
+      "git_blob_sha": "254855777dc996c8f90280f0e1f15b615b71c237"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-161.jpg",
+      "bytes": 401300,
+      "sha256": "424be78498cb0ffc5114af576a281dca3e436cc67621ab85faf0ffcf68e863f3",
+      "git_blob_sha": "963ecc0afc3b4ea9614592b1d6a81eebe67f2e4b"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-163.jpg",
+      "bytes": 373374,
+      "sha256": "5eb614d0271d0b388927d7719f4fcc3a32c5dca382e1e3130c4bc69654a85796",
+      "git_blob_sha": "cc4eb1b17cb664ff89435560c293a7f77821f8ea"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-164.jpg",
+      "bytes": 326481,
+      "sha256": "2cee9be4ded45f3db015a89ea60c677ada467683e9ea9462b6d035e2e777142a",
+      "git_blob_sha": "406a42dd0f1abffe325f2ae7bb652dd333f333de"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-landscape-32-hd-v1.png",
+      "bytes": 3491154,
+      "sha256": "392fbdcf68dfc642c6031613337aed61955438e3d8ac58314266d3010773f8a8",
+      "git_blob_sha": "bebde98a40e5b64546a523a8a8978b2e8ce7c3a7"
+    },
+    {
+      "path": "dist/gumleaf/assets/gumleaf-portrait-expanded-v1.png",
+      "bytes": 2318071,
+      "sha256": "b6f16479807cc002649bed2d8f1c8f7de17967792bb92a77137c59ed440d1d04",
+      "git_blob_sha": "1f1d39de591b40d6307eec3d4e7188934a300f5e"
+    },
+    {
+      "path": "dist/gumleaf/index.html",
+      "bytes": 49342,
+      "sha256": "0ec1ed4d5e400469f385e084726cb4b594f8d2e903d1d16774799bd706239a56",
+      "git_blob_sha": "d7d61198309459cd83fea6553629ba35802b9cab"
+    },
+    {
+      "path": "dist/index.html",
+      "bytes": 19365,
+      "sha256": "e24b89106b7acc9e9886ae84547db9171686e8dcba1bec01f272f945c7a66336",
+      "git_blob_sha": "d5bd4e671d3e4e849cc4186dd4d30fe27f15e6f8"
+    },
+    {
+      "path": "dist/iso-meter-response.js",
+      "bytes": 797,
+      "sha256": "cbdb06cdd57fa8928e48cc9e2db3cb4b6c5f7bea7db7df37577a25005c468bc4",
+      "git_blob_sha": "4b6e1a6c18f8265da6083a0e322ef150461f7f08"
+    },
+    {
+      "path": "dist/sound-horeg/NewHeterodoxMono-Bold.otf",
+      "bytes": 53040,
+      "sha256": "36e6794fa058d02d3f4a25fdd0d5ff66797ecbbfe55961f8e87b9e65f9a99bd2",
+      "git_blob_sha": "595926171b9c57d6897f1a96634625dcc7c0560e"
+    },
+    {
+      "path": "dist/sound-horeg/NewHeterodoxMono-Book.otf",
+      "bytes": 56648,
+      "sha256": "56df2b2c5bc6ee3913714162435dea2195d5de8ad6e4c9fb0477851cac6c9f2a",
+      "git_blob_sha": "d4a4ef069fb78c774b9d257a9b74ca4a076eb667"
+    },
+    {
+      "path": "dist/sound-horeg/assets/ai-reconstruction-28-children-convoy-v1.png",
+      "bytes": 2444865,
+      "sha256": "b6c03d5d880640974c13567a4d2b5c098689a064f44720c50442a12c2228d6ea",
+      "git_blob_sha": "e3b8cce31887b49db5fa021349dd577c179c30d9"
+    },
+    {
+      "path": "dist/sound-horeg/assets/ai-reconstruction-44-green-mask-v1.png",
+      "bytes": 2476481,
+      "sha256": "c2c8ebf508e74e190c0e2ccb390c7642b56fa698b4aeece731e3d1fdfeda869c",
+      "git_blob_sha": "4a2080e29cf202d5a938ca24fa7bcf2a3a97ef53"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_09.jpg",
+      "bytes": 131495,
+      "sha256": "98b6414bba4e4a621f0c7a187fd3d6197d59b62ae3e992b57fc957495527c343",
+      "git_blob_sha": "29a2e6bbe4d4d34452bcf13ed61545b8c1c4aecc"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_12.jpg",
+      "bytes": 117345,
+      "sha256": "8fb1402db0db6b91f5c2641ddc661ea6a6985bc1016dfc1dc308a971c3b36e45",
+      "git_blob_sha": "2bb76440aa8342068aab962580a54d6323960837"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_20.jpg",
+      "bytes": 189367,
+      "sha256": "8f482d33a03a9f45427711220bfd3b19cd4717ef7d9041c3f57ab6da0e487cb5",
+      "git_blob_sha": "3e7988ada21d40f74c7d908d01cf37cc35aa7018"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_21.jpg",
+      "bytes": 161739,
+      "sha256": "78326a02d2adc679abf0b11a77a1d88e42726d947aad319c04f3084d2a794fe9",
+      "git_blob_sha": "ea6c9ecf4e0ce343c2273ec5ef5ad7067d9a19e7"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_22.jpg",
+      "bytes": 213264,
+      "sha256": "25dc5ed253ed58f4f3da4dfcdc6b044bae32230e7adeec0e1c99cbf40743ad6d",
+      "git_blob_sha": "b6da146e8a8d720267fede7a8c9112667f98e7a2"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_38.jpg",
+      "bytes": 214892,
+      "sha256": "31f0d70755964da8155e9c6282b58a800d26aa15dd5892afa87b5d77ce68c3ce",
+      "git_blob_sha": "3073b541fdd4046dbedd60f37d49833407eaa4d9"
+    },
+    {
+      "path": "dist/sound-horeg/assets/foto_40.jpg",
+      "bytes": 381055,
+      "sha256": "15d1fadbc88902f067cb6aaf19c15ac5c21e944ffaa9d87d9b92c9566d84951a",
+      "git_blob_sha": "367657a8004db02a399385104450f5970d2d5d82"
+    },
+    {
+      "path": "dist/sound-horeg/assets/sound-horeg-aerial-forest-approved.png",
+      "bytes": 3556067,
+      "sha256": "559a3594081e273bc253106f8990792c01c44c3432e623a92212ee6a5999a0a5",
+      "git_blob_sha": "14fa1c188f3747c604374046907ad0fa7ec90b0c"
+    },
+    {
+      "path": "dist/sound-horeg/assets/sound-horeg-aerial-night-forest-approved-v2.png",
+      "bytes": 2217597,
+      "sha256": "4e7ace6845991f2b7e3396e689ad2f891233745f5bb014f5d76af9ea2166f6db",
+      "git_blob_sha": "f2ac4e52907aad001770c5d64941a9d2375b7e9e"
+    },
+    {
+      "path": "dist/sound-horeg/assets/sound-horeg-corteo-wide-approved.png",
+      "bytes": 3281214,
+      "sha256": "4278dd08e2b3e2034af89dd25d651471567de36a06acf8735c129a6a02ea6159",
+      "git_blob_sha": "9bddb88f4f82fb35625e8fb60ada980374a268f8"
+    },
+    {
+      "path": "dist/sound-horeg/assets/sound-horeg-street-day-approved.png",
+      "bytes": 2887389,
+      "sha256": "5d70a325455667a4d66f516137e7c4663e1dcdc0bcd59beedfb2192866e437e2",
+      "git_blob_sha": "ef99863bb4271d7b9cb9a0e1a57c876f9b56918a"
+    },
+    {
+      "path": "dist/sound-horeg/assets/sound-horeg-woman-right-extended-v1.png",
+      "bytes": 2455820,
+      "sha256": "dfdc981e3dfdcc2e3f30688b034bacc4d436ffd8f4cc325fb8151d0a4a7a0849",
+      "git_blob_sha": "2c5750ffa7d9abdd10e112787445b7eb258a1574"
+    },
+    {
+      "path": "dist/sound-horeg/index.html",
+      "bytes": 46824,
+      "sha256": "e75c0629f614777d7b45fc1e159325b1b7b92c54668643c5fdf6bdfdeecddfd1",
+      "git_blob_sha": "e0b8417c38e37be26c0a115890f0034e5174069f"
+    }
+  ]
+}
