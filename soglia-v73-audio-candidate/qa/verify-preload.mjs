@@ -31,10 +31,11 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
   });
   const manifest = { schemaVersion: 1, fadeSeconds: 1, loopCrossfadeSeconds: 1, layers };
   let manifestFailed = false, corrupted = false, offline = false;
-  async function fetch(url) {
+  async function fetch(url, options) {
     if (offline) throw new Error('No network permitted after readiness');
     requests.push(url);
     if (url.endsWith('manifest.json')) {
+      assert.ok(['no-cache','reload'].includes(options.cache),'manifest updates must be revalidated without bypassing the media cache');
       if (failManifest && !manifestFailed) { manifestFailed = true; return new Response('', { status: 503 }); }
       return new Response(JSON.stringify(manifest));
     }
@@ -125,7 +126,7 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
       fonts.ready = readyFonts.promise;
       const childDocument = { body: { inert: false }, fonts, documentElement: { style: { setProperty() {} } }, addEventListener: (key, fn) => { innerEvents[key] = fn; } };
       const child = { parent: window, location: { href: redirect ? source+'#redirected' : source, search: window.location.search }, addEventListener() {}, __prepareSogliaIntro() { geometry++; }, __startSogliaIntro() { intros++; }, __eraseDebug: { visiblePhotoRatios: [0, 0, 0] } };
-      const childContext = vm.createContext({ ...globals, window: child, document: childDocument, PHOTO_SRC: [], imgs: [], setOpticalFlipAxes() {}, size() { layouts++; }, snake() {}, requestAnimationFrame() {} });
+      const childContext = vm.createContext({ ...globals, window: child, document: childDocument, PHOTO_SRC: [], imgs: [], setCartolinaBorder() {}, setOpticalFlipAxes() {}, size() { layouts++; }, snake() {}, requestAnimationFrame() {} });
       vm.runInContext(read('experience-loader.js'), childContext);
       vm.runInContext(read('cartolina-config.js'), childContext);
       assert.equal(child.ISOExperienceLoader, window.ISOExperienceLoader, 'frame must share the parent resource cache');

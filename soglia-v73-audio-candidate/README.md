@@ -18,6 +18,8 @@ cartoline/<id>/v1/audio/sciola.mp3
 
 Cartolina attuale: `soglia-prova`, versione `v1`. Manifest pubblico: https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev/cartoline/soglia-prova/v1/manifest.json
 
+La cornice presenta **Cartolina 1 · acqua · pietra · ripetizione · cielo**, con lo stesso percorso e la stessa velocità. Titolo e parole sono definiti nel manifest Cloudflare, con spaziatura adattata alla lunghezza della frase. [CARTOLINE.md](CARTOLINE.md) descrive come consegnare le prossime immagini, gli audio e le parole. Il manifest viene rivalidato all'apertura per rendere visibili le modifiche, mentre la cache e il caricamento completo dei media restano invariati.
+
 | Foto originale | Audio provvisorio |
 | --- | --- |
 | 1 | River |

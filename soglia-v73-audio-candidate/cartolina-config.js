@@ -42,8 +42,11 @@
       { key: `audio:${layer.audio}`, url: layer.audio }
     ]));
     const timing = (value, fallback) => Number.isFinite(value) && value >= 0 && value <= 10 ? value : fallback;
+    const text = value => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
     return {
       ...manifest, layers, manifestURL, audioOrigin,
+      borderLabel: text(manifest.borderLabel) || text(manifest.title) || 'Cartolina',
+      borderWords: Array.isArray(manifest.borderWords) ? manifest.borderWords.map(text).filter(Boolean) : [],
       fadeSeconds: timing(manifest.fadeSeconds, 1),
       loopCrossfadeSeconds: timing(manifest.loopCrossfadeSeconds, 1)
     };

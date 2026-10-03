@@ -50,7 +50,7 @@
     publish();
   }
 
-  async function bytes(url, sha256) {
+  async function bytes(url, sha256, cache = 'default') {
     let download = downloads.get(url);
     if (!download) {
       download = { loaded: 0, total: 0, bytes: null, promise: null };
@@ -64,7 +64,7 @@
         };
         armTimeout();
         try {
-          const response = await fetch(url, { mode: 'cors', credentials: 'omit', cache: failedURLs.has(url) ? 'reload' : 'default', signal: controller.signal });
+          const response = await fetch(url, { mode: 'cors', credentials: 'omit', cache: failedURLs.has(url) ? 'reload' : cache, signal: controller.signal });
           if (!response.ok) throw new Error(`Risorsa: HTTP ${response.status}`);
           download.total = Number(response.headers.get('content-length')) || 0;
           if (response.body && response.body.getReader) {
@@ -156,7 +156,7 @@
 
   async function json(url) {
     try {
-      return JSON.parse(new TextDecoder().decode(await bytes(url)));
+      return JSON.parse(new TextDecoder().decode(await bytes(url, undefined, 'no-cache')));
     } catch (cause) {
       downloads.delete(url);
       throw cause;

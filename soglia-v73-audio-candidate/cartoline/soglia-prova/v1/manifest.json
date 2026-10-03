@@ -2,7 +2,9 @@
   "schemaVersion": 1,
   "id": "soglia-prova",
   "version": "v1",
-  "title": "Soglia — cartolina di prova",
+  "title": "Cartolina 1",
+  "borderLabel": "Cartolina 1",
+  "borderWords": ["acqua", "pietra", "ripetizione", "cielo"],
   "fadeSeconds": 1,
   "loopCrossfadeSeconds": 1,
   "layers": [

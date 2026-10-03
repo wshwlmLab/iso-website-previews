@@ -75,9 +75,16 @@ const pointAt=distance=>{
   if(s<side*3)return{x:97.8-(s-side*2),y:97.8};
   return{x:2.2,y:97.8-(s-side*3)};
 };
-const context=vm.createContext({document:{getElementById:id=>id==='snakePath'?{getTotalLength:()=>length,getPointAtLength:pointAt}:{appendChild(){}},createElementNS:()=>({setAttribute(){writes++}})},Math,Float64Array,Array,requestAnimationFrame(){}});
+const context=vm.createContext({document:{getElementById:id=>id==='snakePath'?{getTotalLength:()=>length,getPointAtLength:pointAt}:{appendChild(){},replaceChildren(){}},createElementNS:()=>({setAttribute(){writes++}})},Math,Float64Array,Array,requestAnimationFrame(){}});
 const snakeSource=html.slice(html.indexOf("const path=document.getElementById('snakePath')"),html.indexOf('// ---------- erase system'));
 vm.runInContext(snakeSource,context);
+context.cartolina=JSON.parse(fs.readFileSync(path.join(root,'cartoline/soglia-prova/v1/manifest.json'),'utf8'));
+vm.runInContext('setCartolinaBorder(cartolina)',context);
+assert.equal(vm.runInContext('glyphs.map(letter=>letter.textContent).join("")',context),'CARTOLINA 1 · ACQUA · PIETRA · RIPETIZIONE · CIELO · '.repeat(6));
+assert.ok(vm.runInContext('gap',context)>=length/340,'the longer phrase must not compress the approved letter spacing');
+context.cartolina={borderLabel:'Cartolina 2',borderWords:['vento','tracce','notte']};
+vm.runInContext('setCartolinaBorder(cartolina)',context);
+assert.match(vm.runInContext('glyphs.map(letter=>letter.textContent).join("")',context),/^CARTOLINA 2 · VENTO · TRACCE · NOTTE · /);
 for(let n=0;n<1000;n++){
   const s=n/1000*length,expected=pointAt(s);
   context.distance=s;

@@ -121,9 +121,9 @@
   <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
   <button class="meter-hit active" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
 
-  <script src="experience-loader.js?v=20261003-audio-compare"></script>
-  <script src="cartolina-config.js?v=20261003-audio-compare"></script>
-  <script src="loop-audio.js?v=20261003-audio-compare"></script>
+  <script src="experience-loader.js?v=20261003-cartolina1"></script>
+  <script src="cartolina-config.js?v=20261003-cartolina1"></script>
+  <script src="loop-audio.js?v=20261003-cartolina1"></script>
   <script src="iso-meter-response.js?v=20261003-1"></script>
   <script>
     (() => {
@@ -426,7 +426,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261003-audio-compare');
+          source.searchParams.set('build', '20261003-cartolina1');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {
@@ -512,7 +512,7 @@
         capture() {
           const stats = audioContext?.playbackStats;
           return {
-            build: '20261003-audio-compare', audioOrigin: this.audioOrigin, audioEngine: audioEngineMode,
+            build: '20261003-cartolina1', audioOrigin: this.audioOrigin, audioEngine: audioEngineMode,
             ready: experienceReady, paused: meterPaused, error: this.error,
             audio: audioContext ? {
               state: audioContext.state, currentTime: audioContext.currentTime,
