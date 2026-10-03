@@ -2,7 +2,7 @@
 
 Prova basata sulla v73 approvata, commit Sites originale `d0a0349082d954425ff6356b5306c164ad014135`. La v73 definitiva resta intatta nel ramo GitHub `frozen/soglia-v73`, commit `1fd73843345ae54ccc74e3ed259c0f626883ebf3`.
 
-La modalità predefinita carica sia le immagini sia gli audio da Cloudflare R2. La segnalazione di interruzione audio resta aperta: [AUDIO-DIAGNOSIS.md](AUDIO-DIAGNOSIS.md) documenta il confronto `audio_origine=locale` con copie identiche sul sito e la prova del player HTML precedente `audio_motore=html`. Il player HTML usa temporaneamente la giunzione originale dei file, senza crossfade della coda; la modalità predefinita conserva il crossfade. Le prove non aggiungono interfacce di caricamento e non alterano l'eraser.
+La modalità predefinita carica sia le immagini sia gli audio da Cloudflare R2. William ha confermato che le prove Cloudflare con player HTML e con player PCM funzionano entrambe bene il 3 ottobre 2026, ore 16:41 Europe/Rome. Si prosegue con il player PCM predefinito e il crossfade dei loop. [AUDIO-DIAGNOSIS.md](AUDIO-DIAGNOSIS.md) documenta il confronto `audio_origine=locale` con copie identiche sul sito e la prova del player HTML precedente `audio_motore=html`. Il player HTML usa temporaneamente la giunzione originale dei file, senza crossfade della coda; la modalità predefinita conserva il crossfade. Le prove non aggiungono interfacce di caricamento e non alterano l'eraser.
 
 Il bucket esistente è `il-suono-organizzato-audio`; ogni cartolina ha un contenitore logico indipendente:
 
@@ -48,4 +48,4 @@ La regola comune del sito in `SITE_EXPERIENCE_RULES.md` è aggiornata alla decis
 
 La procedura n8n di upload e verifica è nel progetto personale di William, alla radice: `ISO — Cartoline R2 — upload e verifica`. È inattiva e viene eseguita manualmente tramite il collegamento n8n; nessun webhook di produzione è stato pubblicato. L'importazione integrale di Endless Ascent è stata eseguita con una procedura separata esclusivamente manuale, con sorgente e chiave R2 fisse.
 
-Stato: PROVA, in attesa dell'approvazione di William.
+Stato: funzionamento audio confermato da William nelle prove 1 e 2. Base per proseguire: Cloudflare + player PCM attuale, con crossfade e fade da un secondo. Il sorgente ascoltato è `5130fb2cf509276837b70d7305bdc215a0c912b6` (Sites), salvato in `9a12e686f1662ef1df91faa1db43e2666dd6c4c5` (GitHub). La v73 definitiva originale resta nel suo ramo Frozen.

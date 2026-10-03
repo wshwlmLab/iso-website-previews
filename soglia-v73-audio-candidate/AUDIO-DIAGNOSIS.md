@@ -1,6 +1,8 @@
 # Soglia — isolamento dell'interruzione audio, 3 ottobre 2026
 
-La segnalazione di William resta aperta: nel suo browser il suono continua a incepparsi. Non è stata osservata né misurata direttamente l'uscita audio di quel browser. I test Node/V8 eseguono il codice con API audio simulate: verificano integrità, stato, avvii, richieste e programmazione dei fade, non dimostrano l'assenza di interruzioni udibili in Chrome.
+**Riscontro di William, 3 ottobre 2026, ore 16:41 Europe/Rome:** ha ascoltato le prove 1 e 2 e riferisce che entrambe funzionano bene: Cloudflare con player HTML precedente e Cloudflare con player PCM attuale. La prova 3 con audio locali non è stata eseguita. Il sintomo non si è ripresentato nelle due prove ascoltate. La modalità scelta per proseguire è Cloudflare con il player PCM attuale, che mantiene il crossfade dei loop e i fade di un secondo.
+
+Il riscontro riguarda il sorgente Sites `5130fb2cf509276837b70d7305bdc215a0c912b6`, salvato su GitHub in `9a12e686f1662ef1df91faa1db43e2666dd6c4c5`. Il risultato conferma il funzionamento di questa prova sul dispositivo dell'utente; non identifica con certezza la causa del blocco precedente. I test Node/V8 restano controlli di integrità e stato con API simulate, distinti dall'ascolto riferito.
 
 ## Il confronto storico aveva più variabili
 
@@ -19,7 +21,7 @@ Cloudflare rimane l'origine predefinita e quella del manifest e delle immagini. 
 
 Aprire una prova per volta. Due pagine aperte insieme riprodurrebbero entrambe gli stessi suoni, alterando l'ascolto. Entrambe preparano completamente le risorse prima dello svelamento e non effettuano richieste o nuove decodifiche durante il loop. Le immagini restano su Cloudflare anche nella prova audio locale: questo confronto isola l'origine dei soli audio.
 
-Se il problema è presente in entrambe, la provenienza degli MP3 non basta a spiegarlo. Se emerge solo nella prova Cloudflare, vanno acquisiti lo stato di preparazione, le richieste e gli errori di quella prova. Nessun risultato di ascolto di questo confronto è ancora disponibile.
+Se il problema è presente in entrambe, la provenienza degli MP3 non basta a spiegarlo. Se emerge solo nella prova Cloudflare, vanno acquisiti lo stato di preparazione, le richieste e gli errori di quella prova. William ha confermato l'ascolto della modalità PCM con Cloudflare; il confronto con copie locali non è stato necessario per scegliere la modalità da mantenere e non è stato ascoltato.
 
 È disponibile anche il confronto con il player HTML precedente:
 
@@ -49,4 +51,4 @@ node qa/verify-audio-fades.mjs dist
 
 Copertura: URL differenti solo per l'audio; hash degli MP3 locali; nessuna rete dopo preparazione; tre/cinque loop continui; player HTML senza decoder PCM e senza doppio avvio; mute senza riavvio; inversioni del fade, getter non aggiornato, completamento, durata zero, 3.000 cambi allo stesso clock; mantenimento delle immagini e dell'introduzione. L'eraser e la cornice non vengono modificati in questa indagine.
 
-La v73 definitiva nel ramo e nella cartella Frozen resta invariata. Questa è una prova candidata.
+La v73 definitiva nel ramo e nella cartella Frozen resta invariata. Questa è la prova audio con funzionamento confermato da William; la v73 definitiva originale resta distinta.
