@@ -117,7 +117,27 @@ body.has-moved .hint{opacity:0}
 body.article-active .stage,body.article-active .card-shell,body.article-active .index,body.article-active .hint{visibility:hidden;pointer-events:none}
 @media(max-width:760px){.card-shell{width:76cqw;height:129px}.card-face{padding:12px 13px 11px}.card-title{font-size:18.75px}.card-meta{font-size:9.375px;column-gap:8px}}
 @media(max-aspect-ratio:4/3){:root{--identity-size:clamp(18px,4.25vw,30px);--micro-size:clamp(8px,1.7vw,10px)}.micro{width:46vw}}
-</style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
+
+/* === GLOBAL NAV TEST A: in black band, around meter === */
+.global-nav-band{
+  position:fixed;z-index:55;left:50%;top:calc(var(--frame-top)/2);
+  transform:translate(-50%,-50%);
+  width:min(58vw,920px);height:28px;
+  display:grid;grid-template-columns:1fr 86px 1fr;align-items:center;
+  pointer-events:none;
+  font-size:clamp(8px,.62vw,10px);line-height:1;
+  letter-spacing:.075em;text-transform:uppercase;white-space:nowrap;
+}
+.global-nav-band .nav-cluster{display:flex;align-items:center;gap:clamp(13px,1.35vw,25px)}
+.global-nav-band .nav-left{justify-content:flex-end}
+.global-nav-band .nav-right{justify-content:flex-start}
+.global-nav-band .nav-item{color:#fff;opacity:.34}
+.global-nav-band .nav-item.is-active{opacity:.82}
+</style></head><body><div class="frame-stage"><nav class="global-nav-band" aria-label="Navigazione globale">
+    <span class="nav-cluster nav-left"><span class="nav-item">INDEX</span><span class="nav-item">HOME</span><span class="nav-item">WORKS</span></span>
+    <span aria-hidden="true"></span>
+    <span class="nav-cluster nav-right"><span class="nav-item is-active">BLOG</span><span class="nav-item">ABOUT</span></span>
+  </nav>  <div class="identity id-il"><span class="identity-inner">IL</span></div>
   <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
   <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
   <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
