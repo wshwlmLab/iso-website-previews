@@ -150,7 +150,7 @@ async function verifyAudio() {
     target.forEach((value,i)=>assert.deepEqual(gains[i+4].gain.calls.at(-1),['ramp',value,11.1]));
   }
   meterEvents.click({stopPropagation(){}});
-  assert.deepEqual(gains[2].gain.calls.at(-1),['ramp',0,11.1]);
+  assert.deepEqual(gains[2].gain.calls.at(-1),['ramp',0,10.6]);
   meterEvents.click({stopPropagation(){}});
   assert.deepEqual(gains[2].gain.calls.at(-1),['ramp',1,11.1]);
   await innerEvents.pointerdown();
@@ -158,7 +158,7 @@ async function verifyAudio() {
   assert.ok(sources.every(source=>source.startCalls===1 && source.loop));
   assert.ok(Array.from(window.ISOAudioMeter.tracks).every(track=>track.loopCrossfadeSeconds===1));
   assert.equal(window.ISOAudioMeter.error,null);
-  console.log('Audio: 1-second fades; head/tail crossfade continues at the seam; all stereo loops start once together; mute and later gestures do not restart them.');
+  console.log('Audio: 0.5-second meter mute, 1-second unmute and photo fades; loop seam crossfade continuous; all loops start once; mute never restarts them.');
 }
 
 verifyEraser(3);

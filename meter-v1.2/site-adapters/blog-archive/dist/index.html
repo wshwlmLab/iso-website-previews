@@ -1,0 +1,253 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Archivio — Il Suono Organizzato</title><style>:root{
+  --frame-top:6.52vh;
+  --frame-side:2vw;
+  --menu-size:clamp(54px,7vw,112px);
+  --identity-size:clamp(19px,2.25vw,36px);
+  --micro-size:clamp(8px,.708vw,11px);
+  --psyop-tracking:.055em;
+}
+.identity{position:absolute;z-index:5;font-size:var(--identity-size);line-height:1;letter-spacing:var(--psyop-tracking);white-space:nowrap;user-select:none;cursor:default;transition:none}
+.id-il{left:.65vw;top:calc(var(--frame-top)/2);transform:translateY(-50%)}
+.id-suono{right:.72vw;top:calc(var(--frame-top)/2);transform:translateY(-50%)}
+.id-organizzato{right:.70vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%)}
+.identity-inner{display:block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(-1);will-change:transform;pointer-events:none}
+.identity.identity-flipped .identity-inner{transform:scaleY(1)}
+.micro{position:absolute;left:.65vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%);font-size:var(--micro-size);display:flex;width:25vw;justify-content:space-between;gap:0;white-space:nowrap}
+.micro .clock-group{display:inline-flex;align-items:baseline;gap:.55em}
+.micro .tz{color:#777;font-size:.92em}    .meter, .meter-hit {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: calc(6.52vh / 2);
+      width: clamp(52px, 4.2vw, 62px);
+      height: clamp(32px, 2.85vw, 41px);
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meter {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+      opacity: 1;
+    }
+    .meter-hit {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .meter-hit.active { pointer-events: auto; }
+    .meter-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 50%;
+      height: 80%;
+      padding: 1px 0;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(4px, .35vw, 6px);
+    }
+    .meter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 0;
+    }
+    .meter-seg {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      flex: 0 0 1px;
+      background: #343434;
+      opacity: 1;
+      border-radius: 0;
+      transform: scaleY(1);
+      transform-origin: center;
+      transition: background 56ms linear, opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      height: 2px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+    .meter.paused .meter-seg { background: #343434 !important; opacity: 1 !important; transform: scaleY(1) !important; }
+
+@font-face{font-family:"New Heterodox Mono";src:url("NewHeterodoxMono-Book.otf") format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"New Heterodox Mono";src:url("NewHeterodoxMono-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:"New Heterodox Mono",monospace;overscroll-behavior:none}
+.frame-stage{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+:root{--frame-side:1vw}
+.page-window{position:absolute;left:var(--frame-side);right:var(--frame-side);top:var(--frame-top);bottom:var(--frame-top);overflow:hidden;background:#000;transform:translateZ(0);isolation:isolate;container-type:size}
+
+.page-window{background:#fff;color:#101010;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#555 #fff}
+.archive{padding:clamp(20px,3vw,56px);min-height:100%;}
+.archive-heading{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:clamp(25px,4vh,50px);gap:20px}
+h1{font-weight:400;font-size:clamp(42px,5.5vw,94px);line-height:1;margin:0;letter-spacing:-.065em}
+.archive-heading p{font-size:14px;line-height:1.4;text-transform:uppercase;margin:0;white-space:nowrap}
+.archive-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(25px,4vw,80px);align-items:start}
+.stories{min-width:0}
+.story{display:grid;grid-template-columns:clamp(60px,7vw,130px) minmax(0,1fr);column-gap:clamp(15px,1.8vw,35px);padding:32px 0 30px;text-decoration:none;color:inherit;border-top:1px solid #aaa9a5;min-height:240px;transition:color 380ms ease;position:relative;outline-offset:6px}
+.story:last-child{border-bottom:1px solid #aaa9a5}
+.story::before{position:absolute;left:0;top:-1px;width:0;height:3px;background:var(--story-color);content:'';transition:width 500ms cubic-bezier(.22,.6,.3,1)}
+.story:hover::before,.story:focus-visible::before{width:100%}
+.number{font-size:clamp(56px,6.6vw,115px);font-weight:400;letter-spacing:-.095em;line-height:.9;color:var(--story-color)}
+.story-copy{min-width:0}
+.story h2{font-size:clamp(28px,3.2vw,58px);line-height:1.04;letter-spacing:-.045em;font-weight:400;margin:0 0 24px;text-transform:uppercase;transition:color 380ms ease}
+.story h2 span{display:block}
+.story:hover h2,.story:focus-visible h2{color:var(--story-color)}
+.story-meta{display:flex;flex-wrap:wrap;column-gap:1.2em;row-gap:.4em;font-size:14px;line-height:1.45;text-transform:uppercase;max-width:330px}
+.story-meta .place{flex-basis:100%}
+.sound{--story-color:#ff351d}.gum{--story-color:#72b94b}
+.photo-field{position:sticky;top:24px;min-height:500px;height:calc(86.96vh - 160px);max-height:850px;isolation:isolate;min-width:0}
+.photo{position:absolute;margin:0;left:var(--x);top:var(--y);width:var(--w);height:var(--h);opacity:0;pointer-events:none;transform:translateY(36px) scale(.97);transition:left 1050ms cubic-bezier(.22,.65,.28,1),top 1050ms cubic-bezier(.22,.65,.28,1),width 1050ms cubic-bezier(.22,.65,.28,1),height 1050ms cubic-bezier(.22,.65,.28,1),transform 1050ms cubic-bezier(.22,.65,.28,1),opacity 450ms ease;overflow:hidden;background:#111;z-index:1}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;object-position:var(--position,center)}
+.photo.bw img{filter:grayscale(1) contrast(1.08)}
+.photo-field[data-active] .photo{opacity:0;pointer-events:none;z-index:0}
+.photo-field[data-active="sound"] .photo[data-story="sound"],.photo-field[data-active="gum"] .photo[data-story="gum"]{left:var(--ax);top:var(--ay);width:var(--aw);height:var(--ah);opacity:1;pointer-events:auto;z-index:2;transform:translateY(0) scale(1);transition-delay:var(--delay,0ms)}
+.photo-field[data-active] .photo.bw img{filter:grayscale(1) contrast(1.08)}
+.mobile-photos{display:none}
+.archive-foot{font-size:14px;line-height:1.5;margin:40px 0 0;text-transform:uppercase}
+.archive-foot a{color:inherit;text-underline-offset:4px}
+@media(min-width:1700px){.story{min-height:300px}.story h2{font-size:60px}}
+@media(max-width:900px){.archive-grid{gap:24px;grid-template-columns:1fr 1fr}.story{grid-template-columns:62px 1fr;gap:18px;min-height:230px}.number{font-size:64px}.story h2{font-size:30px}.archive-heading{padding-bottom:28px}.photo-field{min-height:480px}}
+@media(max-width:650px){
+ .archive{padding:23px 20px 34px}.archive-heading{align-items:start;padding-bottom:30px;gap:12px}
+ h1{font-size:42px}.archive-heading p{font-size:12px;white-space:normal;text-align:right;padding-top:4px}
+ .archive-grid{display:block}.photo-field{display:none}.story{grid-template-columns:56px 1fr;gap:16px;padding:26px 0 32px;min-height:0}.number{font-size:58px}.story h2{font-size:30px;margin-bottom:16px;line-height:1.08}
+ .story-meta{font-size:14px;column-gap:.8em}.mobile-photos{display:grid;grid-column:1/-1;grid-template-columns:1.12fr .88fr;align-items:start;gap:12px;margin-top:0;width:100%;max-height:0;opacity:0;overflow:hidden;transition:max-height 900ms cubic-bezier(.22,.65,.28,1),opacity 550ms ease,margin-top 900ms cubic-bezier(.22,.65,.28,1)}
+ .story.is-preview .mobile-photos{max-height:280px;opacity:1;margin-top:22px}
+ .gum .mobile-photos{grid-template-columns:.72fr 1.28fr}.gum .mobile-photos img:first-child{height:168px;margin-top:42px}.gum .mobile-photos img:last-child{height:142px}
+ .mobile-photos img{width:100%;height:180px;object-fit:cover;display:block}.mobile-photos img:first-child{margin-top:28px;height:190px}.mobile-photos img.bw{filter:grayscale(1) contrast(1.15)}
+ .archive-foot{margin-top:27px;font-size:13px}.story::before{width:100%;height:2px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before{transition:none!important}}
+</style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
+  <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
+  <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
+  <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
+
+ <span class="meter" aria-hidden="true"><span class="meter-zone"><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span><span class="meter-col"><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span><span class="meter-seg"></span></span></span></span>
+
+<main class="page-window" aria-label="Archivio delle storie"><div class="archive">
+<header class="archive-heading"><h1>ARCHIVIO</h1><p>BLOG<br>STORIE 01—02</p></header>
+<div class="archive-grid">
+<div class="stories">
+<a class="story sound" data-story="sound" href="https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site/sound-horeg/index.html" aria-label="Leggi la storia 01, Una festa che deve tremare">
+<span class="number">01</span><div class="story-copy"><h2><span>Una festa</span><span>che deve</span><span>tremare</span></h2><div class="story-meta"><span>Sound Horeg</span><span>Storia</span><span class="place">Giava Orientale / Indonesia</span></div></div>
+<div class="mobile-photos" aria-hidden="true"><img class="bw" src="assets/sound-woman.png" alt=""><img src="assets/sound-procession.png" alt=""></div></a>
+<a class="story gum" data-story="gum" href="https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site/gumleaf/index.html" aria-label="Leggi la storia 02, Gumleaf">
+<span class="number">02</span><div class="story-copy"><h2>Gumleaf</h2><div class="story-meta"><span>Storia</span><span class="place">Sud-est / Australia</span></div></div>
+<div class="mobile-photos" aria-hidden="true"><img class="bw" src="assets/gum-portrait.png" alt=""><img src="assets/gum-landscape.png" alt=""></div></a>
+</div>
+<div class="photo-field" aria-label="Fotografie delle due storie">
+<figure class="photo bw" data-story="sound" style="--x:3%;--y:2%;--w:43%;--h:27%;--ax:0%;--ay:10%;--aw:52%;--ah:33%;--delay:0ms"><img src="assets/sound-lights.jpg" alt="Luci di un sound system a Giava Orientale"></figure>
+<figure class="photo bw" data-story="sound" style="--x:61%;--y:0%;--w:30%;--h:35%;--ax:64%;--ay:3%;--aw:36%;--ah:49%;--delay:90ms;--position:66% center"><img src="assets/sound-woman.png" alt="Una donna si copre le orecchie durante la festa"></figure>
+<figure class="photo bw" data-story="gum" style="--x:9%;--y:38%;--w:28%;--h:31%;--ax:5%;--ay:54%;--aw:24%;--ah:43%;--delay:170ms;--position:center top"><img src="assets/gum-portrait.png" alt="Un suonatore di gumleaf nel bosco"></figure>
+<figure class="photo" data-story="gum" style="--x:48%;--y:43%;--w:44%;--h:23%;--ax:49%;--ay:66%;--aw:49%;--ah:27%;--delay:85ms"><img src="assets/gum-band.jpg" alt="Una gumleaf band sul palco"></figure>
+<figure class="photo" data-story="sound" style="--x:0%;--y:78%;--w:53%;--h:22%;--ax:12%;--ay:62%;--aw:73%;--ah:29%;--delay:180ms"><img src="assets/sound-procession.png" alt="Una processione di camion di casse tra case e vegetazione"></figure>
+<figure class="photo" data-story="gum" style="--x:64%;--y:74%;--w:36%;--h:26%;--ax:6%;--ay:4%;--aw:88%;--ah:44%;--delay:0ms"><img src="assets/gum-landscape.png" alt="Il paesaggio di Sandy Creek, Bournda"></figure>
+</div></div>
+<footer class="archive-foot"><a href="https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site">BLOG / SFOGLIA LE STORIE</a></footer>
+</div></main></div>
+<script src="iso-meter-response.js?v=20261003-meter12"></script><script>
+const field=document.querySelector('.photo-field');
+const stories=[...document.querySelectorAll('.story')];
+let resetTimer;
+function activate(story){clearTimeout(resetTimer);field.dataset.active=story;stories.forEach(el=>el.classList.toggle('is-preview',el.dataset.story===story));}
+function reset(){clearTimeout(resetTimer);resetTimer=setTimeout(()=>{if(!document.querySelector('.story:hover,.story:focus-visible')){field.removeAttribute('data-active');stories.forEach(el=>el.classList.remove('is-preview'));}},170)}
+stories.forEach(el=>{
+ el.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')activate(el.dataset.story)});
+ el.addEventListener('pointerleave',reset);
+ el.addEventListener('focus',()=>{if(el.matches(':focus-visible'))activate(el.dataset.story)});
+ el.addEventListener('blur',reset);
+ el.addEventListener('click',e=>{if(matchMedia('(hover:none)').matches&&e.detail>0&&!el.classList.contains('is-preview')){e.preventDefault();activate(el.dataset.story)}});
+});
+field.addEventListener('pointerenter',()=>clearTimeout(resetTimer));field.addEventListener('pointerleave',reset);
+document.querySelectorAll('.photo').forEach(el=>el.addEventListener('pointerenter',()=>activate(el.dataset.story)));
+const identities=[...document.querySelectorAll('.identity')];
+identities.forEach(el=>{
+  let inside=false;
+  let flipped=false;
+  el.addEventListener('pointerenter',()=>{
+    if(inside) return;
+    inside=true;
+    flipped=!flipped;
+    el.classList.toggle('identity-flipped',flipped);
+  });
+  el.addEventListener('pointerleave',()=>{
+    inside=false;
+  });
+});
+
+// ---------- optical flip axis ----------
+// scaleY(-1) around the CSS line-box center can look like a vertical jump,
+// because the font's real uppercase ink is not vertically centered inside
+// that line box. Measure the actual glyph ink and rotate around its optical
+// centre instead, so the visible top/bottom margins stay fixed in both states.
+function setOpticalFlipAxes(){
+  const canvas=document.createElement('canvas');
+  const ctx=canvas.getContext('2d');
+  const targets=[...document.querySelectorAll('.word-inner,.identity-inner,.char-flip')];
+
+  targets.forEach(el=>{
+    const parent=el.parentElement;
+    const cs=getComputedStyle(parent);
+    const fs=parseFloat(cs.fontSize)||16;
+    const lhRaw=parseFloat(cs.lineHeight);
+    const lh=Number.isFinite(lhRaw)?lhRaw:fs;
+    const weight=cs.fontWeight||'400';
+    const family=cs.fontFamily||'monospace';
+    ctx.font=`${weight} ${fs}px ${family}`;
+
+    const m=ctx.measureText(el.textContent||'H');
+    const actualA=m.actualBoundingBoxAscent||fs*.72;
+    const actualD=m.actualBoundingBoxDescent||fs*.02;
+
+    let baselineY;
+    if(Number.isFinite(m.fontBoundingBoxAscent) && Number.isFinite(m.fontBoundingBoxDescent)){
+      const fA=m.fontBoundingBoxAscent, fD=m.fontBoundingBoxDescent;
+      baselineY=(lh-(fA+fD))/2+fA;
+    }else{
+      // Fallback close to CSS font metrics; only used in older browsers.
+      baselineY=lh*.78;
+    }
+
+    const inkCenterY=baselineY+(actualD-actualA)/2;
+    el.style.setProperty('--optical-axis-y',`${inkCenterY.toFixed(3)}px`);
+    parent.style.setProperty('--optical-axis-y',`${inkCenterY.toFixed(3)}px`);
+  });
+}
+
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(setOpticalFlipAxes);
+}else{
+  requestAnimationFrame(setOpticalFlipAxes);
+}
+window.addEventListener('resize',setOpticalFlipAxes,{passive:true});
+
+// ---------- clock ----------
+function clock(){const n=new Date();document.getElementById('clock').textContent=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false}).format(n);document.getElementById('year').textContent=n.getFullYear()}
+clock();setInterval(clock,15000);
+
+
+</script></body></html>

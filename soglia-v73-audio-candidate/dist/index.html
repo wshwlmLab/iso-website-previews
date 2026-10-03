@@ -124,7 +124,7 @@
   <script src="experience-loader.js?v=20261003-cartolina1"></script>
   <script src="cartolina-config.js?v=20261003-cartolina1"></script>
   <script src="loop-audio.js?v=20261003-cartolina1"></script>
-  <script src="iso-meter-response.js?v=20261003-1"></script>
+  <script src="iso-meter-response.js?v=20261003-meter12"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -238,7 +238,7 @@
 
       function fadeMuteState(paused) {
         if (!audioContext || !muteGain) return;
-        window.ISOLoopAudio.fade(audioContext, muteGain.gain, paused ? 0 : 1, 1);
+        window.ISOMeterResponse.fadeMuted(audioContext, muteGain.gain, paused);
       }
 
       function attachMediaElement(media) {
@@ -487,17 +487,23 @@
       }
       window.__retrySogliaAssets = prepareExperience;
 
-      meterHit.addEventListener('click', event => {
-        event.stopPropagation();
-        ensureAudioStarted();
-        meterPaused = !meterPaused;
+      function setMeterMuted(value) {
+        const next = Boolean(value);
+        if (next === meterPaused) return;
+        meterPaused = next;
         fadeMuteState(meterPaused);
         meter.classList.toggle('paused', meterPaused);
         meterHit.setAttribute('aria-pressed', String(meterPaused));
         meterHit.setAttribute('aria-label', meterPaused ? "Riattiva l'audio" : "Disattiva l'audio");
+      }
+      meterHit.addEventListener('click', event => {
+        event.stopPropagation();
+        ensureAudioStarted();
+        setMeterMuted(!meterPaused);
       });
 
       window.__sogliaMeterDebug = {
+        setMuted: setMeterMuted,
         get revealLevel() { return revealLevel; },
         get targetRevealLevel() { return targetRevealLevel; },
         get levels() { return meterValues.slice(); },

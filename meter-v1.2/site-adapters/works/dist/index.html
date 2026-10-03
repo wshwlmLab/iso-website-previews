@@ -1,0 +1,2128 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WORKS — Motion Lab</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Book.otf") format("opentype");
+  font-style:normal;
+  font-weight:400 500;
+  font-display:swap;
+}
+@font-face{
+  font-family:"New Heterodox Mono";
+  src:url("https://cdn.jsdelivr.net/gh/hckiang/font-new-heterodox-mono@main/NewHeterodoxMono-Bold.otf") format("opentype");
+  font-style:normal;
+  font-weight:600 900;
+  font-display:swap;
+}
+:root{
+  --side:5.55vw;
+  --large-w:88.9vw;
+  --large-h:50.00625vw;
+  --medium-w:79vw;
+  --medium-h:44.4375vw;
+  --wide-w:84vw;
+  --wide-h:47.25vw;
+  --gap:30vh;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;color:#fff;font-family:"New Heterodox Mono","Courier New",monospace}
+html{overflow-x:hidden;overflow-anchor:none;scrollbar-color:#505050 #000;scrollbar-width:thin}
+::-webkit-scrollbar{width:8px;height:8px;background:#000}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:#505050;border:2px solid #000;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#686868}
+::-webkit-scrollbar-corner{background:#000}
+body{min-height:100vh;overflow-x:hidden;overflow-anchor:none}
+.top-ui{
+  position:fixed;top:14px;left:0;right:0;z-index:1000;
+  display:flex;justify-content:center;
+  font-size:10px;letter-spacing:.08em;color:#fff;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.scroll-hint{
+  position:fixed;top:14px;right:18px;z-index:1000;
+  font-size:9px;letter-spacing:.08em;color:#fff;opacity:.48;
+  mix-blend-mode:difference;pointer-events:none;
+}
+.topspace{height:44vh;min-height:320px}
+.endspace{height:14vh}
+
+.project{
+  position:relative;width:100vw;margin-bottom:var(--gap);
+  z-index:5;
+}
+.project.large{height:var(--large-h)}
+.project.medium{height:var(--medium-h)}
+.project.wide{height:var(--wide-h)}
+.media{
+  position:fixed;top:0;overflow:hidden;will-change:transform;visibility:hidden;
+  background:transparent;
+}
+.media::after{
+  content:"";
+  position:absolute;inset:0;z-index:5;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .38s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .media::after{
+  opacity:.31;
+}
+.project.is-opening .media::after{
+  opacity:.52;
+  transition:opacity .26s cubic-bezier(.22,.61,.36,1);
+}
+.project.is-hover .line-inner,
+.project.is-opening .line-inner{color:#fff}
+.large .media{left:var(--side);width:var(--large-w);height:var(--large-h)}
+.medium .media{width:var(--medium-w);height:var(--medium-h)}
+.medium.left .media{left:var(--side)}
+.medium.right .media{right:var(--side)}
+.wide .media{width:var(--wide-w);height:var(--wide-h)}
+.wide.right .media{right:var(--side)}
+
+.video-layer{
+  position:absolute;inset:0;
+  will-change:transform;
+  transform:translate3d(0,0,0);
+}
+
+.video-frame{
+  position:absolute;
+  inset:-3.8%;
+  width:107.6%;
+  height:107.6%;
+  border:0;
+  display:block;
+  background:#000;
+  transform:scale(1.035);
+  pointer-events:none;
+}
+.media .underlay{
+  position:absolute;
+  inset:0;
+  background:#050505;
+}
+
+.copy-clip{
+  position:fixed;left:var(--site-frame-side,0px);top:0;
+  width:calc(100vw - var(--site-frame-side,0px)*2);height:100%;visibility:hidden;
+  overflow:hidden;z-index:40;pointer-events:none;
+}
+.line-mask{
+  position:absolute;left:0;top:0;width:100%;
+  overflow:hidden;pointer-events:none;
+  will-change:transform;
+}
+.line-inner{
+  position:absolute;left:0;top:0;width:max-content;max-width:calc(100vw - var(--site-frame-side,0px)*2 - 1vw);
+  color:rgba(255,255,255,.50);white-space:nowrap;
+  transition:color .30s cubic-bezier(.22,.61,.36,1);
+  will-change:transform,opacity,filter;
+  pointer-events:auto;
+  cursor:pointer;
+}
+.title-mask{height:clamp(48px,7.4vw,118px)}
+.director-mask{height:clamp(18px,2.2vw,36px)}
+.title{
+  font-size:clamp(48px,7vw,112px);line-height:.92;
+  letter-spacing:-.029em;font-weight:700;
+}
+.director{
+  font-size:clamp(14px,1.65vw,27px);line-height:1;
+  font-weight:400;text-transform:uppercase;
+  letter-spacing:.01em;
+}
+.director .credit-label{
+  font-size:.62em;
+  letter-spacing:.10em;
+  opacity:.78;
+  margin-right:.72em;
+  vertical-align:.08em;
+}
+.director .credit-name{
+  font-size:1em;
+  letter-spacing:.01em;
+  opacity:1;
+}
+.medium .title{font-size:clamp(41px,5.7vw,91px)}
+.medium .director{font-size:clamp(13px,1.45vw,23px)}
+.medium .title-mask{height:clamp(42px,6.1vw,98px)}
+.medium .director-mask{height:clamp(17px,2vw,31px)}
+.wide .title{font-size:clamp(46px,6.6vw,105px)}
+.wide .director{font-size:clamp(14px,1.58vw,25px)}
+.wide .title-mask{height:clamp(46px,7vw,111px)}
+.wide .director-mask{height:clamp(18px,2.1vw,33px)}
+
+@media(max-width:800px){
+  :root{
+    --side:5vw;
+    --large-w:90vw;--large-h:50.625vw;
+    --medium-w:82vw;--medium-h:46.125vw;
+    --wide-w:86vw;--wide-h:48.375vw;
+    --gap:30vh;
+  }
+  .title{font-size:10.7vw}
+  .director{font-size:2.7vw}
+  .medium .title{font-size:9.1vw}
+  .medium .director{font-size:2.4vw}
+  .wide .title{font-size:9.9vw}
+  .wide .director{font-size:2.55vw}
+  .top-ui,.scroll-hint{font-size:8px}
+}
+
+#nebulaStarfield{
+  position:fixed;inset:0;z-index:0;
+  background:#000106 url("stars-nebula.webp") center / cover no-repeat;
+  pointer-events:none;opacity:0;
+}
+#bgStarfield{
+  position:fixed;inset:0;z-index:0;
+  background:url("works-stars-realistic.png") center center / cover no-repeat;
+  pointer-events:none;
+  opacity:0;
+  will-change:opacity,background-position;
+}
+#bgStarfield::after{
+  content:"";position:absolute;inset:-1.2%;
+  background:url("works-stars-realistic.png") center center / cover no-repeat;
+  mix-blend-mode:screen;opacity:var(--star-glimmer,.018);
+  pointer-events:none;
+}
+@keyframes starfieldFallbackBreath{
+  0%,100%{transform:translate3d(-.3%,.18%,0) scale(1.008)}
+  50%{transform:translate3d(.3%,-.18%,0) scale(1.008)}
+}
+body.starfield-fallback #bgStarfield{
+  animation:starfieldFallbackBreath 18s ease-in-out infinite;
+}
+@media(prefers-reduced-motion:reduce){body.starfield-fallback #bgStarfield{animation:none}}
+#starPointsCanvas{
+  position:fixed;inset:0;z-index:1;
+  width:100%;height:100%;pointer-events:none;
+}
+#openingWash{
+  position:fixed;
+  inset:var(--frame-top) var(--frame-side);
+  z-index:2;
+  background:#fff;
+  opacity:1;
+  pointer-events:none;
+  will-change:opacity;
+}
+.intro{
+  position:relative;z-index:5;
+  min-height:100vh;min-height:100svh;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:17.8svh calc(var(--frame-side) + 10px) var(--frame-top);
+  overflow:hidden;
+}
+@media(min-width:801px){
+  .intro{
+    align-items:center;
+    padding:var(--frame-top) calc(var(--frame-side) + 10px) calc(var(--frame-top) + 2.5svh);
+  }
+}
+.intro-phrase{
+  display:flex;flex-direction:column;align-items:stretch;
+  width:100%;max-width:1200px;margin:0;
+  font-weight:400;
+  opacity:1;
+  will-change:opacity;
+}
+.intro-line{
+  position:relative;width:100%;height:clamp(40px,10vw,70px);
+  font-size:clamp(39px,9.8vw,69px);
+  line-height:1;letter-spacing:-.01em;
+  white-space:nowrap;
+}
+.intro-word{
+  position:absolute;left:0;top:50%;
+  display:block;color:#101010;
+  transform:translate3d(0,-50%,0);
+  will-change:transform;
+}
+.intro-word:not(.glyph-ready){visibility:hidden}
+.intro-glyph{display:inline-block;opacity:0;transition:opacity .32s cubic-bezier(.2,.7,.2,1)}
+@media(min-width:740px){
+  .intro-line{height:clamp(68px,6.8vw,94px);font-size:clamp(66px,6.6vw,80px)}
+}
+@media(min-width:740px) and (max-height:850px){
+  .intro-line{height:min(8svh,80px);font-size:min(7.6svh,76px)}
+}
+.stars-coda{position:relative;z-index:2;height:100svh;min-height:640px;pointer-events:none}
+.media{will-change:transform}
+.media .underlay{display:none!important}
+
+/* Pagina Soglia v68 — FROZEN — 23 settembre 2026 */
+:root{
+  --frame-top:6.52vh;
+  --frame-side:2vw;
+  --site-frame-top:var(--frame-top);
+  --site-frame-side:var(--frame-side);
+}
+#worksFrame{
+  position:fixed;inset:0;z-index:900;pointer-events:none;
+  border-style:solid;border-color:#000;
+  border-width:var(--frame-top) var(--frame-side);
+}
+.top-ui{display:none}
+.scroll-hint{display:none}
+.site-identity{
+  position:fixed;z-index:1001;color:#fff;font-size:clamp(19px,2.25vw,36px);
+  line-height:1;letter-spacing:.055em;white-space:nowrap;user-select:none;cursor:default;
+}
+.site-identity-inner{display:block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(-1);will-change:transform;pointer-events:none}
+.site-identity.site-identity-flipped .site-identity-inner{transform:scaleY(1)}
+.site-id-il{left:.65vw;top:calc(var(--site-frame-top)/2);transform:translateY(-50%)}
+.site-id-suono{right:.72vw;top:calc(var(--site-frame-top)/2);transform:translateY(-50%)}
+.site-id-organizzato{right:.70vw;bottom:calc(var(--site-frame-top)/2);transform:translateY(50%)}
+.site-micro{
+  position:fixed;z-index:1001;left:.65vw;bottom:calc(var(--site-frame-top)/2);transform:translateY(50%);
+  color:#fff;font-size:clamp(8px,.708vw,11px);display:flex;width:25vw;justify-content:space-between;gap:0;white-space:nowrap;pointer-events:none;
+}
+.site-micro .clock-group{display:inline-flex;align-items:baseline;gap:.55em}
+.site-micro .tz{color:#777;font-size:.92em}
+.meter,.meter-hit{
+  position:fixed;z-index:1000;left:50%;top:calc(var(--site-frame-top)/2);
+  width:clamp(52px,4.2vw,62px);height:clamp(32px,2.85vw,41px);
+  transform:translate(-50%,-50%);box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+}
+.meter{border:0;padding:0;background:transparent;pointer-events:none;opacity:1}
+.meter-hit{
+  border:0;border-radius:0;padding:0;background:transparent;cursor:pointer;
+  opacity:0;pointer-events:none;
+}
+.meter-hit.active{pointer-events:auto}
+.meter-zone{
+  position:absolute;left:50%;top:50%;width:50%;height:80%;padding:1px 0;
+  transform:translate(-50%,-50%);display:flex;align-items:flex-end;
+  justify-content:space-between;gap:clamp(4px,.35vw,6px);
+}
+.meter-col{flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:stretch;gap:0}
+.meter-seg{
+  position:relative;width:100%;min-height:0;flex:0 0 1px;background:#343434;opacity:1;
+  border-radius:0;transform:scaleY(1);transform-origin:center;
+  transition:background 56ms linear,opacity 56ms linear,transform 72ms cubic-bezier(.2,.8,.2,1);
+}
+.meter::after{
+  content:"";position:absolute;left:50%;top:50%;width:82%;height:2px;background:#f1f1f1;
+  transform:translate(-50%,-50%) rotate(-40deg) scaleX(0);transform-origin:center;transition:transform .18s ease;
+}
+.meter.paused::after{transform:translate(-50%,-50%) rotate(-40deg) scaleX(1)}
+.meter.paused .meter-seg{background:#343434!important;opacity:1!important;transform:scaleY(1)!important}
+/* On phones the cards belong to the document flow and scrolling stays native. */
+@media(max-width:800px){
+  html{overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
+  .topspace{height:10svh;min-height:72px}
+  .project,.project.large,.project.medium,.project.wide{
+    width:calc(100% - 2 * (var(--frame-side) + 4vw));height:auto;
+    margin:0 auto clamp(38px,7svh,72px);
+  }
+  .project .media{
+    position:relative;inset:auto!important;width:100%;height:auto;
+    aspect-ratio:16/9;visibility:visible!important;
+    transform:none!important;will-change:auto;
+    background:#06080b center / cover no-repeat;
+  }
+  .project .video-layer{transform:none!important;will-change:auto}
+  .project .video-frame{pointer-events:none;opacity:0;transition:opacity .36s ease}
+  .project .video-frame.is-loaded{opacity:1}
+  .project .copy-clip{
+    position:relative;inset:auto!important;width:100%;height:auto!important;
+    overflow:visible;visibility:visible!important;pointer-events:auto;
+    clip-path:none!important;margin-top:12px;
+  }
+  .project .line-mask{
+    position:relative;inset:auto;width:100%;height:auto!important;
+    overflow:visible;visibility:visible!important;transform:none!important;
+    clip-path:none!important;margin:0;
+  }
+  .project .director-mask{margin-top:5px}
+  .project .line-inner{
+    position:relative;inset:auto;display:block;width:auto;max-width:100%;
+    transform:none!important;opacity:1!important;filter:none!important;
+    white-space:normal;overflow-wrap:break-word;line-height:1.03;
+    color:#f3f3f3;
+  }
+  .project .title,.project.medium .title,.project.wide .title{font-size:clamp(23px,7.1vw,42px)}
+  .project .director,.project.medium .director,.project.wide .director{font-size:clamp(11px,2.8vw,16px);line-height:1.25;color:#ccc}
+  .stars-coda{min-height:0;height:100svh}
+  .endspace{height:7svh}
+}
+</style>
+
+<style id="trailer-v30-style">
+[data-trailer-trigger],a,button,.trailer-progress,.trailer-volume-track,.trailer-video-surface video{cursor:pointer}
+body.trailer-open{overflow:hidden}
+body.trailer-open::after{
+  content:"";position:fixed;top:calc(var(--site-frame-top) - 4px);right:var(--site-frame-side);width:8.5vw;height:calc(100vh - 2 * var(--site-frame-top) + 8px);z-index:4998;
+  backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  -webkit-backdrop-filter:blur(13px) brightness(.70) saturate(.72);
+  background:rgba(0,0,0,.08);pointer-events:none;
+  opacity:1;transition:opacity .55s ease;
+}
+.trailer-panel{
+  position:fixed;left:var(--site-frame-side);top:calc(var(--site-frame-top) - 4px);
+  width:calc(91.5vw - var(--site-frame-side));height:calc(100vh - 2 * var(--site-frame-top) + 8px);z-index:5000;
+  color:#fff;transform:translate3d(-100%,0,0);
+  transition:transform 1.72s cubic-bezier(.19,1,.22,1);
+  visibility:hidden;pointer-events:none;overflow:visible;
+  font-family:"New Heterodox Mono","Courier New",monospace;
+  will-change:transform;
+}
+.trailer-panel.is-visible{visibility:visible}
+.trailer-panel.is-open{transform:translate3d(0,0,0);pointer-events:auto}
+.trailer-panel.is-exiting{transition-timing-function:cubic-bezier(.45,0,.55,1)}
+.trailer-panel-inner{position:absolute;inset:0;background:#000;overflow:hidden}
+body.trailer-open #worksFrame{z-index:6000}
+body.trailer-open .site-identity,body.trailer-open .site-micro,body.trailer-open .meter,body.trailer-open .meter-hit{z-index:6001}
+
+.trailer-player-wrap{
+  position:absolute;left:50%;top:50%;z-index:3;
+  width:min(84vw,calc(76vh * 16 / 9));
+  transform:translate(-50%,-48.5%) scale(.994);
+  opacity:0;transition:opacity .70s ease .54s,transform 1.02s cubic-bezier(.19,1,.22,1) .46s;
+  cursor:auto;
+}
+.trailer-panel.is-open .trailer-player-wrap{opacity:1;transform:translate(-50%,-48.5%) scale(1)}
+
+.trailer-fullscreen-stage{position:relative;width:100%;background:#000}
+.trailer-player-wrap:fullscreen,.trailer-player-wrap:-webkit-full-screen{
+  position:fixed;left:0;top:0;
+  width:100vw;height:100vh;max-width:none;background:#000;
+  transform:none;transition:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.trailer-player-wrap.fs-instant{transition:none!important}
+.trailer-player-wrap:fullscreen .trailer-fullscreen-stage,
+.trailer-player-wrap:-webkit-full-screen .trailer-fullscreen-stage{width:100%;height:100%}
+.trailer-player-wrap:fullscreen .trailer-video-surface,
+.trailer-player-wrap:-webkit-full-screen .trailer-video-surface{
+  position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;background:#000;
+}
+.trailer-player-wrap:fullscreen .trailer-video-surface video,
+.trailer-player-wrap:-webkit-full-screen .trailer-video-surface video{
+  width:100%;height:100%;object-fit:contain;background:#000;
+}
+.trailer-player-wrap:fullscreen .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen .trailer-controls{
+  position:absolute;left:clamp(22px,3vw,52px);right:clamp(22px,3vw,52px);bottom:clamp(16px,2.5vh,30px);
+  width:auto;height:58px;z-index:10;margin:0;padding:0 8px;
+  grid-template-columns:70px minmax(0,1fr) 60px 60px;gap:14px;
+  background:linear-gradient(to top,rgba(0,0,0,.50),rgba(0,0,0,.14) 62%,rgba(0,0,0,0));
+  opacity:0;pointer-events:none;transition:opacity .32s ease;
+}
+.trailer-player-wrap:fullscreen.fs-controls-active .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen.fs-controls-active .trailer-controls{opacity:1;pointer-events:auto}
+.trailer-player-wrap:fullscreen:not(.fs-controls-active),
+.trailer-player-wrap:fullscreen:not(.fs-controls-active) *,
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active),
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active) *{cursor:none!important}
+.trailer-player-wrap:fullscreen:not(.fs-controls-active) .trailer-controls,
+.trailer-player-wrap:-webkit-full-screen:not(.fs-controls-active) .trailer-controls{opacity:0!important;pointer-events:none!important}
+.trailer-player-wrap:fullscreen .trailer-control-btn,
+.trailer-player-wrap:-webkit-full-screen .trailer-control-btn{width:56px;height:56px}
+.trailer-player-wrap:fullscreen .trailer-play-btn,
+.trailer-player-wrap:-webkit-full-screen .trailer-play-btn{width:84px;height:52px}
+.trailer-player-wrap:fullscreen .trailer-control-btn svg,
+.trailer-player-wrap:-webkit-full-screen .trailer-control-btn svg{width:32px;height:32px}
+.trailer-player-wrap:fullscreen .trailer-preview-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-preview-tip{bottom:58px}
+.trailer-player-wrap:fullscreen .trailer-time-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-time-tip{bottom:38px}
+.trailer-player-wrap:fullscreen .trailer-volume-pop,
+.trailer-player-wrap:-webkit-full-screen .trailer-volume-pop{bottom:55px}
+.trailer-player-wrap:fullscreen .trailer-fs-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-fs-tip{bottom:70px}
+.trailer-player-wrap:fullscreen .trailer-play-tip,
+.trailer-player-wrap:-webkit-full-screen .trailer-play-tip{bottom:66px}
+.trailer-video-surface{
+  position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;
+}
+.trailer-video-surface video{
+  position:absolute;inset:0;width:100%;height:100%;display:block;background:#000;object-fit:contain;cursor:auto;
+  opacity:0;transition:opacity .30s ease;
+}
+.trailer-player-wrap.media-ready .trailer-video-surface video{opacity:1}
+.trailer-player-wrap.closing-black .trailer-video-surface video{opacity:0;transition:opacity .22s ease}
+.trailer-player-wrap.closing-black .trailer-controls{opacity:0!important;pointer-events:none!important}
+.trailer-loader{
+  position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
+  border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;
+  animation:trailerSpin .82s linear infinite;z-index:6;opacity:0;transition:opacity .22s ease;pointer-events:none;
+}
+.trailer-loader.is-loading{opacity:1}
+@keyframes trailerSpin{to{transform:rotate(360deg)}}
+
+.trailer-controls{
+  position:relative;width:100%;height:38px;margin-top:0;
+  display:grid;grid-template-columns:54px minmax(0,1fr) 46px 46px;gap:10px;align-items:center;
+  padding:0 0 0 0;background:#000;
+  opacity:0;transition:opacity .55s ease;pointer-events:none;
+}
+.trailer-player-wrap.controls-active .trailer-controls,
+.trailer-player-wrap:hover .trailer-controls{opacity:1;pointer-events:auto}
+.trailer-control-btn{
+  appearance:none;border:0;background:transparent;color:#fff;padding:0;margin:0;width:42px;height:42px;
+  display:grid;place-items:center;cursor:pointer;
+}
+.trailer-control-btn svg{width:27px;height:27px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.trailer-control-btn .fill-icon{fill:currentColor;stroke:none}
+.trailer-control-btn:focus-visible{outline:1px solid rgba(255,255,255,.9);outline-offset:2px}
+.trailer-control-btn{color:rgba(255,255,255,.65);transition:color .12s ease}
+.trailer-control-btn:hover{color:#fff}
+.trailer-fs-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-fs-tip{
+  position:absolute;bottom:46px;left:50%;transform:translateX(-50%);
+  font:600 11px/1 Arial,Helvetica,sans-serif;white-space:nowrap;background:none;color:#fff;
+  padding:0;opacity:0;pointer-events:none;transition:opacity .14s ease;
+}
+.trailer-fs-wrap:hover .trailer-fs-tip{opacity:1}
+.trailer-play-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-play-tip{bottom:44px}
+.trailer-play-btn{width:50px;height:32px;background:transparent;border-radius:4px;transition:background .12s ease,color .12s ease}
+.trailer-play-btn:hover{background:#fff;color:#111!important}
+.trailer-play-wrap:hover .trailer-play-tip{opacity:1}
+
+.trailer-progress{position:relative;height:42px;cursor:pointer;min-width:0;display:flex;align-items:center}
+.trailer-progress-track{position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%) scaleY(1);background:#2c2c2c;transition:transform .12s ease}
+.trailer-progress:hover .trailer-progress-track{transform:translateY(-50%) scaleY(1.4)}
+.trailer-progress-buffered{position:absolute;left:0;top:0;bottom:0;width:0;background:#6a6a6a}
+.trailer-progress-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+.trailer-progress-knob{position:absolute;top:50%;left:0;width:7px;height:7px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);opacity:0;transition:opacity .12s ease}
+.trailer-progress:hover .trailer-progress-knob{opacity:1}
+.trailer-time-tip{
+  position:absolute;bottom:27px;left:0;transform:translateX(-50%);
+  font:700 10px/1 Arial,Helvetica,sans-serif;white-space:nowrap;background:#fff;color:#111;
+  padding:4px 5px 3px;border-radius:2px;opacity:0;pointer-events:none;
+}
+.trailer-progress:hover .trailer-time-tip{opacity:1}
+.trailer-preview-tip{
+  position:absolute;bottom:42px;left:0;width:142px;aspect-ratio:16/9;
+  transform:translateX(-50%);background:#070707;border:1px solid rgba(255,255,255,.38);
+  opacity:0;pointer-events:none;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.45);
+}
+.trailer-progress:hover .trailer-preview-tip{opacity:1}
+.trailer-preview-tip img{display:block;width:100%;height:100%;object-fit:cover;background:#111}
+.trailer-preview-time{
+  position:absolute;left:0;right:0;bottom:0;height:19px;background:rgba(0,0,0,.82);color:#fff;
+  display:grid;place-items:center;font:700 10px/1 Arial,Helvetica,sans-serif;
+}
+.trailer-volume-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.trailer-volume-wrap #trailerMute{position:relative;z-index:3;cursor:pointer}
+.trailer-volume-pop{
+  position:absolute;left:50%;bottom:34px;width:40px;height:104px;transform:translateX(-50%);
+  background:rgba(0,0,0,.90);border:none;border-radius:3px;
+  z-index:2;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .16s ease;
+}
+.trailer-volume-pop::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-30px;height:34px}
+.trailer-volume-wrap:hover .trailer-volume-pop,.trailer-volume-wrap.volume-open .trailer-volume-pop,.trailer-volume-pop.is-active{opacity:1;pointer-events:auto}
+.trailer-volume-track{position:relative;width:26px;height:78px;background:transparent;cursor:pointer;touch-action:none}
+.trailer-volume-track::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%) scaleX(1);background:#505050;transition:transform .12s ease}
+.trailer-volume-fill{position:absolute;left:50%;bottom:0;width:3px;height:100%;transform:translateX(-50%) scaleX(1);background:#fff;transition:transform .12s ease}
+.trailer-volume-track:hover::before{transform:translateX(-50%) scaleX(1.6)}
+.trailer-volume-track:hover .trailer-volume-fill{transform:translateX(-50%) scaleX(1.6)}
+.trailer-volume-knob{position:absolute;left:50%;bottom:100%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,50%);pointer-events:none}
+
+.trailer-close{
+  position:absolute;right:0;top:50%;z-index:15;width:min(140px,13vw);height:min(140px,13vw);
+  transform:translate(50%,-50%);border:0;background:transparent;color:#fff;
+  display:grid;place-items:center;padding:0;cursor:pointer;opacity:0;
+  transition:none;
+}
+.trailer-close .close-arrows{position:relative;display:block;width:min(75px,9vw);height:min(75px,9vw);transition:transform .42s cubic-bezier(.2,.7,.2,1)}
+.trailer-close .close-arrows svg{position:absolute;inset:0;display:block;width:100%;height:100%;fill:currentColor;transition:opacity .56s ease-in-out}
+.trailer-close .close-arrows .arrow-enter{transform:scaleX(-1);opacity:0}
+.trailer-panel.is-entering .trailer-close{pointer-events:none}
+.trailer-panel.is-entering .close-arrows .arrow-enter{opacity:1}
+.trailer-panel.is-entering .close-arrows .arrow-close{opacity:0}
+.trailer-panel.is-arrow-swapping .close-arrows .arrow-enter,
+.trailer-panel.is-arrow-swapping .close-arrows .arrow-close{opacity:0}
+.trailer-panel.is-open .trailer-close{opacity:1;transition:opacity 1.72s linear}
+.trailer-panel.is-entering .trailer-close{opacity:var(--arrow-entry-opacity,0);transition:none}
+.trailer-panel.is-exiting .trailer-close{opacity:var(--arrow-exit-opacity,1);transition:none}
+.trailer-panel.is-open:not(.is-entering) .trailer-close:hover .close-arrows,
+.trailer-panel.is-open:not(.is-entering) .trailer-close:focus-visible .close-arrows{transform:translateX(-9px)}
+.trailer-close:focus-visible{outline:1px solid rgba(255,255,255,.8);outline-offset:4px}
+
+@media(max-width:800px){
+  body.trailer-open::after{width:8vw;backdrop-filter:blur(9px) brightness(.72);-webkit-backdrop-filter:blur(9px) brightness(.72)}
+  .trailer-panel{width:calc(92vw - var(--site-frame-side))}
+  .trailer-player-wrap{width:min(88vw,calc(72vh * 16 / 9))}
+  .trailer-close{right:4vw;width:100px;height:100px}
+  .trailer-close .close-arrows{width:63px;height:63px}
+  .trailer-preview-tip{width:108px}
+}
+</style>
+
+<script src="works-motion.js"></script>
+<script defer src="https://embed.cloudflarestream.com/embed/sdk.latest.js"></script>
+</head>
+<body>
+
+<div id="nebulaStarfield" aria-hidden="true"></div>
+<div id="bgStarfield" aria-hidden="true"></div>
+<canvas id="starPointsCanvas" aria-hidden="true"></canvas>
+<div id="openingWash" aria-hidden="true"></div>
+<div id="worksFrame" aria-hidden="true"></div>
+<div class="site-identity site-id-il"><span class="site-identity-inner">IL</span></div>
+<div class="site-identity site-id-suono"><span class="site-identity-inner">SUONO</span></div>
+<div class="site-identity site-id-organizzato"><span class="site-identity-inner">ORGANIZZATO</span></div>
+<div class="site-micro" aria-hidden="true"><span>Rome, Italy</span><span class="clock-group"><span id="siteClock">--:--</span><span class="tz">(UTC+1)</span></span><span>2026</span></div>
+<span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
+<button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
+
+<div class="top-ui">WORKS — MOTION LAB</div>
+<div class="scroll-hint">SCROLL ↓ / ↑</div>
+
+<div class="intro">
+  <h1 class="intro-phrase" aria-label="Driven by the urge to shape sound">
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">DRIVEN</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">BY</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">THE</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">URGE</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">TO</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">SHAPE</span></span>
+    <span class="intro-line"><span class="intro-word" aria-hidden="true">SOUND</span></span>
+  </h1>
+</div>
+
+<section class="project large"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA GIOIA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/6f7c67868b3b3b1c617f6e01db3a1f0a/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">LA GIOIA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">NICOLANGELO GELORMINI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.12"
+  data-end-anchor="0.41"
+  data-director-start="0.378"
+  data-director-end="0.298"
+  data-director-k="22.5"
+  data-director-d="9.9" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview IDDU — L’ULTIMO PADRINO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/961ad447c679f89f44df207c36097e76/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">IDDU — L’ULTIMO PADRINO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">FABIO GRASSADONIA / ANTONIO PIAZZA</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="ce09cf036328ffbacbb8255f9cb63604"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.43"
+  data-end-anchor="0.21"
+  data-director-start="0.390"
+  data-director-end="0.310"
+  data-director-k="24.5"
+  data-director-d="10.1" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview COMANDANTE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/3a960b00a04f55d477a13de73f7f851d/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>COMANDANTE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">EDOARDO DE ANGELIS</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="03a39cc5a46e0281bef0aee341d831fd"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.46"
+  data-end-anchor="0.23"
+  data-director-start="0.400"
+  data-director-end="0.320"
+  data-director-k="25.5"
+  data-director-d="10.3" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview DENTI DA SQUALO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/f7b0fb0b9475456487e4018a41e8323f/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>DENTI DA SQUALO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">DAVIDE GENTILE</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.16"
+  data-end-anchor="0.44"
+  data-director-start="0.412"
+  data-director-end="0.332"
+  data-director-k="27"
+  data-director-d="10.6" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview HANNO UCCISO L’UOMO RAGNO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/7240a18c42be690d9832a67fc7728fd4/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">HANNO UCCISO L’UOMO RAGNO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">SYDNEY SIBILIA</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="b91ca5f00c2732b5b2816b7ca8793a34"
+  data-clip-status="quality-pending"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.45"
+  data-end-anchor="0.22"
+  data-director-start="0.424"
+  data-director-end="0.344"
+  data-director-k="28"
+  data-director-d="10.8" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview A.C.A.B. — LA SERIE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/9581c9abbe573ce9b73bf528368c5f40/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>A.C.A.B. — LA SERIE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">MICHELE ALHAIQUE</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="143f64a1feaf91b5537d29d55f3bdf70"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.47"
+  data-end-anchor="0.24"
+  data-director-start="0.436"
+  data-director-end="0.356"
+  data-director-k="29"
+  data-director-d="11.0" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview MOTORVALLEY"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/6ff5d64c8ba5df735d0bc737673495b9/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>MOTORVALLEY</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">MATTEO ROVERE / PIPPO MEZZAPESA / LYDA PATITUCCI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.18"
+  data-end-anchor="0.46"
+  data-director-start="0.448"
+  data-director-end="0.368"
+  data-director-k="30.5"
+  data-director-d="11.3" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview UN’ESTATE FA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/fedd5e6d8ecac78aacbf6ecb88cd6e31/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">UN’ESTATE FA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">DAVIDE MARENGO / MARTA SAVINA</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.49"
+  data-end-anchor="0.25"
+  data-director-start="0.460"
+  data-director-end="0.380"
+  data-director-k="31.5"
+  data-director-d="11.5" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview L’INFINITO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/0086e0b33674a6600af5b84a0141768d/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">L’INFINITO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">UMBERTO CONTARELLO</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview MASCHI VERI"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/b86261d2d72989ff943ffb8e1dc9762b/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">MASCHI VERI</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">LETIZIA LAMARTIRE / MATTEO OLEOTTO</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.12"
+  data-end-anchor="0.41"
+  data-director-start="0.378"
+  data-director-end="0.298"
+  data-director-k="22.5"
+  data-director-d="9.9" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview GANGS DI MILANO"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/1804758f323ff010f2489d0a90689c3d/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">GANGS DI MILANO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">CIRO VISCO</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="415460dbd1cc7a2ffe5932689b3868df"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.43"
+  data-end-anchor="0.21"
+  data-director-start="0.390"
+  data-director-end="0.310"
+  data-director-k="24.5"
+  data-director-d="10.1" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview SUPERSEX"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/f3f30b09ccef806756d11792f0cf5458/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>SUPERSEX</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">MATTEO ROVERE / FRANCESCO CARROZZINI / FRANCESCA MAZZOLENI</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="a295cc05be14997b12843f713f25e87f"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA CITTÀ PROIBITA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/e7abfca4d70c1981e9c368a9d93edc43/iframe?autoplay=false&amp;muted=true&amp;loop=true&amp;controls=false&amp;preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA CITTÀ PROIBITA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">GABRIELE MAINETTI</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="130156eafe4034217da9bb55c0e8251c"
+  data-clip-status="selection-pending"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.12"
+  data-end-anchor="0.41"
+  data-director-start="0.378"
+  data-director-end="0.298"
+  data-director-k="22.5"
+  data-director-d="9.9" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview PARTHENOPE"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/97d46163332cda2ac466178f4deb25fd/iframe?autoplay=false&amp;muted=true&amp;loop=true&amp;controls=false&amp;preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>PARTHENOPE</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">PAOLO SORRENTINO</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="42a947f434b79ec7cd878330b95665ff"
+  data-clip-status="selection-pending"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.43"
+  data-end-anchor="0.21"
+  data-director-start="0.390"
+  data-director-end="0.310"
+  data-director-k="24.5"
+  data-director-d="10.1" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview DIVA FUTURA"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/ae87ee43ff75a2ecac265eb74704997a/iframe?autoplay=false&amp;muted=true&amp;loop=true&amp;controls=false&amp;preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>DIVA FUTURA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">GIULIA LOUISE STEIGERWALT</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview SEI FRATELLI"
+      loading="eager"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/12fcb6666cb7ce211b5c7f6b154bbaef/iframe?autoplay=false&amp;muted=true&amp;loop=true&amp;controls=false&amp;preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title">SEI FRATELLI</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director"><span class="credit-label">DIRETTO DA</span><span class="credit-name">SIMONE GODANO</span></div></div>
+  </div>
+</section>
+
+<section class="project medium left"
+  data-trailer-uid="5325987c987a532e230f4ed5b54091e1"
+  data-title-x="9.2"
+  data-hover-mode="align-to-offset-soft"
+  data-start-anchor="0.18"
+  data-end-anchor="0.46"
+  data-director-start="0.448"
+  data-director-end="0.368"
+  data-director-k="30.5"
+  data-director-d="11.3" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview ANOTHER END"
+      loading="lazy"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/108096845b4b741d6e0462db7239e855/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>ANOTHER END</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">PIERO MESSINA</span></div></div>
+  </div>
+</section>
+
+<section class="project wide right"
+  data-trailer-uid="bd9ca57e9ad410cdd58b416746564680"
+  data-clip-status="trailer-preview"
+  data-title-x="27.8"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.45"
+  data-end-anchor="0.22"
+  data-director-start="0.424"
+  data-director-end="0.344"
+  data-director-k="28"
+  data-director-d="10.8" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview EL PARAÍSO"
+      loading="lazy"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/bd9ca57e9ad410cdd58b416746564680/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>EL PARAÍSO</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">ENRICO MARIA ARTALE</span></div></div>
+  </div>
+</section>
+
+<section class="project large"
+  data-trailer-uid="ebb529421d59709b20ae19767202db11"
+  data-clip-status="trailer-preview"
+  data-title-x="9.2"
+  data-hover-mode="offset-to-align-soft"
+  data-start-anchor="0.50"
+  data-end-anchor="0.25"
+  data-director-start="0.365"
+  data-director-end="0.285"
+  data-director-k="21.5"
+  data-director-d="9.7" data-visible-bottom-lift="0.018">
+  <div class="media">
+    <div class="underlay"></div>
+    <div class="video-layer" data-video-layer>
+    <iframe class="video-frame"
+      title="Preview LA GRAZIA"
+      loading="lazy"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      data-src="https://customer-g4gszpjfcto93ptl.cloudflarestream.com/ebb529421d59709b20ae19767202db11/iframe?autoplay=false&muted=true&loop=true&controls=false&preload=metadata"></iframe>
+    </div>
+  </div>
+  <div class="copy-clip">
+    <div class="line-mask title-mask"><div class="line-inner title" data-trailer-trigger>LA GRAZIA</div></div>
+    <div class="line-mask director-mask"><div class="line-inner director" data-trailer-trigger><span class="credit-label">DIRETTO DA</span><span class="credit-name">PAOLO SORRENTINO</span></div></div>
+  </div>
+</section>
+
+<section class="stars-coda" aria-label="Campo di stelle"></section>
+<div class="endspace"></div>
+
+<script>
+(()=>{
+  const projects=[...document.querySelectorAll('.project')];
+  const mobileView=matchMedia('(max-width:800px)');
+  // Only mount nearby previews on phones; the desktop player lifecycle is unchanged.
+  const mobileObserver=new IntersectionObserver(entries=>{
+    if(!mobileView.matches)return;
+    entries.forEach(({target,isIntersecting})=>{
+      const iframe=target.querySelector('.video-frame');
+      if(!iframe)return;
+      if(isIntersecting && !document.hidden){
+        if(!iframe.getAttribute('src'))iframe.src=iframe.dataset.src.replace('autoplay=false','autoplay=true');
+      }else if(iframe.getAttribute('src')){
+        iframe.classList.remove('is-loaded');iframe.removeAttribute('src');
+      }
+    });
+  },{rootMargin:'40% 0px'});
+  function configurePreviews(){
+    projects.forEach(p=>{
+      const iframe=p.querySelector('.video-frame');
+      if(!iframe)return;
+      if(mobileView.matches){
+        if(!iframe.dataset.loadBound){
+          iframe.addEventListener('load',()=>{if(iframe.getAttribute('src'))iframe.classList.add('is-loaded')});
+          iframe.dataset.loadBound='true';
+        }
+        const thumbnail=iframe.dataset.src.replace('/iframe?','/thumbnails/thumbnail.jpg?time=1s&height=360&');
+        p.querySelector('.media').style.backgroundImage=`url("${thumbnail}")`;
+        mobileObserver.observe(p);
+      }else{
+        mobileObserver.unobserve(p);
+        if(!iframe.getAttribute('src'))iframe.src=iframe.dataset.src;
+      }
+    });
+  }
+  configurePreviews();
+  mobileView.addEventListener('change',configurePreviews);
+  document.addEventListener('visibilitychange',()=>{
+    if(!mobileView.matches)return;
+    if(document.hidden)projects.forEach(p=>{
+      const iframe=p.querySelector('.video-frame');
+      iframe?.classList.remove('is-loaded');iframe?.removeAttribute('src');
+    });
+    else projects.forEach(p=>{mobileObserver.unobserve(p);mobileObserver.observe(p)});
+  });
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const smooth=(a,b,x)=>{
+    const t=clamp((x-a)/(b-a),0,1);
+    return t*t*(3-2*t);
+  };
+
+  function springStep(s,target,dt,k,c){
+    const t=Math.min(dt,40)/1000;
+    const a=(target-s.x)*k-s.v*c;
+    s.v+=a*t;
+    s.x+=s.v*t;
+    return s.x;
+  }
+
+  const states=new Map();
+  projects.forEach(p=>{
+    states.set(p,{
+      titleIn:{x:0,v:0},
+      directorIn:{x:0,v:0},
+      titleOut:{x:0,v:0},
+      directorOut:{x:0,v:0},
+      xTitle:{x:Number(p.dataset.titleX),v:0},
+      xDirector:{x:Number(p.dataset.titleX),v:0},
+      hover:{x:0,v:0},
+      hoverTarget:0,
+      directorDelayStart:null,
+      directorDelayArmed:false,
+      titleArmed:false,
+
+    });
+  });
+
+  let pointerX=-9999, pointerY=-9999;
+  let hoverProject=null;
+
+  addEventListener('pointermove',e=>{
+    if(mobileView.matches)return;
+    pointerX=e.clientX;
+    pointerY=e.clientY;
+
+    let hit=null;
+
+    for(const p of projects){
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+      const tr=title.getBoundingClientRect();
+      const dr=director.getBoundingClientRect();
+      const pad=16;
+
+      const overTitle=
+        pointerX>=tr.left-pad && pointerX<=tr.right+pad &&
+        pointerY>=tr.top-pad && pointerY<=tr.bottom+pad;
+
+      const overDirector=
+        pointerX>=dr.left-pad && pointerX<=dr.right+pad &&
+        pointerY>=dr.top-pad && pointerY<=dr.bottom+pad;
+
+      if(overTitle||overDirector){
+        hit=p;
+        break;
+      }
+    }
+
+    hoverProject=hit;
+  },{passive:true});
+
+  addEventListener('pointerleave',()=>{
+    pointerX=-9999;
+    pointerY=-9999;
+    hoverProject=null;
+  },{passive:true});
+
+  const PICTURE_SAFE_RATIO=0.88;
+  const motion=new WorksMotion();
+  const playback=projects.map(p=>({iframe:p.querySelector('iframe'),api:null,playing:null}));
+  let lastWheelAt=0,wheelBurst=0,playbackQuietUntil=0,holdPlaybackForFastScroll=false;
+  function updatePlayback(positions,layouts,vh){
+    // The approved card motion must never wait for 19 embedded players to
+    // receive play/pause messages during a fast gesture. Keep their current
+    // frames, then reconcile playback once the animated handoff settles.
+    if(holdPlaybackForFastScroll){
+      if(performance.now()<playbackQuietUntil || motion.isLocked())return;
+      holdPlaybackForFastScroll=false;
+      window.__worksFastScrollActive=false;
+    }
+    const visible=positions.map((y,i)=>y<vh && y+layouts[i].height>0?i:-1).filter(i=>i>=0);
+    playback.forEach((p,i)=>{
+      const near=visible.some(j=>Math.abs(i-j)<=1) && !document.hidden;
+      if(!p.api && typeof Stream==='function')p.api=Stream(p.iframe);
+      if(p.api && p.playing!==near){
+        p.playing=near;
+        if(near){p.api.muted=true;p.api.play().catch(()=>{p.iframe.dataset.playback='unavailable';});}
+        else p.api.pause();
+      }
+    });
+  }
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  let prev=performance.now();
+
+  // A gesture controls the armed handoff; releasing it lets the same curve finish.
+  addEventListener('wheel',e=>{
+    if(mobileView.matches)return;
+    if(document.body.classList.contains('trailer-open'))return;
+    const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);
+    const now=performance.now();
+    wheelBurst=now-lastWheelAt<160?wheelBurst+Math.abs(delta):Math.abs(delta);
+    lastWheelAt=now;
+    if(Math.abs(delta)>180 || wheelBurst>400){
+      holdPlaybackForFastScroll=true;
+      window.__worksFastScrollActive=true;
+      playbackQuietUntil=now+240;
+    }
+    motion.noteInput(delta);
+    if(motion.isLocked() && e.cancelable)e.preventDefault();
+  },{passive:false});
+  let motionTouchY=null;
+  addEventListener('touchstart',e=>{
+    motionTouchY=e.touches[0]?.clientY??null;
+  },{passive:true});
+  addEventListener('touchmove',e=>{
+    if(mobileView.matches)return;
+    const nextY=e.touches[0]?.clientY??motionTouchY;
+    if(motionTouchY!==null&&nextY!==null)motion.noteInput(motionTouchY-nextY);
+    motionTouchY=nextY;
+  },{passive:true});
+  addEventListener('touchend',()=>{motionTouchY=null;},{passive:true});
+  addEventListener('keydown',e=>{
+    if(mobileView.matches)return;
+    const direction=['ArrowUp','PageUp','Home'].includes(e.key)?-1:1;
+    if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(e.key))motion.noteInput(direction*80);
+  });
+  addEventListener('pointerdown',e=>{if(!mobileView.matches&&e.clientX>=innerWidth-24)motion.setDirectControl(true);},{passive:true});
+  addEventListener('pointerup',()=>{if(motion.directControl)motion.setDirectControl(false);},{passive:true});
+  addEventListener('pointercancel',()=>{if(motion.directControl)motion.setDirectControl(false);},{passive:true});
+
+  function frame(now){
+    const dt=now-prev; prev=now;
+    if(mobileView.matches){requestAnimationFrame(frame);return;}
+    const vh=innerHeight;
+    // The copy lives inside the Soglia frame: every horizontal measure is
+    // relative to the inner paper, never to the full browser viewport.
+    const frameSidePx=parseFloat(getComputedStyle(document.getElementById('worksFrame')).borderLeftWidth)||innerWidth*.02;
+    const contentWidth=Math.max(1,innerWidth-frameSidePx*2);
+    // Read geometry once before writing any media positions.
+    const projectRects=projects.map(p=>p.getBoundingClientRect());
+    const layouts=projectRects.map((r,i)=>({top:r.top+scrollY,height:projects[i].querySelector('.media').offsetHeight}));
+    document.documentElement.dataset.motionFrame=String(now);
+    document.documentElement.dataset.nativeScroll=String(scrollY);
+    const positions=motion.update(layouts,scrollY,vh,dt/1000,reducedMotion.matches);
+    if(motion.scrollCommand!==null && Math.abs(scrollY-motion.scrollCommand)>.5)scrollTo(0,motion.scrollCommand);
+    updatePlayback(positions,layouts,vh);
+    projects.forEach((p,index)=>{
+      const media=p.querySelector('.media');
+      media.style.transform=`translate3d(0,${positions[index].toFixed(3)}px,0)`;
+      media.dataset.motionMode=motion.cards[index].mode;
+      media.dataset.motionOffset=String(motion.cards[index].offset);
+      media.style.visibility='visible';
+    });
+    projects.forEach((p,index)=>{
+      const s=states.get(p);
+      const media=p.querySelector('.media');
+      const pr=projectRects[index];
+      const mediaY=positions[index];
+      if(positions[index]+layouts[index].height < -vh || positions[index]>vh*2){
+        p.querySelector('.copy-clip').style.visibility='hidden';
+        return;
+      }
+      p.querySelector('.copy-clip').style.visibility='visible';
+      media.style.transform=`translate3d(0,${mediaY.toFixed(3)}px,0)`;
+      media.style.clipPath='none';
+      const mediaLayer=p.querySelector('[data-video-layer]');
+      mediaLayer.style.transform='translate3d(0,0,0)';
+      mediaLayer.dataset.revealPx='0';
+
+      const mr=media.getBoundingClientRect();
+      const pictureTop=mr.top;
+      const pictureBottom=Math.min(mr.bottom,pictureTop+mr.height*PICTURE_SAFE_RATIO);
+      const pictureHeight=Math.max(0,pictureBottom-pictureTop);
+      p.dataset.pictureTop=pictureTop.toFixed(3);
+      p.dataset.pictureBottom=pictureBottom.toFixed(3);
+
+      const titleMask=p.querySelector('.title-mask');
+      const directorMask=p.querySelector('.director-mask');
+      const title=p.querySelector('.title');
+      const director=p.querySelector('.director');
+
+      const titleH=titleMask.offsetHeight;
+      const directorH=directorMask.offsetHeight;
+      const large=p.classList.contains('large');
+
+      const copyClip=p.querySelector('.copy-clip');
+      const titleLineH=title.offsetHeight;
+      const directorLineH=director.offsetHeight;
+
+      const pictureLocalTop=pictureTop;
+      copyClip.style.top=`${pictureLocalTop}px`;
+      copyClip.style.height=`${pictureHeight}px`;
+      copyClip.style.clipPath='none';
+
+      const bottomClearance=Math.max(20,pictureHeight*.04);
+
+      const interlineAir=Math.max(16,titleLineH*.18);
+
+      const naturalDirectorY=pictureBottom-bottomClearance-directorLineH;
+      const naturalTitleY=naturalDirectorY-titleLineH-interlineAir;
+      const naturalGap=naturalDirectorY-naturalTitleY;
+
+      const center=mr.top+mr.height*.5;
+
+      const titleRawContinuous=smooth(vh*.535,vh*.475,center);
+      if(!s.titleArmed && titleRawContinuous>=.5) s.titleArmed=true;
+      if(s.titleArmed && titleRawContinuous<=.08) s.titleArmed=false;
+      const titleRaw=s.titleArmed?1:0;
+
+      const directorK=Number(p.dataset.directorK||29);
+      const directorD=Number(p.dataset.directorD||10.8);
+
+      const titleIn=clamp(springStep(s.titleIn,titleRaw,dt,50,12.6),0,1.015);
+
+      if(!s.directorDelayArmed && titleIn>=.985){
+        s.directorDelayArmed=true;
+        s.directorDelayStart=now;
+      }
+      if(s.directorDelayArmed && titleIn<.72){
+        s.directorDelayArmed=false;
+        s.directorDelayStart=null;
+      }
+
+      const directorDelayDone=s.directorDelayArmed && s.directorDelayStart!==null && (now-s.directorDelayStart)>=0;
+      const directorTarget=directorDelayDone?1:0;
+      const directorIn=clamp(springStep(s.directorIn,directorTarget,dt,directorK,directorD),0,1.012);
+      const directorEntryGate=smooth(.90,.985,titleIn);
+      const directorVisibleIn=directorIn*directorEntryGate;
+
+      // The texts now take their cue from the inner paper edge of the
+      // frozen Soglia frame, not from the top of the browser window.
+      const stickyTop=parseFloat(getComputedStyle(document.getElementById('worksFrame')).borderTopWidth)||vh*.0652;
+      const titleSticky=naturalTitleY<=stickyTop;
+      const titleViewportY=titleSticky ? stickyTop : naturalTitleY;
+      // Film and director remain one typographic unit. Once the title meets
+      // the frame edge, the director is carried by that exact same motion.
+      const directorViewportY=titleViewportY+naturalGap;
+
+      const titleExitStart=titleViewportY+titleH+150;
+      const titleExitEnd=titleViewportY+titleH+70;
+      const directorExitStart=directorViewportY+directorH+42;
+      const directorExitEnd=directorViewportY+directorH+10;
+
+      const titleExitRaw=titleSticky ? 1-smooth(titleExitEnd,titleExitStart,pictureBottom) : 0;
+      const directorExitRaw=titleSticky ? 1-smooth(directorExitEnd,directorExitStart,pictureBottom) : 0;
+
+      const titleOut=clamp(springStep(s.titleOut,titleExitRaw,dt,18,9.3),0,1.025);
+      const directorOutBase=clamp(springStep(s.directorOut,directorExitRaw,dt,11.8,8.9),0,1.02);
+      const directorReverseHold=titleSticky ? smooth(0.40,0.72,titleOut) : 0;
+      const directorOut=Math.max(directorOutBase,directorReverseHold);
+
+      const scrollConv=smooth(vh*.54,vh*.10,center);
+
+      const baseTitle=Number(p.dataset.titleX);
+      const mode=p.dataset.hoverMode||'offset-to-align';
+      const startAnchor=Number(p.dataset.startAnchor||.5);
+      const endAnchor=Number(p.dataset.endAnchor||.16);
+
+      const titleWidthPx=title.offsetWidth;
+      const contentUnit=contentWidth/100;
+
+      const startDirectorX=baseTitle + (titleWidthPx*startAnchor)/contentUnit;
+
+      const scrollTitleX=baseTitle + scrollConv*.55;
+      const scrollDirectorX=startDirectorX - scrollConv*1.15;
+
+      s.hoverTarget=(hoverProject===p)?1:0;
+      p.classList.toggle('is-hover',s.hoverTarget===1);
+
+      const hover=clamp(springStep(s.hover,s.hoverTarget,dt,112,20.5),0,1);
+
+      let hoverTitleX=scrollTitleX;
+      let hoverDirectorX=scrollDirectorX;
+
+      if(mode==='offset-to-align'){
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/contentUnit;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='offset-to-align-soft'){
+        const commonX=baseTitle + (titleWidthPx*endAnchor)/contentUnit;
+        hoverTitleX=commonX;
+        hoverDirectorX=commonX;
+
+      }else if(mode==='align-to-offset'){
+        const centerX=baseTitle + (titleWidthPx*.17)/contentUnit;
+        hoverTitleX=centerX - Math.max(18,titleWidthPx*.055)/contentUnit;
+        hoverDirectorX=centerX + Math.max(64,titleWidthPx*.23)/contentUnit;
+
+      }else if(mode==='align-to-offset-gentle'){
+        const centerX=baseTitle + (titleWidthPx*.13)/contentUnit;
+        hoverTitleX=centerX - Math.max(16,titleWidthPx*.05)/contentUnit;
+        hoverDirectorX=centerX + Math.max(32,titleWidthPx*.115)/contentUnit;
+
+      }else if(mode==='align-to-offset-soft'){
+        const centerX=baseTitle + (titleWidthPx*.14)/contentUnit;
+        hoverTitleX=centerX - Math.max(22,titleWidthPx*.07)/contentUnit;
+        hoverDirectorX=centerX + Math.max(44,titleWidthPx*.16)/contentUnit;
+
+      }else{
+        const centerX=baseTitle + (titleWidthPx*.20)/contentUnit;
+        hoverTitleX=centerX - Math.max(14,titleWidthPx*.045)/contentUnit;
+        hoverDirectorX=centerX + Math.max(50,titleWidthPx*.19)/contentUnit;
+      }
+
+      const targetTitleX=scrollTitleX+(hoverTitleX-scrollTitleX)*hover;
+      const targetDirectorX=scrollDirectorX+(hoverDirectorX-scrollDirectorX)*hover;
+
+      const activeHover=hover>.02;
+
+      const xTitle=activeHover
+        ? springStep(s.xTitle,targetTitleX,dt,88,16.8)
+        : springStep(s.xTitle,targetTitleX,dt,18,9.2);
+
+      const xDirector=activeHover
+        ? springStep(s.xDirector,targetDirectorX,dt,82,15.8)
+        : springStep(s.xDirector,targetDirectorX,dt,16,8.8);
+
+      titleMask.style.transform=`translate3d(0,${titleViewportY-pictureTop}px,0)`;
+      directorMask.style.transform=`translate3d(0,${directorViewportY-pictureTop}px,0)`;
+
+      const clampMaskToPicture=(mask, viewportY, maskH)=>{
+        const maskBottom=viewportY+maskH;
+        const clipTop=clamp(pictureTop-viewportY,0,maskH);
+        const clipBottom=clamp(maskBottom-pictureBottom,0,maskH);
+        const fullyOutside=(clipTop+clipBottom)>=maskH-.5 || pictureHeight<1;
+        mask.style.visibility=fullyOutside?'hidden':'visible';
+        mask.style.clipPath=fullyOutside
+          ? 'inset(50% 0 50% 0)'
+          : `inset(${clipTop}px 0 ${clipBottom}px 0)`;
+      };
+
+      clampMaskToPicture(titleMask,titleViewportY,titleH);
+      clampMaskToPicture(directorMask,directorViewportY,directorH);
+
+      const titleEntryY=(1-titleIn)*.98*titleH;
+      const directorEntryY=(1-directorVisibleIn)*.98*directorH;
+
+      const titleExitY=titleOut*1.015*titleH;
+      const directorExitY=directorOut*1.015*directorH;
+
+      const titleY=titleEntryY+titleExitY;
+      const directorY=directorEntryY+directorExitY;
+
+      const titleSoft=smooth(.55,1,titleOut);
+      const directorSoft=smooth(.55,1,directorOut);
+
+      // Clamp against the inner frame so film titles and directors react to
+      // its margins rather than disappearing beyond the screen edge.
+      const titleXpx=clamp(xTitle*contentUnit,0,Math.max(0,contentWidth-title.offsetWidth));
+      const directorXpx=clamp(xDirector*contentUnit,0,Math.max(0,contentWidth-director.offsetWidth));
+      title.style.transform=`translate3d(${titleXpx.toFixed(3)}px,${titleY}px,0)`;
+      director.style.transform=`translate3d(${directorXpx.toFixed(3)}px,${directorY}px,0)`;
+      title.style.opacity=clamp(titleIn*(1-titleSoft*.42),0,1);
+      director.style.opacity=clamp(directorVisibleIn*(1-directorSoft*.42),0,1);
+      title.style.filter=`blur(${titleSoft*.35}px)`;
+      director.style.filter=`blur(${directorSoft*.35}px)`;
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+
+  window.__worksV22QA=()=>projects.map((p,i)=>{
+    const mr=p.querySelector('.media').getBoundingClientRect();
+    const revealPx=Number(p.querySelector('[data-video-layer]').dataset.revealPx||0);
+    const pictureTop=Math.min(mr.bottom,mr.top+revealPx);
+    const pictureBottom=Math.min(mr.bottom,pictureTop+mr.height*PICTURE_SAFE_RATIO);
+    const cc=p.querySelector('.copy-clip').getBoundingClientRect();
+    return {i,mediaTop:mr.top,mediaBottom:mr.bottom,revealPx,pictureTop,pictureBottom,copyTop:cc.top,copyBottom:cc.bottom};
+  });
+})();
+</script>
+
+<div class="trailer-panel" id="trailerPanel" aria-hidden="true">
+  <div class="trailer-panel-inner">
+    <div class="trailer-player-wrap" id="trailerPlayerWrap">
+      <div class="trailer-fullscreen-stage" id="trailerFullscreenStage">
+      <div class="trailer-video-surface" id="trailerVideoSurface">
+        <div class="trailer-loader is-loading" id="trailerLoader" aria-label="Caricamento trailer"></div>
+        <video id="trailerVideo" playsinline preload="auto"></video>
+      </div>
+      <div class="trailer-controls" id="trailerControls" aria-label="Controlli trailer">
+        <div class="trailer-play-wrap">
+          <button type="button" class="trailer-control-btn trailer-play-btn" id="trailerPlay" aria-label="Play / Pause">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><g id="playGlyph"><path class="fill-icon" d="M6 4.2 15 10 6 15.8Z"/></g><g id="pauseGlyph" style="display:none"><rect class="fill-icon" x="5" y="4" width="3.2" height="12"/><rect class="fill-icon" x="11.8" y="4" width="3.2" height="12"/></g></svg>
+          </button>
+          <div class="trailer-fs-tip trailer-play-tip" id="trailerPlayTip">Play</div>
+        </div>
+        <div class="trailer-progress" id="trailerProgress" role="slider" aria-label="Posizione trailer" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="trailer-progress-track"><div class="trailer-progress-buffered" id="trailerProgressBuffered"></div><div class="trailer-progress-fill" id="trailerProgressFill"></div></div>
+          <div class="trailer-progress-knob" id="trailerProgressKnob"></div>
+          <div class="trailer-time-tip" id="trailerTimeTip">00:00</div>
+          <div class="trailer-preview-tip" id="trailerPreviewTip"><img id="trailerPreviewImg" alt=""><div class="trailer-preview-time" id="trailerPreviewTime">00:00</div></div>
+        </div>
+        <div class="trailer-volume-wrap">
+          <button type="button" class="trailer-control-btn" id="trailerMute" aria-label="Audio">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8h3l4-3v10l-4-3H4z"/><path id="volWave1" d="M13.2 7.2c1.4 1.4 1.4 4.2 0 5.6"/><path id="volWave2" d="M15.5 5.3c2.4 2.5 2.4 6.9 0 9.4"/><path id="volMuteSlash" d="M2.8 3.2L17.2 16.8" style="display:none;stroke-width:2.1"/></svg>
+          </button>
+          <div class="trailer-volume-pop" id="trailerVolumePop" aria-label="Volume"><div class="trailer-volume-track" id="trailerVolumeTrack"><div class="trailer-volume-fill" id="trailerVolumeFill"></div><div class="trailer-volume-knob" id="trailerVolumeKnob"></div></div></div>
+        </div>
+        <div class="trailer-fs-wrap">
+          <button type="button" class="trailer-control-btn" id="trailerFullscreen" aria-label="Schermo intero">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <g id="fsEnterGlyph"><path d="M3.5 7V3.5H7M13 3.5h3.5V7M16.5 13v3.5H13M7 16.5H3.5V13"/></g>
+              <g id="fsExitGlyph" style="display:none"><path d="M7 3.5V7H3.5M13 3.5V7h3.5M13 16.5V13h3.5M7 16.5V13H3.5"/></g>
+            </svg>
+          </button>
+          <div class="trailer-fs-tip" id="trailerFsTip">Fullscreen</div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  <button class="trailer-close" id="trailerClose" aria-label="Torna ai lavori"><span class="close-arrows" aria-hidden="true"><svg class="arrow-enter" viewBox="0 0 256 256"><path d="M202.83,205.17a4,4,0,0,1-5.66,5.66l-80-80a4,4,0,0,1,0-5.66l80-80a4,4,0,1,1,5.66,5.66L125.66,128ZM45.66,128l77.17-77.17a4,4,0,0,0-5.66-5.66l-80,80a4,4,0,0,0,0,5.66l80,80a4,4,0,1,0,5.66-5.66Z"/></svg><svg class="arrow-close" viewBox="0 0 256 256"><path d="M202.83,205.17a4,4,0,0,1-5.66,5.66l-80-80a4,4,0,0,1,0-5.66l80-80a4,4,0,1,1,5.66,5.66L125.66,128ZM45.66,128l77.17-77.17a4,4,0,0,0-5.66-5.66l-80,80a4,4,0,0,0,0,5.66l80,80a4,4,0,1,0,5.66-5.66Z"/></svg></span></button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+<script id="trailer-v33-script">
+(()=>{
+  const panel=document.getElementById('trailerPanel');
+  const closeBtn=document.getElementById('trailerClose');
+  const wrap=document.getElementById('trailerPlayerWrap');
+  const fsStage=document.getElementById('trailerFullscreenStage');
+  const fsHome=document.createComment('fullscreen-stage-home');
+  fsStage.parentNode.insertBefore(fsHome,fsStage);
+  const video=document.getElementById('trailerVideo');
+  const videoSurface=document.getElementById('trailerVideoSurface');
+  const loader=document.getElementById('trailerLoader');
+  const playBtn=document.getElementById('trailerPlay');
+  const playGlyph=document.getElementById('playGlyph');
+  const playTip=document.getElementById('trailerPlayTip');
+  const pauseGlyph=document.getElementById('pauseGlyph');
+  const muteBtn=document.getElementById('trailerMute');
+  const volWave1=document.getElementById('volWave1');
+  const volWave2=document.getElementById('volWave2');
+  const volMuteSlash=document.getElementById('volMuteSlash');
+  const volumePop=document.getElementById('trailerVolumePop');
+  const volumeTrack=document.getElementById('trailerVolumeTrack');
+  const volumeFill=document.getElementById('trailerVolumeFill');
+  const volumeKnob=document.getElementById('trailerVolumeKnob');
+  let volumeValue=1;
+  const fsBtn=document.getElementById('trailerFullscreen');
+  const fsTip=document.getElementById('trailerFsTip');
+  const fsEnterGlyph=document.getElementById('fsEnterGlyph');
+  const fsExitGlyph=document.getElementById('fsExitGlyph');
+  const progress=document.getElementById('trailerProgress');
+  const fill=document.getElementById('trailerProgressFill');
+  const buffered=document.getElementById('trailerProgressBuffered');
+  const knob=document.getElementById('trailerProgressKnob');
+  const timeTip=document.getElementById('trailerTimeTip');
+  const previewTip=document.getElementById('trailerPreviewTip');
+  const previewImg=document.getElementById('trailerPreviewImg');
+  const previewTime=document.getElementById('trailerPreviewTime');
+  const triggers=[...document.querySelectorAll('[data-trailer-trigger]')];
+
+  const CF='https://customer-g4gszpjfcto93ptl.cloudflarestream.com';
+  let currentUID=null;
+  const HLS_SRC=()=>currentUID?`${CF}/${currentUID}/manifest/video.m3u8`:'';
+  const THUMB_SRC=t=>currentUID?`${CF}/${currentUID}/thumbnails/thumbnail.jpg?time=${Math.max(0,t).toFixed(1)}s&height=120`:'';
+  let hls=null,sourceAttached=false,qualityReady=false,mediaReady=false,open=false,lastScrollY=0,openingProject=null;
+  let closeTimer=null,openTimer=null,controlsTimer=null,fsControlsTimer=null,revealTimer=null,desiredLevel=-1,lastPreviewSecond=-1,volumeDragging=false,volumeHideTimer=null,cinematicFullscreen=false,fullscreenAnimating=false;
+  let userMuted=false,lastAudibleVolume=1;
+  const PANEL_MS=1720, BLACK_BEFORE_EXIT_MS=250, MIN_LOADER_MS=520, CLICK_DARKEN_MS=290;
+  let arrowTurnTimer=0,arrowRevealTimer=0,arrowExitFrame=0,arrowEnterFrame=0;
+
+  const formatTime=s=>{if(!Number.isFinite(s))return '00:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')};
+  const readyEnough=()=>video.readyState>=3 && (qualityReady || !window.Hls || !Hls.isSupported());
+
+  function markMediaReady(){
+    mediaReady=true;
+    wrap.classList.add('media-ready');
+    loader.classList.remove('is-loading');
+    if(open){video.volume=volumeValue;video.muted=userMuted || video.volume===0;video.play().catch(()=>{});showControls();updateVolumeIcon();}
+  }
+  function maybeReveal(openedAt=0){
+    if(!readyEnough())return;
+    const wait=Math.max(0,MIN_LOADER_MS-(performance.now()-openedAt));
+    clearTimeout(revealTimer);
+    revealTimer=setTimeout(markMediaReady,wait);
+  }
+  function destroySource(){
+    try{video.pause();}catch(e){}
+    if(hls){try{hls.destroy();}catch(e){} hls=null;}
+    try{video.removeAttribute('src');video.load?.();}catch(e){}
+    sourceAttached=false;qualityReady=false;mediaReady=false;desiredLevel=-1;lastPreviewSecond=-1;
+    wrap.classList.remove('media-ready');loader.classList.add('is-loading');
+  }
+  function selectSource(uid){
+    if(!uid)return;
+    if(currentUID===uid && sourceAttached)return;
+    if(sourceAttached || currentUID!==uid)destroySource();
+    currentUID=uid;
+    attachSource();
+  }
+  function attachSource(){
+    if(sourceAttached||!currentUID)return;sourceAttached=true;
+    video.preload='auto';
+    if(window.Hls&&Hls.isSupported()){
+      hls=new Hls({enableWorker:true,lowLatencyMode:false,capLevelToPlayerSize:false,abrEwmaDefaultEstimate:8000000,maxBufferLength:40});
+      hls.loadSource(HLS_SRC());hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+        desiredLevel=hls.levels.reduce((best,l,i)=>((l.height||0)>(hls.levels[best]?.height||0)?i:best),0);
+        if(desiredLevel>=0){
+          try{hls.startLevel=desiredLevel;hls.loadLevel=desiredLevel;hls.nextLevel=desiredLevel;}catch(e){}
+        }
+      });
+      hls.on(Hls.Events.FRAG_BUFFERED,(_,data)=>{
+        const lvl=data&&data.frag&&Number.isInteger(data.frag.level)?data.frag.level:-1;
+        if(desiredLevel<0 || lvl===desiredLevel){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}
+      });
+      hls.on(Hls.Events.ERROR,(_,data)=>{if(data&&data.fatal){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}});
+    }else{
+      video.src=HLS_SRC();
+      video.oncanplaythrough=()=>{qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);};
+      video.onloadeddata=()=>setTimeout(()=>{if(sourceAttached){qualityReady=true;maybeReveal(window.__trailerOpenedAt||0);}},900);
+    }
+    video.load?.();
+  }
+  window.addEventListener('load',()=>{
+    try{const l=document.createElement('link');l.rel='preconnect';l.href=CF;document.head.appendChild(l);}catch(e){}
+  },{once:true});
+
+  function showControls(){
+    if(wrap.classList.contains('closing-black'))return;
+    wrap.classList.add('controls-active');
+    clearTimeout(controlsTimer);
+    controlsTimer=setTimeout(()=>wrap.classList.remove('controls-active'),1500);
+  }
+  function showFullscreenControls(){
+    if(!cinematicFullscreen)return;
+    wrap.classList.add('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+    fsControlsTimer=setTimeout(()=>wrap.classList.remove('fs-controls-active'),1000);
+  }
+  function openTrailer(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    if(open)return;
+    open=true;lastScrollY=window.scrollY;
+    openingProject=ev&&ev.currentTarget?ev.currentTarget.closest('.project'):null;
+    if(openingProject)openingProject.classList.add('is-opening');
+    clearTimeout(openTimer);clearTimeout(closeTimer);clearTimeout(revealTimer);clearTimeout(fsControlsTimer);clearTimeout(arrowTurnTimer);clearTimeout(arrowRevealTimer);cancelAnimationFrame(arrowExitFrame);cancelAnimationFrame(arrowEnterFrame);
+    closeBtn.style.removeProperty('--arrow-exit-opacity');closeBtn.style.removeProperty('--arrow-entry-opacity');
+    fsStage.classList.remove('fs-controls-active');panel.classList.remove('is-exiting','is-entering','is-arrow-swapping');
+    wrap.classList.remove('closing-black');panel.classList.remove('is-closing');wrap.classList.remove('media-ready');mediaReady=false;
+    loader.classList.add('is-loading');
+    const selectedUID=openingProject?.dataset?.trailerUid;
+    selectSource(selectedUID);
+
+    openTimer=setTimeout(()=>{
+      if(!open)return;
+      window.__trailerOpenedAt=performance.now();
+      panel.classList.add('is-visible','is-entering');panel.setAttribute('aria-hidden','false');document.body.classList.add('trailer-open');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(!open)return;
+        const fadeStart=window.innerWidth*.32;
+        const fadeDistance=window.innerWidth*.40;
+        closeBtn.style.setProperty('--arrow-entry-opacity','0');
+        panel.classList.add('is-open');
+        const fadeWithPosition=()=>{
+          if(!open || !panel.classList.contains('is-entering'))return;
+          const progress=Math.max(0,Math.min(1,(panel.getBoundingClientRect().right-fadeStart)/fadeDistance));
+          const smooth=progress*progress*(3-2*progress);
+          closeBtn.style.setProperty('--arrow-entry-opacity',String(smooth));
+          if(progress<1)arrowEnterFrame=requestAnimationFrame(fadeWithPosition);
+        };
+        arrowEnterFrame=requestAnimationFrame(fadeWithPosition);
+        arrowTurnTimer=setTimeout(()=>{
+          if(!open)return;
+          cancelAnimationFrame(arrowEnterFrame);
+          closeBtn.style.setProperty('--arrow-entry-opacity','1');
+          panel.classList.add('is-arrow-swapping');
+          arrowRevealTimer=setTimeout(()=>{
+            if(open){panel.classList.remove('is-entering','is-arrow-swapping');closeBtn.style.removeProperty('--arrow-entry-opacity');}
+          },560);
+        },PANEL_MS);
+      }));
+      maybeReveal(window.__trailerOpenedAt);
+      setTimeout(()=>{if(open&&!mediaReady&&video.readyState>=3){qualityReady=true;maybeReveal(window.__trailerOpenedAt);}},3000);
+    },CLICK_DARKEN_MS);
+  }
+  function finishClose(){
+    clearTimeout(arrowTurnTimer);clearTimeout(arrowRevealTimer);cancelAnimationFrame(arrowExitFrame);cancelAnimationFrame(arrowEnterFrame);
+    closeBtn.style.removeProperty('--arrow-exit-opacity');closeBtn.style.removeProperty('--arrow-entry-opacity');
+    cinematicFullscreen=false;fullscreenAnimating=false;
+    wrap.classList.remove('fs-controls-active');
+    panel.classList.remove('is-visible','is-closing','is-exiting','is-entering','is-arrow-swapping');document.body.classList.remove('trailer-open');
+    wrap.classList.remove('controls-active','closing-black','media-ready');loader.classList.remove('is-loading');
+    clearTimeout(openTimer);
+    if(openingProject){openingProject.classList.remove('is-opening');openingProject=null;}
+    try{video.currentTime=0;}catch(e){}
+    window.scrollTo(0,lastScrollY);
+  }
+  function closeTrailer(){
+    if(!open)return;open=false;panel.setAttribute('aria-hidden','true');
+    clearTimeout(openTimer);clearTimeout(controlsTimer);clearTimeout(fsControlsTimer);clearTimeout(revealTimer);clearTimeout(volumeHideTimer);clearTimeout(arrowTurnTimer);clearTimeout(arrowRevealTimer);cancelAnimationFrame(arrowExitFrame);cancelAnimationFrame(arrowEnterFrame);
+    try{video.pause();}catch(e){}
+    panel.classList.remove('is-entering','is-arrow-swapping');panel.classList.add('is-closing');
+    if(cinematicFullscreen){exitCinematicFullscreen();}
+    if(!panel.classList.contains('is-visible')){finishClose();return;}
+    wrap.classList.add('closing-black');
+    closeTimer=setTimeout(()=>{
+      const initialRight=videoSurface.getBoundingClientRect().right;
+      const midpoint=window.innerWidth/2;
+      const fadeDistance=Math.max(1,initialRight-midpoint);
+      closeBtn.style.setProperty('--arrow-exit-opacity','1');
+      panel.classList.add('is-exiting');
+      panel.classList.remove('is-open');
+      const fadeWithPosition=()=>{
+        if(!panel.classList.contains('is-exiting'))return;
+        const progress=Math.max(0,Math.min(1,(initialRight-videoSurface.getBoundingClientRect().right)/fadeDistance));
+        const smooth=progress*progress*(3-2*progress);
+        closeBtn.style.setProperty('--arrow-exit-opacity',String(1-smooth));
+        if(progress<1)arrowExitFrame=requestAnimationFrame(fadeWithPosition);
+      };
+      arrowExitFrame=requestAnimationFrame(fadeWithPosition);
+      closeTimer=setTimeout(finishClose,PANEL_MS+80);
+    },BLACK_BEFORE_EXIT_MS);
+  }
+
+  function updatePlay(){const paused=video.paused;playGlyph.style.display=paused?'':'none';pauseGlyph.style.display=paused?'none':'';playTip.textContent=paused?'Play':'Pause';}
+  function updateVolumeIcon(){const silent=video.muted||video.volume===0;volWave1.style.display=silent?'none':'';volWave2.style.display=silent?'none':'';volMuteSlash.style.display=silent?'':'none';muteBtn.setAttribute('aria-label',silent?'Riattiva audio':'Disattiva audio');muteBtn.setAttribute('aria-pressed',String(silent));const v=video.muted?0:video.volume;volumeFill.style.height=(v*100)+'%';volumeKnob.style.bottom=(v*100)+'%';}
+  function updateProgress(){
+    const d=video.duration||0,p=d?video.currentTime/d:0,pct=Math.max(0,Math.min(100,p*100));
+    fill.style.width=pct+'%';knob.style.left=pct+'%';progress.setAttribute('aria-valuenow',String(Math.round(pct)));
+  }
+  function updateBuffered(){
+    const d=video.duration;
+    if(!d||!video.buffered.length){buffered.style.width='0%';return;}
+    let end=0;
+    for(let i=0;i<video.buffered.length;i++){
+      if(video.buffered.start(i)<=video.currentTime+0.5)end=Math.max(end,video.buffered.end(i));
+    }
+    buffered.style.width=Math.max(0,Math.min(100,(end/d)*100))+'%';
+  }
+  video.addEventListener('progress',updateBuffered);
+  video.addEventListener('timeupdate',updateBuffered);
+  function seekFromEvent(e){if(!video.duration)return;const r=progress.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));video.currentTime=p*video.duration;updateProgress();}
+  function updateHoverPreview(e){
+    const r=progress.getBoundingClientRect();const rawX=Math.max(0,Math.min(r.width,e.clientX-r.left));const p=r.width?rawX/r.width:0;const t=p*(video.duration||0);
+    const safePreviewX=Math.max(71,Math.min(r.width-71,rawX));
+    timeTip.style.left=rawX+'px';timeTip.textContent=formatTime(t);
+    previewTip.style.left=safePreviewX+'px';previewTime.textContent=formatTime(t);
+    const sec=Math.max(0,Math.floor(t));
+    if(sec!==lastPreviewSecond){lastPreviewSecond=sec;previewImg.src=THUMB_SRC(sec);}
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  progress.addEventListener('click',seekFromEvent);
+  progress.addEventListener('pointermove',updateHoverPreview);
+  progress.addEventListener('pointerleave',()=>{lastPreviewSecond=-1;});
+  playBtn.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('click',()=>{video.paused?video.play().catch(()=>{}):video.pause();if(cinematicFullscreen)showFullscreenControls();else showControls();});
+  video.addEventListener('play',updatePlay);video.addEventListener('pause',updatePlay);video.addEventListener('timeupdate',updateProgress);video.addEventListener('durationchange',updateProgress);
+  video.addEventListener('waiting',()=>{if(open&&!mediaReady)loader.classList.add('is-loading');});
+  video.addEventListener('canplay',()=>maybeReveal(window.__trailerOpenedAt||0));
+  function setVolumeFromPointer(e){
+    const r=volumeTrack.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(r.bottom-e.clientY)/r.height));
+    volumeValue=p;video.volume=p;if(p>0){lastAudibleVolume=p;userMuted=false;}else{userMuted=true;}video.muted=userMuted;updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();
+  }
+  const volumeWrap=volumePop.parentElement;
+  const openVolume=()=>{clearTimeout(volumeHideTimer);volumeWrap.classList.add('volume-open');};
+  const scheduleVolumeClose=()=>{if(volumeDragging)return;clearTimeout(volumeHideTimer);volumeHideTimer=setTimeout(()=>volumeWrap.classList.remove('volume-open'),120);};
+  volumeWrap.addEventListener('pointerenter',openVolume);
+  volumeWrap.addEventListener('pointerleave',scheduleVolumeClose);
+  volumePop.addEventListener('pointerenter',openVolume);
+  volumePop.addEventListener('pointerleave',scheduleVolumeClose);
+  volumeTrack.addEventListener('pointerdown',e=>{openVolume();volumeDragging=true;volumePop.classList.add('is-active');volumeTrack.setPointerCapture?.(e.pointerId);setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointermove',e=>{if(volumeDragging)setVolumeFromPointer(e);});
+  volumeTrack.addEventListener('pointerup',e=>{volumeDragging=false;volumePop.classList.remove('is-active');volumeTrack.releasePointerCapture?.(e.pointerId);scheduleVolumeClose();});
+  volumeTrack.addEventListener('pointercancel',()=>{volumeDragging=false;volumePop.classList.remove('is-active');scheduleVolumeClose();});
+  muteBtn.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();openVolume();
+    userMuted=!userMuted;
+    if(!userMuted&&video.volume===0){const restore=Math.max(.5,lastAudibleVolume||volumeValue||1);video.volume=restore;volumeValue=restore;}
+    if(!userMuted&&video.volume>0)lastAudibleVolume=video.volume;
+    video.muted=userMuted;
+    updateVolumeIcon();
+    if(cinematicFullscreen)showFullscreenControls();else showControls();scheduleVolumeClose();
+  });
+
+  function requestNativeFullscreen(el){
+    if(el.requestFullscreen)return el.requestFullscreen();
+    if(el.webkitRequestFullscreen)return el.webkitRequestFullscreen();
+    return Promise.reject(new Error('Fullscreen API unsupported'));
+  }
+  function exitNativeFullscreen(){
+    if(document.exitFullscreen)return document.exitFullscreen();
+    if(document.webkitExitFullscreen)return document.webkitExitFullscreen();
+    return Promise.resolve();
+  }
+  function currentFullscreenElement(){
+    return document.fullscreenElement||document.webkitFullscreenElement||null;
+  }
+  function enterCinematicFullscreen(){
+    if(cinematicFullscreen||fullscreenAnimating)return;
+    fullscreenAnimating=true;
+    wrap.classList.add('fs-instant');
+    Promise.resolve(requestNativeFullscreen(wrap)).catch(()=>{fullscreenAnimating=false;wrap.classList.remove('fs-instant');});
+  }
+  function exitCinematicFullscreen(){
+    if(currentFullscreenElement()!==wrap)return;
+    wrap.classList.add('fs-instant');
+    Promise.resolve(exitNativeFullscreen()).catch(()=>{});
+  }
+  function onFullscreenChange(){
+    cinematicFullscreen=(currentFullscreenElement()===wrap);
+    fullscreenAnimating=false;
+    wrap.classList.remove('fs-controls-active');
+    clearTimeout(fsControlsTimer);
+    fsTip.textContent=cinematicFullscreen?'Exit full screen':'Fullscreen';
+    fsEnterGlyph.style.display=cinematicFullscreen?'none':'';
+    fsExitGlyph.style.display=cinematicFullscreen?'':'none';
+    if(cinematicFullscreen)showFullscreenControls();else if(open)showControls();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>wrap.classList.remove('fs-instant')));
+  }
+  document.addEventListener('fullscreenchange',onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange',onFullscreenChange);
+  fsBtn.addEventListener('click',()=>{cinematicFullscreen?exitCinematicFullscreen():enterCinematicFullscreen();});
+  wrap.addEventListener('pointermove',()=>{if(cinematicFullscreen)showFullscreenControls();else if(!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerdown',()=>{if(cinematicFullscreen)showFullscreenControls();});
+  wrap.addEventListener('pointerenter',()=>{if(!cinematicFullscreen&&!fullscreenAnimating)showControls();});
+  wrap.addEventListener('pointerleave',()=>{if(!cinematicFullscreen&&!fullscreenAnimating){clearTimeout(controlsTimer);controlsTimer=setTimeout(()=>wrap.classList.remove('controls-active'),1300);}});
+  triggers.forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('click',openTrailer);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){openTrailer(e);}});});
+  closeBtn.addEventListener('click',closeTrailer);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open&&!cinematicFullscreen){closeTrailer();}});
+  updatePlay();updateVolumeIcon();
+})();
+</script>
+
+
+<script src="iso-meter-response.js?v=20261003-meter12"></script>
+<script id="works-official-meter-v1-script">
+(()=>{
+  // ISO OFFICIAL METER v1 — shared Soglia implementation for WORKS.
+  const meter=document.getElementById('meter');
+  const hit=document.getElementById('meterHit');
+  const zone=document.getElementById('meterZone');
+  const clock=document.getElementById('siteClock');
+  const columns=Array.from({length:2},()=>{
+    const col=document.createElement('span');col.className='meter-col';
+    for(let i=0;i<16;i++){const seg=document.createElement('i');seg.className='meter-seg';col.appendChild(seg);}
+    zone.appendChild(col);return col;
+  });
+  const clamp=(v,min=0,max=1)=>Math.max(min,Math.min(max,v));
+  const rms=buffer=>Math.sqrt(buffer.reduce((sum,value)=>sum+value*value,0)/buffer.length);
+  const values=[0,0],leftData=new Float32Array(2048),rightData=new Float32Array(2048);
+  const attached=new WeakMap();
+  let paused=false,context=null,input=null,gain=null,left=null,right=null,sink=null,monoEvidence=0,previous=performance.now();
+
+  function createEngine(){
+    if(context)return context;
+    const Context=window.AudioContext||window.webkitAudioContext;
+    context=new Context();input=context.createGain();gain=context.createGain();
+    const split=context.createChannelSplitter(2);left=context.createAnalyser();right=context.createAnalyser();sink=context.createGain();
+    left.fftSize=right.fftSize=2048;left.smoothingTimeConstant=right.smoothingTimeConstant=0;
+    sink.gain.value=0;input.connect(gain);gain.connect(context.destination);gain.connect(split);split.connect(left,0);split.connect(right,1);left.connect(sink);right.connect(sink);sink.connect(context.destination);
+    gain.gain.value=paused?0:1;return context;
+  }
+  function attach(media){
+    if(!media||attached.has(media))return attached.get(media);
+    createEngine();
+    try{const source=context.createMediaElementSource(media);source.connect(input);attached.set(media,source);return source;}
+    catch(_){return null;}
+  }
+  function scan(root=document){root.querySelectorAll('audio,video').forEach(attach);}
+  async function activate(){
+    const audio=createEngine();scan();
+    if(audio.state!=='running')try{await audio.resume();}catch(_){}
+  }
+  function level(value){if(value<.00008)return 0;return clamp((20*Math.log10(value)+54)/48);}
+  function stereo(){
+    if(!left||!right||context.state!=='running')return [0,0];
+    left.getFloatTimeDomainData(leftData);right.getFloatTimeDomainData(rightData);
+    let a=rms(leftData),b=rms(rightData);
+    if(a>.001&&b<a*.015)monoEvidence=Math.min(45,monoEvidence+1);else if(b>.001)monoEvidence=Math.max(0,monoEvidence-4);
+    if(monoEvidence>18)b=a;return [level(a),level(b)];
+  }
+  function draw(now){
+    const dt=Math.min(40,now-previous);previous=now;
+    const targets=paused?[0,0]:stereo();
+    columns.forEach((column,columnIndex)=>{
+      values[columnIndex]=window.ISOMeterResponse.advance(values[columnIndex],targets[columnIndex],dt);
+      if(targets[columnIndex]===0&&values[columnIndex]<.002)values[columnIndex]=0;
+      const exact=values[columnIndex]*16;
+      Array.from(column.children).forEach((segment,index)=>{
+        const distance=exact-index;
+        const opacity=Math.min(.9,.16+Math.max(0,distance)*.72);
+        segment.style.background=paused||distance<=.03?'#343434':distance>=1?'#f1f1f1':`rgba(241,241,241,${opacity})`;
+      });
+    });
+    requestAnimationFrame(draw);
+  }
+  function setMuted(value){
+    const next=Boolean(value);if(next===paused)return;
+    paused=next;meter.classList.toggle('paused',paused);
+    if(gain)window.ISOMeterResponse.fadeMuted(context,gain.gain,paused);
+    hit.setAttribute('aria-pressed',String(paused));hit.setAttribute('aria-label',paused?'Riattiva l\'audio':'Disattiva l\'audio');
+  }
+  hit.addEventListener('click',event=>{
+    event.stopPropagation();activate();setMuted(!paused);
+  });
+  document.addEventListener('pointerdown',activate,{capture:true,passive:true});
+  document.addEventListener('play',event=>{if(event.target instanceof HTMLMediaElement){attach(event.target);activate();}},{capture:true});
+  hit.classList.add('active');scan();new MutationObserver(()=>scan()).observe(document.body,{childList:true,subtree:true});
+  const updateClock=()=>{clock.textContent=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());};
+  updateClock();setInterval(updateClock,15000);
+
+  // Exact Soglia frozen corner-word behaviour: each word starts optically
+  // mirrored and flips once on every fresh pointer entry.
+  const identities=[...document.querySelectorAll('.site-identity')];
+  identities.forEach(el=>{
+    let inside=false,flipped=false;
+    el.addEventListener('pointerenter',()=>{
+      if(inside)return;
+      inside=true;flipped=!flipped;
+      el.classList.toggle('site-identity-flipped',flipped);
+    });
+    el.addEventListener('pointerleave',()=>{inside=false;});
+  });
+  function setOpticalFlipAxes(){
+    const canvas=document.createElement('canvas');
+    const ctx=canvas.getContext('2d');
+    document.querySelectorAll('.site-identity-inner').forEach(el=>{
+      const parent=el.parentElement,cs=getComputedStyle(parent);
+      const fs=parseFloat(cs.fontSize)||16;
+      const lineHeight=parseFloat(cs.lineHeight);
+      const lh=Number.isFinite(lineHeight)?lineHeight:fs;
+      ctx.font=`${cs.fontWeight||'400'} ${fs}px ${cs.fontFamily||'monospace'}`;
+      const m=ctx.measureText(el.textContent||'H');
+      const actualA=m.actualBoundingBoxAscent||fs*.72;
+      const actualD=m.actualBoundingBoxDescent||fs*.02;
+      const baselineY=Number.isFinite(m.fontBoundingBoxAscent)&&Number.isFinite(m.fontBoundingBoxDescent)
+        ? (lh-(m.fontBoundingBoxAscent+m.fontBoundingBoxDescent))/2+m.fontBoundingBoxAscent
+        : lh*.78;
+      const inkCenterY=baselineY+(actualD-actualA)/2;
+      el.style.setProperty('--optical-axis-y',`${inkCenterY.toFixed(3)}px`);
+    });
+  }
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setOpticalFlipAxes);
+  else requestAnimationFrame(setOpticalFlipAxes);
+  window.addEventListener('resize',setOpticalFlipAxes,{passive:true});
+  window.ISOAudioMeter={attachMediaElement:attach,setMuted,get paused(){return paused},get levels(){return values.slice()}};
+  requestAnimationFrame(draw);
+})();
+</script>
+
+<script id="works-intro-title-motion">
+(()=>{
+  // Independent trajectories with exact rests between movements.
+  const curves=[
+    [197,138,11,274, .7353,1.6560,-.4930, 2.2512,3.2138,-.4930, 3.8370,4.6086,-.4930],
+    [64,204,131,287, .4482,1.3913,-.4930, 2.2403,3.0751,-.4930, 3.8303,4.6044,-.4930],
+    [96,188,229,153, .7983,1.5105,-.4930, 2.7712,3.5624,.4930, 3.8021,4.8800,.4123],
+    [133,170,105,241, .6714,1.3711,-.4930, 2.4406,3.1559,-.4930, 3.9802,4.8800,.4930],
+    [63,205,266,149, .5311,1.2054,-.4930, 2.4138,3.2082,-.4930, 3.8785,4.8800,.4308],
+    [194,139,277,11, .2759,1.1740,-.4930, 2.0157,2.8184,-.4930, 3.7766,4.6577,-.4142],
+    [155,159.25,42,260, .5700,1.4280,-.4100, 2.6200,3.4900,.4200, 3.9300,4.7800,-.3900]
+  ];
+  const words=[...document.querySelectorAll('.intro-word')];
+  const phrase=document.querySelector('.intro-phrase');
+  const intro=document.querySelector('.intro');
+  const wash=document.getElementById('openingWash');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  // A single scattered entrance for individual letters, across all seven lines.
+  const glyphs=[];
+  words.forEach(word=>{
+    const letters=[...word.textContent];
+    word.replaceChildren();
+    letters.forEach(letter=>{
+      const glyph=document.createElement('span');
+      glyph.className='intro-glyph';glyph.textContent=letter;
+      word.appendChild(glyph);glyphs.push(glyph);
+    });
+    word.classList.add('glyph-ready');
+  });
+  if(reduced.matches){glyphs.forEach(glyph=>{glyph.style.transition='none';glyph.style.opacity='1'})}
+  else{
+    const order=[...glyphs].sort(()=>Math.random()-.5);
+    order.forEach((glyph,rank)=>setTimeout(()=>{glyph.style.opacity='1'},rank*36+Math.random()*70));
+  }
+  let limits=[],introHeight=0,origin;
+  function measure(){
+    limits=words.map(word=>Math.max(0,word.parentElement.clientWidth-word.getBoundingClientRect().width));
+    introHeight=intro.offsetHeight;
+  }
+  function ease(t,start,end,skew){
+    if(t<=start)return 0;
+    if(t>=end)return 1;
+    const u=(t-start)/(end-start);
+    const z=u+skew*u*(1-u);
+    return z*z*z*(10+z*(-15+6*z));
+  }
+  function position(c,t,first=c[2],second=c[3]){
+    const center=c[1];
+    return center
+      +(first-center)*ease(t,c[4],c[5],c[6])
+      +(second-first)*ease(t,c[7],c[8],c[9])
+      +(center-second)*ease(t,c[10],c[11],c[12]);
+  }
+  // Each word has its own distances and pacing in the middle and final passage.
+  const scores=[
+    [.66,.36,4.58,.00,.90,.96,4.42,.00],
+    [.48,.54,5.02,.13,.94,.87,4.79,.11],
+    [.75,.26,4.91,.05,.82,.95,5.14,.02],
+    [.57,.47,4.66,.22,.97,.91,4.55,.20],
+    [.70,.32,5.13,.03,.86,.98,4.96,.05],
+    [.53,.58,4.84,.18,.95,.86,4.72,.16],
+    [.63,.41,4.72,.09,.89,.93,5.24,.08]
+  ];
+  function loopPosition(c,seconds,index){
+    const range=480-c[0],center=c[1];
+    const s=scores[index];
+    let travel,first=c[2],second=c[3];
+    if(seconds<4.2){
+      travel=seconds*5/4.2;
+    }else if(seconds<9.4){
+      // A restrained crossing through the center, with individual pauses.
+      travel=Math.max(0,Math.min(5,(seconds-4.2-s[3])*5/s[2]));
+      first=center+(c[3]-center)*s[0];
+      second=center+(c[2]-center)*s[1];
+    }else{
+      travel=Math.max(0,Math.min(5,(seconds-9.4-s[7])*5/s[6]));
+      first=center+(c[2]-center)*s[4];
+      second=center+(c[3]-center)*s[5];
+    }
+    return Math.max(0,Math.min(range,position(c,travel,first,second)));
+  }
+  // Preserve the brief rests and original trajectory; each moving passage
+  // takes twice as long as in the frozen autonomous loop.
+  const tempoMap=[
+    [0,.382,.5],[.382,3.944,2/1.1],[3.944,4.863,.5],
+    [4.863,8.881,2/1.1],[8.881,9.992,.5],
+    [9.992,14.399,2/1.1],[14.399,15,.5]
+  ];
+  const loopSeconds=tempoMap.reduce((sum,[start,end,scale])=>sum+(end-start)*scale,0);
+  function choreographicTime(milliseconds){
+    let elapsed=(milliseconds/1000)%loopSeconds;
+    for(const [start,end,scale] of tempoMap){
+      const duration=(end-start)*scale;
+      if(elapsed<duration)return start+elapsed/scale;
+      elapsed-=duration;
+    }
+    return 0;
+  }
+  let openingTarget=0,openingShown=null,lastOpeningFrame;
+  function updateOpening(){
+    // Wait until the first video occupies the lower half of the viewport.
+    // Spread the fade over the whole passage, with only gentle easing at its ends.
+    const firstVideoTop=document.querySelector('.project').offsetTop;
+    const start=Math.max(0,firstVideoTop-innerHeight*.52);
+    const end=start+innerHeight*2;
+    const u=Math.max(0,Math.min(1,(scrollY-start)/(end-start)));
+    openingTarget=.65*u+.35*u*u*(3-2*u);
+    if(openingShown===null)openingShown=openingTarget;
+  }
+  function frame(now){
+    if(origin===undefined)origin=now;
+    const elapsed=lastOpeningFrame===undefined?0:Math.min(.08,Math.max(0,(now-lastOpeningFrame)/1000));
+    lastOpeningFrame=now;
+    openingShown+=reduced.matches?openingTarget-openingShown:(openingTarget-openingShown)*(1-Math.exp(-elapsed/.32));
+    if(Math.abs(openingTarget-openingShown)<.0001)openingShown=openingTarget;
+    wash.style.opacity=(1-openingShown).toFixed(4);
+    phrase.style.opacity=Math.pow(1-openingShown,1.15).toFixed(4);
+    if(scrollY<introHeight+innerHeight*.15&&!document.hidden){
+      const t=reduced.matches?0:choreographicTime(now-origin);
+      words.forEach((word,i)=>{
+        const x=limits[i]*loopPosition(curves[i],t,i)/(480-curves[i][0]);
+        word.style.transform=`translate3d(${x.toFixed(2)}px,-50%,0)`;
+      });
+    }
+    requestAnimationFrame(frame);
+  }
+  document.fonts.ready.then(measure);
+  addEventListener('resize',()=>{measure();updateOpening();},{passive:true});
+  addEventListener('scroll',updateOpening,{passive:true});
+  measure();updateOpening();frame(performance.now());
+})();
+</script>
+
+<script src="works-starfield.js?v=104" defer></script>
+
+<script type="application/json" id="iso-works-media-status">{"date": "2026-09-24", "approvedTrailers": 11, "pendingClips": ["ACAB", "PARTHENOPE", "DIVA FUTURA", "SEI FRATELLI"], "temporaryTrailerPreviews": ["EL PARAÍSO", "LA GRAZIA"], "trailerAwaiting1080": ["IDDU", "SEI FRATELLI"]}</script>
+<script type="application/json" id="iso-works-v13-motion-meta">{"source":"works-real-clips-v09-media-separated-candidate.html","frozenUntouched":true,"unchangedMeasurements":true,"change":"longer pre-entry space + soft mirrored whole-media in/out","entry":{"start":0.88,"settle":0.24},"exit":{"start":0.36,"settle":0.02},"travel":0.38,"spring":{"k":42,"c":12.4},"pictureSafeRatio":0.88}</script>
+</body>
+</html>

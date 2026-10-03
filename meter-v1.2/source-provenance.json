@@ -1,0 +1,53 @@
+{
+  "profile": "1.2",
+  "muteFadeSeconds": 0.5,
+  "unmuteFadeSeconds": 1,
+  "updatedAt": "2026-10-03",
+  "sites": [
+    {
+      "key": "soglia",
+      "project_id": "appgprj_6aafc7401678819190b985290ad9e77d",
+      "commit_sha": "0bb844d2e8b6908ec094792f3cd5572dcafc2366",
+      "base_commit_sha": "e220314408cc16973ee3ea55574dc8e345c167ae",
+      "version_id": "appgprj_6aafc7401678819190b985290ad9e77d~appgver_44f052da3bac81918ecda4034f0741d5",
+      "deployment_id": "appgdep_6ac1258ae24c8191a92e31741c57d934",
+      "url": "https://iso-soglia-real-meter.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "works",
+      "project_id": "appgprj_6aaa7cb1feec8191881973c429996cf8",
+      "commit_sha": "9dfc877dfb5ef37b3c067924d68849253650ef76",
+      "base_commit_sha": "e0cb8820083b13a7c29e0742da05a729239b93b4",
+      "version_id": "appgprj_6aaa7cb1feec8191881973c429996cf8~appgver_fca05c5126bc8191b51bb121306df432",
+      "deployment_id": "appgdep_6ac125a551348191a8c5708bc668fb0a",
+      "url": "https://iso-works-motion-lab.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "works-youtube",
+      "project_id": "appgprj_6ac0d1fa0cb88191b36e00d15c31af5f",
+      "commit_sha": "7abaa07386161be837f121454b8e580c9372d00a",
+      "base_commit_sha": "c2dea51e68341cb9fb05bf1340118ec887f4da98",
+      "version_id": "appgprj_6ac0d1fa0cb88191b36e00d15c31af5f~appgver_98669da064d48191817b749777924698",
+      "deployment_id": "appgdep_6ac125f4dd0481919484105e939c103e",
+      "url": "https://iso-works-acab-youtube-candidate.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "blog",
+      "project_id": "appgprj_6ac0e7e2ec8081918e435018405d487a",
+      "commit_sha": "e7f78bd6dabfecda0d7ef1487ab842bc573c0884",
+      "base_commit_sha": "02ca0ea5763685c84e99c9d0cc8aa6fb8293c570",
+      "version_id": "appgprj_6ac0e7e2ec8081918e435018405d487a~appgver_f6dcbdc9e9288191a7ed1c0433ba125c",
+      "deployment_id": "appgdep_6ac12616703c819192d58c0d66ed5d23",
+      "url": "https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "blog-archive",
+      "project_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1",
+      "commit_sha": "b0a77d78158c25ba7bda4b0b261d288f9cd68e80",
+      "base_commit_sha": "ad4744d93745bfdc59e30a28725947a73b94c6c2",
+      "version_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1~appgver_cc73b53dd07081918b4d394e59afd3f6",
+      "deployment_id": "appgdep_6ac12712093c81919612fc08f3d7a07b",
+      "url": "https://iso-blog-archive-candidate-01.area-di-lavo-9208.chatgpt.site"
+    }
+  ]
+}
