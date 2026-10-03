@@ -3,6 +3,10 @@
   const parameters = new URLSearchParams(window.location.search);
   const id = parameters.get('cartolina') || 'soglia-prova';
   const version = parameters.get('versione') || 'v1';
+  // Diagnostic A/B: only the audio origin changes. Images, manifest, hashes,
+  // decoding, loop preparation, eraser and gain scheduling stay identical.
+  const audioOrigin = parameters.get('audio_origine') === 'locale' ? 'locale' : 'cloudflare';
+  const localRoot = new URL('.', window.location.href);
   const valid = /^[a-z0-9-]{1,64}$/.test(id) && /^v[0-9]+$/.test(version);
   const manifestURL = `${origin}/cartoline/${id}/${version}/manifest.json`;
   try {
@@ -27,7 +31,11 @@
       const image = new URL(layer.image, manifestURL);
       const audio = new URL(layer.audio, manifestURL);
       if (image.origin !== origin || audio.origin !== origin) throw new Error('Sorgente cartolina non valida');
-      return { ...layer, image: image.href, audio: audio.href };
+      return {
+        ...layer, image: image.href,
+        audio: audioOrigin === 'locale' ? new URL('.' + audio.pathname, localRoot).href : audio.href,
+        audioCloudflare: audio.href
+      };
     });
     loader.expect(layers.flatMap(layer => [
       { key: `image:${layer.image}`, url: layer.image },
@@ -35,7 +43,7 @@
     ]));
     const timing = (value, fallback) => Number.isFinite(value) && value >= 0 && value <= 10 ? value : fallback;
     return {
-      ...manifest, layers, manifestURL,
+      ...manifest, layers, manifestURL, audioOrigin,
       fadeSeconds: timing(manifest.fadeSeconds, 1),
       loopCrossfadeSeconds: timing(manifest.loopCrossfadeSeconds, 1)
     };

@@ -36,16 +36,56 @@
     });
   }
 
-  function fade(context, parameter, target, seconds = 1) {
-    const now = context.currentTime;
-    const current = parameter.value;
-    if (typeof parameter.cancelAndHoldAtTime === 'function') parameter.cancelAndHoldAtTime(now);
-    else {
-      parameter.cancelScheduledValues(now);
-      parameter.setValueAtTime(current, now);
-    }
-    parameter.linearRampToValueAtTime(target, now + seconds);
+  function loadHTML(url, sha256) {
+    return window.ISOExperienceLoader.prepare(`audio:${url}`, async () => {
+      const data = await window.ISOExperienceLoader.bytes(url, sha256);
+      const objectURL = URL.createObjectURL(new Blob([data], { type: 'audio/mpeg' }));
+      const media = new window.Audio();
+      media.preload = 'auto';
+      media.loop = true;
+      try {
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => finish(new Error('Preparazione audio in attesa')), 45000);
+          function finish(error) {
+            clearTimeout(timeout);
+            media.removeEventListener('canplaythrough', ready);
+            media.removeEventListener('error', failed);
+            if (error) reject(error); else resolve();
+          }
+          function ready() { if (media.readyState === 4) finish(); }
+          function failed() { finish(new Error('Audio non disponibile')); }
+          media.addEventListener('canplaythrough', ready);
+          media.addEventListener('error', failed);
+          media.src = objectURL;
+          media.load();
+          ready();
+        });
+        return { url, media, objectURL, crossfadeSeconds: 0, loopStart: 0, loopEnd: media.duration };
+      } catch (error) {
+        media.removeAttribute('src');
+        media.load();
+        URL.revokeObjectURL(objectURL);
+        throw error;
+      }
+    });
   }
 
-  window.ISOLoopAudio = { createDecoder, makeSeamlessLoop, load, fade };
+  const ramps = new WeakMap();
+  function fade(context, parameter, target, seconds = 1) {
+    const now = context.currentTime;
+    const previous = ramps.get(parameter);
+    // Re-anchor each interruption at the exact value of our own linear ramp.
+    // Do not depend on the AudioParam.value getter or successive hold events.
+    const fraction = previous && previous.end > previous.start
+      ? Math.max(0, Math.min(1, (now - previous.start) / (previous.end - previous.start))) : 1;
+    const current = previous ? previous.from + (previous.to - previous.from) * fraction : parameter.value;
+    const duration = Math.max(0, seconds);
+    parameter.cancelScheduledValues(now);
+    parameter.setValueAtTime(current, now);
+    if (duration > 0) parameter.linearRampToValueAtTime(target, now + duration);
+    else parameter.setValueAtTime(target, now);
+    ramps.set(parameter, { from: current, to: target, start: now, end: now + duration });
+  }
+
+  window.ISOLoopAudio = { createDecoder, makeSeamlessLoop, load, loadHTML, fade };
 })();

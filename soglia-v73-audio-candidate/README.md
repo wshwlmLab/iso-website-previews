@@ -1,8 +1,10 @@
-# Soglia v73 — prova audio e performance senza schermata di caricamento
+# Soglia v73 — prova audio, performance e confronto delle origini
 
 Prova basata sulla v73 approvata, commit Sites originale `d0a0349082d954425ff6356b5306c164ad014135`. La v73 definitiva resta intatta nel ramo GitHub `frozen/soglia-v73`, commit `1fd73843345ae54ccc74e3ed259c0f626883ebf3`.
 
-La pagina carica realmente sia le immagini sia gli audio da Cloudflare R2. Il bucket esistente è `il-suono-organizzato-audio`; ogni cartolina ha un contenitore logico indipendente:
+La modalità predefinita carica sia le immagini sia gli audio da Cloudflare R2. La segnalazione di interruzione audio resta aperta: [AUDIO-DIAGNOSIS.md](AUDIO-DIAGNOSIS.md) documenta il confronto `audio_origine=locale` con copie identiche sul sito e la prova del player HTML precedente `audio_motore=html`. Il player HTML usa temporaneamente la giunzione originale dei file, senza crossfade della coda; la modalità predefinita conserva il crossfade. Le prove non aggiungono interfacce di caricamento e non alterano l'eraser.
+
+Il bucket esistente è `il-suono-organizzato-audio`; ogni cartolina ha un contenitore logico indipendente:
 
 ```text
 cartoline/<id>/v1/manifest.json

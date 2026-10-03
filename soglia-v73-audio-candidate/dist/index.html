@@ -121,9 +121,9 @@
   <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
   <button class="meter-hit active" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
 
-  <script src="experience-loader.js?v=20261003-performance"></script>
-  <script src="cartolina-config.js?v=20261003-performance"></script>
-  <script src="loop-audio.js?v=20261003-performance"></script>
+  <script src="experience-loader.js?v=20261003-audio-compare"></script>
+  <script src="cartolina-config.js?v=20261003-audio-compare"></script>
+  <script src="loop-audio.js?v=20261003-audio-compare"></script>
   <script src="iso-meter-response.js?v=20261003-1"></script>
   <script>
     (() => {
@@ -133,6 +133,9 @@
       const meterHit = document.getElementById('meterHit');
       const meterZone = document.getElementById('meterZone');
       const loader = window.ISOExperienceLoader;
+      // Optional historical-player comparison. The normal experience keeps
+      // the prepared PCM crossfade; this mode tests native HTML audio only.
+      const audioEngineMode = new URL(window.location.href).searchParams.get('audio_motore') === 'html' ? 'html' : 'pcm';
       let experienceReady = false;
       let preparationPromise = null;
       const diagnostics = [];
@@ -148,6 +151,7 @@
       let cartolinaLoadPromise = null;
       let audioLoadError = null;
       let loopsStartedAt = null;
+      let nativeStartPromise = null;
       const columns = Array.from({ length: 2 }, () => {
         const column = document.createElement('span');
         column.className = 'meter-col';
@@ -217,6 +221,7 @@
         muteGain.gain.value = 1;
         ensurePhotoGains();
         audioContext.addEventListener?.('statechange', () => record('audio-state', { state: audioContext.state }));
+        audioContext.addEventListener?.('error', () => record('audio-device-error', { state: audioContext.state }));
         record('audio-created', { sampleRate: audioContext.sampleRate, baseLatency: audioContext.baseLatency });
         return audioContext;
       }
@@ -293,7 +298,19 @@
           ensurePhotoGains();
           // Fetch concurrently, then decode one file at a time while the gate
           // is still closed. No decoding or seam preparation during the eraser.
-          await Promise.all(photoTracks.filter(track => !track.buffer).map(track => loader.bytes(track.url, track.sha256)));
+          await Promise.all(photoTracks.filter(track => !track.buffer && !track.media).map(track => loader.bytes(track.url, track.sha256)));
+          if (audioEngineMode === 'html') {
+            await Promise.all(photoTracks.map(async track => {
+              if (track.media) return;
+              Object.assign(track, await window.ISOLoopAudio.loadHTML(track.url, track.sha256));
+              record('audio-native-ready', { source: track.url, duration: track.media.duration });
+              ['waiting', 'stalled', 'error', 'ended'].forEach(event => {
+                track.media.addEventListener(event, () => record('audio-native-' + event, { source: track.url, readyState: track.media.readyState }));
+              });
+            }));
+            audioLoadError = null;
+            return;
+          }
           // Decode independently of autoplay/device state, always at 48 kHz.
           const decoder = window.ISOLoopAudio.createDecoder();
           for (const track of photoTracks) {
@@ -320,6 +337,20 @@
           await Promise.all([resumePromise, loadCartolinaAudio()]);
           if (!experienceReady) prepareExperience();
           if (loopsStartedAt !== null) return;
+          if (audioEngineMode === 'html') {
+            if (!nativeStartPromise) nativeStartPromise = (async () => {
+              photoTracks.forEach((track, index) => {
+                if (track.source) return;
+                track.source = context.createMediaElementSource(track.media);
+                track.source.connect(photoGains[index]);
+              });
+              await Promise.all(photoTracks.map(track => track.media.paused ? track.media.play() : Promise.resolve()));
+              loopsStartedAt = context.currentTime;
+              record('audio-native-loops-started');
+            })().catch(error => { nativeStartPromise = null; throw error; });
+            await nativeStartPromise;
+            return;
+          }
           loopsStartedAt = context.currentTime + .025;
           photoTracks.forEach((track, index) => {
             const source = context.createBufferSource();
@@ -329,6 +360,7 @@
             source.loopEnd = track.loopEnd;
             source.connect(photoGains[index]);
             source.start(loopsStartedAt, track.loopStart);
+            source.addEventListener?.('ended', () => record('audio-source-ended', { source: track.url }));
             track.source = source;
           });
           record('audio-loops-started');
@@ -394,7 +426,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261003-performance');
+          source.searchParams.set('build', '20261003-audio-compare');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {
@@ -475,14 +507,35 @@
         get diagnostics() { return diagnostics.slice(); },
         get paused() { return meterPaused; },
         get cartolina() { return cartolinaConfig ? cartolinaConfig.manifestURL : null; },
+        get audioOrigin() { return cartolinaConfig ? cartolinaConfig.audioOrigin : null; },
+        get audioEngine() { return audioEngineMode; },
+        capture() {
+          const stats = audioContext?.playbackStats;
+          return {
+            build: '20261003-audio-compare', audioOrigin: this.audioOrigin, audioEngine: audioEngineMode,
+            ready: experienceReady, paused: meterPaused, error: this.error,
+            audio: audioContext ? {
+              state: audioContext.state, currentTime: audioContext.currentTime,
+              sampleRate: audioContext.sampleRate, baseLatency: audioContext.baseLatency,
+              outputLatency: audioContext.outputLatency,
+              playbackStats: stats ? {
+                totalDuration: stats.totalDuration,
+                underrunDuration: stats.underrunDuration, underrunEvents: stats.underrunEvents,
+                averageLatency: stats.averageLatency, maximumLatency: stats.maximumLatency
+              } : null
+            } : null,
+            tracks: this.tracks, resources: loader.snapshot().assets,
+            diagnostics: diagnostics.slice()
+          };
+        },
         get error() { return loader.snapshot().error || audioLoadError || window.__cartolinaLoadError || null; },
         get tracks() {
           return photoTracks.map((track, index) => ({
             source: track.url,
-            loop: track.source ? track.source.loop : false,
-            playing: loopsStartedAt !== null && audioContext.state === 'running',
-            time: loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % (track.loopEnd - track.loopStart),
-            readyState: track.buffer ? 4 : 0,
+            loop: track.media ? track.media.loop : track.source ? track.source.loop : false,
+            playing: loopsStartedAt !== null && audioContext.state === 'running' && (!track.media || !track.media.paused),
+            time: track.media ? track.media.currentTime : loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % (track.loopEnd - track.loopStart),
+            readyState: track.media ? track.media.readyState : track.buffer ? 4 : 0,
             loopCrossfadeSeconds: track.crossfadeSeconds || 0,
             targetVolume: targetPhotoLevels[index],
             gain: photoGains[index] ? photoGains[index].gain.value : 0

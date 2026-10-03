@@ -68,7 +68,9 @@ async function verifyAudio() {
   const gains=[],sources=[];
   class Param {
     constructor(){this.value=1;this.calls=[];}
-    cancelAndHoldAtTime(time){this.calls.push(['hold',time]);}
+    cancelAndHoldAtTime(){throw new Error('The playback fade must not use consecutive hold events');}
+    cancelScheduledValues(time){this.calls.push(['cancel',time]);}
+    setValueAtTime(value,time){this.calls.push(['set',value,time]);}
     linearRampToValueAtTime(value,time){this.value=value;this.calls.push(['ramp',value,time]);}
   }
   class Node {
@@ -94,7 +96,7 @@ async function verifyAudio() {
   const frameEvents={},meterEvents={},innerEvents={};
   const innerDocument={documentElement:{style:{setProperty(){}}},addEventListener:(key,cb)=>innerEvents[key]=cb,querySelectorAll:()=>[]};
   const ratios=[0,0,0];
-  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-performance'},__showSogliaIntro:async()=>{},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
+  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-audio-compare'},__showSogliaIntro:async()=>{},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
   const meterHit={classList:classList(),setAttribute(){},addEventListener:(key,cb)=>meterEvents[key]=cb};
   const meter={classList:classList()};
   const loadingElements=Object.fromEntries(['loadingGate','loadingLabel','loadingProgress','loadingBar','loadingRetry'].map(id=>[id,{hidden:false,addEventListener(){}}]));
@@ -131,7 +133,7 @@ async function verifyAudio() {
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-performance');
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-audio-compare');
   await frameEvents.load();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(window.ISOAudioMeter.experienceReady,true);

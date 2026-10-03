@@ -15,8 +15,9 @@ const settle = async () => { for (let n = 0; n < 4; n++) await new Promise(resol
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const classes = () => ({ add() {}, remove() {}, toggle() {} });
 
-function harness({ corrupt = null, failManifest = false, redirect = false, layerCount = 3 } = {}) {
+function harness({ corrupt = null, failManifest = false, redirect = false, layerCount = 3, audioOrigin = 'cloudflare', audioEngine = 'pcm' } = {}) {
   const requests = [], streams = new Map(), images = [], decodes = [], sources = [], gains = [];
+  const nativeMedia=[];
   const readyFonts = defer();
   const data = new Map();
   const ids=Array.from({length:layerCount},(_,index)=>['river','endless-ascent','sciola'][index]||'layer-'+(index+1));
@@ -24,7 +25,8 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
     const image = `images/0${index + 1}.jpg`, audio = `audio/${id}.mp3`;
     const imageBytes = Uint8Array.from([1, 2, 3, index]);
     const audioBytes = Uint8Array.from([4, 5, 6, index]);
-    data.set(base + image, imageBytes); data.set(base + audio, audioBytes);
+    data.set(base + image, imageBytes);
+    data.set((audioOrigin === 'locale' ? 'https://test.invalid/cartoline/soglia-prova/v1/' : base) + audio, audioBytes);
     return { id, image, audio, imageSHA256: hash(imageBytes), audioSHA256: hash(audioBytes) };
   });
   const manifest = { schemaVersion: 1, fadeSeconds: 1, loopCrossfadeSeconds: 1, layers };
@@ -65,7 +67,9 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
   }
   class Param {
     constructor() { this.value = 1; this.calls = []; }
-    cancelAndHoldAtTime(time) { this.calls.push(['hold', time]); }
+    cancelAndHoldAtTime() { throw new Error('Unexpected fade hold'); }
+    cancelScheduledValues(time) { this.calls.push(['cancel', time]); }
+    setValueAtTime(value, time) { this.calls.push(['set', value, time]); }
     linearRampToValueAtTime(value, time) { this.value = value; this.calls.push(['ramp', value, time]); }
   }
   class Node {
@@ -78,6 +82,15 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
     constructor(channels,length,sampleRate) { assert.equal(sampleRate,48000); }
     async decodeAudioData(bytes) { assert.equal(bytes.byteLength,4); const pending=defer(); decodes.push(pending); await pending.promise; return new PCM(); }
   }
+  class NativeAudio {
+    constructor(){this.listeners=new Map();this.readyState=0;this.paused=true;this.duration=4;this.currentTime=0;this.plays=0;nativeMedia.push(this);}
+    addEventListener(key,fn){if(!this.listeners.has(key))this.listeners.set(key,new Set());this.listeners.get(key).add(fn);}
+    removeEventListener(key,fn){this.listeners.get(key)?.delete(fn);}
+    emit(key){this.listeners.get(key)?.forEach(fn=>fn());}
+    load(){assert.match(this.src,/^blob:/);this.readyState=4;queueMicrotask(()=>this.emit('canplaythrough'));}
+    async play(){this.plays++;this.paused=false;}
+    removeAttribute(){}
+  }
   class AudioContext {
     constructor() { this.state = 'suspended'; this.currentTime = 10; this.destination = new Node(); AudioContext.last = this; }
     createGain() { const node = new Node(); gains.push(node); return node; }
@@ -85,6 +98,7 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
     createAnalyser() { return new Node(); }
     createBuffer() { throw new Error('A second full PCM buffer must not be allocated'); }
     createBufferSource() { const source = new Node(); sources.push(source); return source; }
+    createMediaElementSource(media){const source=new Node();source.media=media;sources.push(source);return source;}
     async decodeAudioData() { throw new Error('Playback context must never decode'); }
     async resume() { this.state = 'running'; }
   }
@@ -97,7 +111,8 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
   elements.meterHit.addEventListener = (key, fn) => { meterEvents[key] = fn; };
   elements.loadingRetry.addEventListener = (key, fn) => { retryEvents[key] = fn; };
   const document = { body: { dataset: {} }, fonts: { ready: Promise.resolve() }, getElementById: id => elements[id], createElement: element };
-  const window = { AudioContext, OfflineAudioContext:Decoder, location: { href: 'https://test.invalid/?cartolina=soglia-prova', search: '?cartolina=soglia-prova' } };
+  const search = '?cartolina=soglia-prova' + (audioOrigin === 'locale' ? '&audio_origine=locale' : '') + (audioEngine === 'html' ? '&audio_motore=html' : '');
+  const window = { AudioContext, OfflineAudioContext:Decoder, Audio:NativeAudio, location: { href: 'https://test.invalid/' + search, search } };
   window.parent = window;
   let draw = null, intros = 0, layouts = 0, geometry = 0, frameCount = 0;
   const globals = { console: { warn() {} }, fetch, crypto: webcrypto, AbortController, Image, Blob, URL, URLSearchParams, TextDecoder, Uint8Array, Float32Array, Promise, Math, Number, Array, performance: { now: () => 0 }, setTimeout, clearTimeout, requestAnimationFrame: cb => { draw = cb; }, MutationObserver: class { observe() {} } };
@@ -124,7 +139,7 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
   for (const file of ['experience-loader.js', 'cartolina-config.js', 'loop-audio.js', 'iso-meter-response.js']) vm.runInContext(read(file), context);
   vm.runInContext(outer, context);
   return {
-    window, elements, frame, requests, streams, images, decodes, sources, gains, readyFonts, releaseDownload, innerEvents, meterEvents, retryEvents,
+    window, elements, frame, requests, streams, images, decodes, sources, gains, nativeMedia, readyFonts, releaseDownload, innerEvents, meterEvents, retryEvents,
     get intros() { return intros; }, get layouts() { return layouts; }, get geometry() { return geometry; }, get frameCount() { return frameCount; },
     async releaseDownloads() { for (const url of Array.from(streams.keys())) releaseDownload(url); await new Promise(resolve => setTimeout(resolve, 10)); await settle(); },
     async releasePreparation() {
@@ -181,6 +196,49 @@ for(let loop=0;loop<10;loop++){
 assert.equal(slow.requests.length,7);
 assert.ok(slow.sources.every(source=>source.starts===1&&source.offset===1&&source.loopStart===1&&source.loopEnd===4));
 console.log('Silent preparation: intro visible during slow audio/image preparation; offline decoding without opening hardware; first gesture unlocks playback; redirect URL accepted; no intro restart or network during ten interaction cycles.');
+
+const local=harness({audioOrigin:'locale'});
+await settle();await local.releaseDownloads();await local.releasePreparation();
+assert.equal(local.window.ISOAudioMeter.experienceReady,true);
+assert.equal(local.window.ISOAudioMeter.audioOrigin,'locale');
+assert.equal(slow.window.ISOAudioMeter.audioOrigin,'cloudflare');
+assert.deepEqual(local.requests.filter(url=>url.includes('/images/')),slow.requests.filter(url=>url.includes('/images/')));
+const cloudAudio=slow.requests.filter(url=>url.includes('/audio/'));
+const localAudio=local.requests.filter(url=>url.includes('/audio/'));
+assert.equal(localAudio.length,3);
+cloudAudio.forEach((url,index)=>assert.equal(localAudio[index],url.replace('https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev','https://test.invalid')));
+assert.equal(local.requests[0],slow.requests[0],'both trials must use the identical Cloudflare manifest');
+await local.innerEvents.pointerdown();
+local.offline();local.frame.contentWindow.__eraseDebug.visiblePhotoRatios=[.5,.25,.25];local.draw(100);
+assert.equal(local.sources.length,3);assert.ok(local.sources.every(source=>source.starts===1&&source.offset===1&&source.loopStart===1&&source.loopEnd===4));
+assert.deepEqual(Array.from(local.window.ISOAudioMeter.capture().tracks,track=>track.targetVolume),[.5,.25,.25]);
+assert.equal(local.window.ISOAudioMeter.capture().audio.playbackStats,null,'unavailable browser diagnostics must remain optional');
+assert.equal(local.requests.length,7,'the origin comparison must not add playback-time requests');
+console.log('Audio-origin A/B: same manifest, hashes, images, offline decoder, fades and loop sources; only the three audio URL origins differ. Neither mode fetches while erasing.');
+
+for(const layerCount of [3,5]){
+ const native=harness({audioEngine:'html',layerCount});
+ await settle();await native.releaseDownloads();await native.releasePreparation();
+ assert.equal(native.window.ISOAudioMeter.experienceReady,true);
+ assert.equal(native.window.ISOAudioMeter.audioState,'not-created');
+ assert.equal(native.window.ISOAudioMeter.audioEngine,'html');
+ assert.equal(native.decodes.length,0,'the historical player comparison must not use PCM decoding');
+ assert.equal(native.nativeMedia.length,layerCount);
+ assert.ok(native.nativeMedia.every(media=>media.paused&&media.readyState===4&&media.loop&&media.preload==='auto'));
+ assert.deepEqual(native.requests.filter(url=>url.includes('/audio/')).slice(0,3),cloudAudio);
+ await Promise.all([native.innerEvents.pointerdown(),native.innerEvents.pointerdown()]);
+ assert.equal(native.sources.length,layerCount);
+ assert.ok(native.nativeMedia.every(media=>media.plays===1));
+ native.offline();
+ native.frame.contentWindow.__eraseDebug.visiblePhotoRatios=Array(layerCount).fill(1/layerCount);
+ native.draw(100);native.meterEvents.click({stopPropagation(){}});await native.innerEvents.pointerdown();
+ assert.equal(native.sources.length,layerCount);assert.ok(native.nativeMedia.every(media=>media.plays===1));
+ assert.ok(Array.from(native.window.ISOAudioMeter.tracks).every(track=>track.loop&&track.playing&&track.readyState===4&&track.loopCrossfadeSeconds===0));
+ native.nativeMedia[0].emit('waiting');
+ assert.equal(native.window.ISOAudioMeter.diagnostics.at(-1).kind,'audio-native-waiting');
+ assert.equal(native.requests.length,1+2*layerCount);
+}
+console.log('Historical HTML player: three/five fully prepared Blob MP3s, no PCM decoder or playback-time network, one start per track under concurrent gestures, same gains and mute; native waiting events recorded. This comparison deliberately uses the original raw loop seam.');
 
 const corruptURL=base+'audio/endless-ascent.mp3';
 const damaged=harness({corrupt:corruptURL});
