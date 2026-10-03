@@ -118,12 +118,11 @@
 </head>
 <body>
   <iframe id="soglia" title="Pagina Soglia interattiva" data-source="soglia-frozen.html"></iframe>
-  <audio id="photoAudio1" data-photo-index="0" preload="auto" loop crossorigin="anonymous" src="audio/river.mp3"></audio>
-  <audio id="photoAudio2" data-photo-index="1" preload="auto" loop crossorigin="anonymous" src="audio/endless-ascent.mp3"></audio>
-  <audio id="photoAudio3" data-photo-index="2" preload="auto" loop crossorigin="anonymous" src="audio/sciola.mp3"></audio>
   <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
   <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
 
+  <script src="cartolina-config.js"></script>
+  <script src="loop-audio.js"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -131,12 +130,14 @@
       const meter = document.getElementById('meter');
       const meterHit = document.getElementById('meterHit');
       const meterZone = document.getElementById('meterZone');
-      // Cartolina di prova: one continuously looping track per photograph.
-      // Only these source URLs need changing when the final media move to R2.
-      const photoAudio = Array.from(document.querySelectorAll('audio[data-photo-index]'));
+      const photoTracks = [];
       const photoGains = [];
-      const targetPhotoLevels = new Float64Array(photoAudio.length);
-      const scheduledPhotoLevels = Array(photoAudio.length).fill(-1);
+      const targetPhotoLevels = [];
+      const scheduledPhotoLevels = [];
+      let cartolinaConfig = null;
+      let cartolinaLoadPromise = null;
+      let audioLoadError = null;
+      let loopsStartedAt = null;
       const columns = Array.from({ length: 2 }, () => {
         const column = document.createElement('span');
         column.className = 'meter-col';
@@ -209,15 +210,7 @@
 
       function fadeMuteState(paused) {
         if (!audioContext || !muteGain) return;
-        const now = audioContext.currentTime;
-        const gain = muteGain.gain;
-        const current = gain.value;
-        if (typeof gain.cancelAndHoldAtTime === 'function') gain.cancelAndHoldAtTime(now);
-        else {
-          gain.cancelScheduledValues(now);
-          gain.setValueAtTime(current, now);
-        }
-        gain.linearRampToValueAtTime(paused ? 0 : 1, now + 1);
+        window.ISOLoopAudio.fade(audioContext, muteGain.gain, paused ? 0 : 1, 1);
       }
 
       function attachMediaElement(media) {
@@ -225,16 +218,7 @@
         createAudioEngine();
         try {
           const source = audioContext.createMediaElementSource(media);
-          const photoIndex = Number(media.dataset.photoIndex);
-          if (Number.isInteger(photoIndex) && photoIndex >= 0 && photoIndex < photoAudio.length) {
-            const gain = audioContext.createGain();
-            gain.gain.value = 0;
-            source.connect(gain);
-            gain.connect(masterInput);
-            photoGains[photoIndex] = gain;
-          } else {
-            source.connect(masterInput);
-          }
+          source.connect(masterInput);
           attachedMedia.set(media, source);
           return source;
         } catch (error) {
@@ -272,14 +256,55 @@
         return [vuLevel(left), vuLevel(right)];
       }
 
+      function loadCartolinaAudio() {
+        if (cartolinaLoadPromise) return cartolinaLoadPromise;
+        cartolinaLoadPromise = window.ISOCartolinaReady.then(async config => {
+          cartolinaConfig = config;
+          const context = createAudioEngine();
+          if (!photoTracks.length) {
+            config.layers.forEach(layer => {
+              const gain = context.createGain();
+              gain.gain.value = 0;
+              gain.connect(masterInput);
+              photoGains.push(gain);
+              photoTracks.push({ url: layer.audio, buffer: null, source: null });
+              targetPhotoLevels.push(0);
+              scheduledPhotoLevels.push(-1);
+            });
+          }
+          await Promise.all(photoTracks.map(async track => {
+            if (track.buffer) return;
+            Object.assign(track, await window.ISOLoopAudio.load(context, track.url, config.loopCrossfadeSeconds));
+          }));
+          audioLoadError = null;
+        }).catch(error => {
+          audioLoadError = error.message;
+          cartolinaLoadPromise = null;
+          throw error;
+        });
+        return cartolinaLoadPromise;
+      }
+
       async function ensureAudioStarted() {
         const context = createAudioEngine();
-        scanMedia();
+        // Resume synchronously inside the original pointer gesture, even if
+        // Cloudflare is still loading. All decoded loops start together once.
         const resumePromise = context.state !== 'running' ? context.resume() : Promise.resolve();
-        // Call play in the original gesture for every track. Once started,
-        // erasing and muting only change gains: the three timelines keep running.
-        const playPromises = photoAudio.filter(media => media.paused).map(media => media.play());
-        await Promise.allSettled([resumePromise, ...playPromises]);
+        try {
+          await Promise.all([resumePromise, loadCartolinaAudio()]);
+          if (loopsStartedAt !== null) return;
+          loopsStartedAt = context.currentTime + .025;
+          photoTracks.forEach((track, index) => {
+            const source = context.createBufferSource();
+            source.buffer = track.buffer;
+            source.loop = true;
+            source.connect(photoGains[index]);
+            source.start(loopsStartedAt);
+            track.source = source;
+          });
+        } catch (error) {
+          console.warn('ISO cartolina: audio non ancora disponibile', error);
+        }
       }
 
       function sampleRevealProgress(now) {
@@ -291,7 +316,7 @@
           const ratios = debug.visiblePhotoRatios;
           if (!ratios) return;
           let visibleTotal = 0;
-          for (let index = 0; index < photoAudio.length; index++) {
+          for (let index = 0; index < photoTracks.length; index++) {
             targetPhotoLevels[index] = clamp(ratios[index] || 0);
             visibleTotal += targetPhotoLevels[index];
           }
@@ -306,11 +331,11 @@
         sampleRevealProgress(now);
         revealLevel += (targetRevealLevel - revealLevel) * (1 - Math.exp(-.0055 * dt));
 
-        if (audioContext) {
+        if (audioContext && loopsStartedAt !== null && audioContext.currentTime >= loopsStartedAt) {
           photoGains.forEach((gain, index) => {
             const target = targetPhotoLevels[index];
             if (Math.abs(target - scheduledPhotoLevels[index]) < 1e-7) return;
-            gain.gain.setTargetAtTime(target, audioContext.currentTime, .055);
+            window.ISOLoopAudio.fade(audioContext, gain.gain, target, cartolinaConfig.fadeSeconds);
             scheduledPhotoLevels[index] = target;
           });
         }
@@ -348,7 +373,7 @@
       });
 
       async function loadFrozenSoglia() {
-        frame.src = frame.dataset.source;
+        frame.src = frame.dataset.source + window.location.search;
       }
 
       meterHit.addEventListener('click', event => {
@@ -367,13 +392,16 @@
         get levels() { return meterValues.slice(); },
         get audioState() { return audioContext ? audioContext.state : 'not-created'; },
         get paused() { return meterPaused; },
+        get cartolina() { return cartolinaConfig ? cartolinaConfig.manifestURL : null; },
+        get error() { return audioLoadError || window.__cartolinaLoadError || null; },
         get tracks() {
-          return photoAudio.map((media, index) => ({
-            source: media.getAttribute('src'),
-            loop: media.loop,
-            playing: !media.paused,
-            time: media.currentTime,
-            readyState: media.readyState,
+          return photoTracks.map((track, index) => ({
+            source: track.url,
+            loop: track.source ? track.source.loop : false,
+            playing: loopsStartedAt !== null && audioContext.state === 'running',
+            time: loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % track.buffer.duration,
+            readyState: track.buffer ? 4 : 0,
+            loopCrossfadeSeconds: track.crossfadeSeconds || 0,
             targetVolume: targetPhotoLevels[index],
             gain: photoGains[index] ? photoGains[index].gain.value : 0
           }));
@@ -392,6 +420,7 @@
       scanMedia();
       new MutationObserver(() => scanMedia()).observe(document.body, { childList: true, subtree: true });
       loadFrozenSoglia();
+      loadCartolinaAudio().catch(() => {});
       requestAnimationFrame(draw);
     })();
   </script>

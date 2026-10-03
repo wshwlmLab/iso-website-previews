@@ -1,0 +1,56 @@
+{
+  "manifest": {
+    "url": "https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev/cartoline/soglia-prova/v1/manifest.json",
+    "sha256": "955efa5e6c348fcc9cad7c41e377a33c496ffec14779d96a5cf6756c27501e1c"
+  },
+  "assets": [
+    {
+      "key": "cartoline/soglia-prova/v1/audio/endless-ascent.mp3",
+      "bytes": 2699704,
+      "sha256": "53dc7f7235a373d744c7b127c9588e0e044cf6d0aa538b08447bb5e8efb654ca",
+      "cors": "*",
+      "mime": "audio/mpeg"
+    },
+    {
+      "key": "cartoline/soglia-prova/v1/audio/river.mp3",
+      "bytes": 780429,
+      "sha256": "f0092a99ac67067e46db6d4f6a46b808a32d48067b086d927136d001e757e261",
+      "cors": "*",
+      "mime": "audio/mpeg"
+    },
+    {
+      "key": "cartoline/soglia-prova/v1/audio/sciola.mp3",
+      "bytes": 283808,
+      "sha256": "20aad508ef14d4d3220496c6b65ae3612bae40028595ae2b5007c15b13543b8b",
+      "cors": "*",
+      "mime": "audio/mpeg"
+    },
+    {
+      "key": "cartoline/soglia-prova/v1/images/01.jpg",
+      "bytes": 147494,
+      "sha256": "ae45e3e268ef2e6a18fea5d0530f914f30d60080b3775d5b1341d1b1580c29d5",
+      "cors": "*",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "cartoline/soglia-prova/v1/images/02.jpg",
+      "bytes": 364067,
+      "sha256": "46f6f281297fbfdcc80c4874ed8c73f1408fbe5cb33a92ae4450e671b6f7101a",
+      "cors": "*",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "cartoline/soglia-prova/v1/images/03.jpg",
+      "bytes": 775273,
+      "sha256": "691c4f969250ab35adc23c699753af4c48a3f43c096ff2c51c907dd09e0acec4",
+      "cors": "*",
+      "mime": "image/jpeg"
+    }
+  ],
+  "qa": {
+    "threeAndFiveLayerLoops": "passed",
+    "fadeSeconds": 1,
+    "loopCrossfadeSeconds": 1,
+    "browserListening": "awaiting user"
+  }
+}
