@@ -1,0 +1,12 @@
+diff --git a/dist/index.html b/dist/index.html
+index 43aef2d..ed4dfc6 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -595,6 +595,7 @@ body.trailer-open .site-identity,body.trailer-open .site-micro,body.trailer-open
+ 
+ <script src="works-motion.js"></script>
+ <script defer src="https://embed.cloudflarestream.com/embed/sdk.latest.js"></script>
++<script defer src="iso-cursor.js?v=20261003-cursor1"></script>
+ </head>
+ <body>
+ 

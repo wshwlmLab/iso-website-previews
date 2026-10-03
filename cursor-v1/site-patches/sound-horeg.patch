@@ -1,0 +1,12 @@
+diff --git a/dist/index.html b/dist/index.html
+index 92a5f8a..b317a3f 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -267,6 +267,7 @@
+     .entry-inset img,.entry-right,.hero-inset img,.hero-photo img,.opening-image img{filter:grayscale(1) saturate(0) contrast(1.08)}
+     @media(prefers-reduced-motion:reduce){.move-a,.move-b{animation:none}.track{scroll-behavior:auto}}
+   </style>
++<script defer src="iso-cursor.js?v=20261003-cursor1"></script>
+ </head>
+ <body>
+   <div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Una festa che deve tremare">

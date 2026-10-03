@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-03",
+  "shared": "iso-cursor.js",
+  "diameter": 12,
+  "pages": [
+    {
+      "directory": "soglia-v73",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": true
+    },
+    {
+      "directory": "meter-fade-sites/works",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/works-youtube",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog",
+      "file": "dist/gumleaf/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog",
+      "file": "dist/sound-horeg/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-b/gumleaf/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-b/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-b/sound-horeg/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-c/gumleaf/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-c/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-green-c/sound-horeg/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-mersi-study/gumleaf/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-mersi-study/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-mersi-study/sound-horeg/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-standard-scroll/gumleaf/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-standard-scroll/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/blog-standard-scroll/sound-horeg/index.html",
+      "src": "../../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "meter-fade-sites/blog-archive-current",
+      "file": "dist/verde/index.html",
+      "src": "../iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "cursor-sites/sound-horeg",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "cursor-sites/gumleaf",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    },
+    {
+      "directory": "cursor-sites/ick",
+      "file": "dist/index.html",
+      "src": "iso-cursor.js",
+      "native": false
+    }
+  ],
+  "home": "app/layout.tsx"
+}

@@ -1,0 +1,12 @@
+diff --git a/dist/index.html b/dist/index.html
+index 1d40136..75d9d57 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -115,6 +115,7 @@
+       100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+     }
+   </style>
++<script defer src="iso-cursor.js?v=20261003-cursor1" data-iso-cursor-native=".photo-module.erase-cursor-live"></script>
+ </head>
+ <body>
+   <iframe id="soglia" title="Pagina Soglia interattiva" data-source="soglia-frozen.html"></iframe>

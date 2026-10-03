@@ -1,0 +1,11 @@
+diff --git a/app/layout.tsx b/app/layout.tsx
+index ab75b57..2de8cda 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,4 +1,5 @@
+ import type {Metadata} from 'next';
+ import './globals.css';
++import Script from 'next/script';
+ export const metadata:Metadata={title:'TOTIP — Studio del fiume | Il Suono Organizzato',description:'Anteprima dello studio di movimento del fiume nell’artwork di Alessio Vitelli.',icons:{icon:'/favicon.svg',shortcut:'/favicon.svg'}};
+-export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="it"><body>{children}</body></html>;}
++export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="it"><body>{children}<Script src="/iso-cursor.js?v=20261003-cursor1" strategy="afterInteractive" /></body></html>;}

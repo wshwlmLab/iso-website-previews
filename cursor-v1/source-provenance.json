@@ -1,0 +1,89 @@
+{
+  "version": "1.0",
+  "diameter": 12,
+  "date": "2026-10-03",
+  "component": "shared/iso-cursor.js",
+  "sites": [
+    {
+      "key": "soglia",
+      "project_id": "appgprj_6aafc7401678819190b985290ad9e77d",
+      "base_commit_sha": "0bb844d2e8b6908ec094792f3cd5572dcafc2366",
+      "commit_sha": "da7a68b69130f9f2d40b54115a0c4239869f4cd8",
+      "version_id": "appgprj_6aafc7401678819190b985290ad9e77d~appgver_6d31b07a186481919b54e33818fabfd8",
+      "deployment_id": "appgdep_6ac13e79623c8191a487ff653370f979",
+      "url": "https://iso-soglia-real-meter.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "works",
+      "project_id": "appgprj_6aaa7cb1feec8191881973c429996cf8",
+      "base_commit_sha": "9dfc877dfb5ef37b3c067924d68849253650ef76",
+      "commit_sha": "a2f438c1afe6910ac45a57c34becfcea9a1a5907",
+      "version_id": "appgprj_6aaa7cb1feec8191881973c429996cf8~appgver_f50b609e8b1c8191975c5421afab6398",
+      "deployment_id": "appgdep_6ac13eab02988191a5988c1681b9f2ba",
+      "url": "https://iso-works-motion-lab.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "works-youtube",
+      "project_id": "appgprj_6ac0d1fa0cb88191b36e00d15c31af5f",
+      "base_commit_sha": "1b46493f0e96c30b06ffd76226bd6f970c38469e",
+      "commit_sha": "24f7757a5b1e6eee4889c8653b1ccedf043d0e1e",
+      "version_id": "appgprj_6ac0d1fa0cb88191b36e00d15c31af5f~appgver_e52e380b45048191a2c29e3644ff1de0",
+      "deployment_id": "appgdep_6ac13edb14d4819185a4e7f4fc6b0bf9",
+      "url": "https://iso-works-acab-youtube-candidate.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "blog",
+      "project_id": "appgprj_6ac0e7e2ec8081918e435018405d487a",
+      "base_commit_sha": "e7f78bd6dabfecda0d7ef1487ab842bc573c0884",
+      "commit_sha": "b71f9792cbc9eb4bb2e2d0268ca2aeb8829319ca",
+      "version_id": "appgprj_6ac0e7e2ec8081918e435018405d487a~appgver_37be1ea9d4f88191af3198a4a4cac389",
+      "deployment_id": "appgdep_6ac13f13bb7881918a860372878da395",
+      "url": "https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "blog-archive",
+      "project_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1",
+      "base_commit_sha": "1741c2a91536b5e18d6ae788d320cae30211880d",
+      "commit_sha": "cb58aca8792b974994745a8670cfe8106cdee8a3",
+      "version_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1~appgver_251f7fc4d82c819199cacedb6bad2010",
+      "deployment_id": "appgdep_6ac1403bc40c819180baf9f0021afad4",
+      "url": "https://iso-blog-archive-candidate-01.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "home-totip",
+      "project_id": "appgprj_6abfe6074b88819193a08ce5edefc274",
+      "base_commit_sha": "24db29016bbecfd6565b685519f2857af8aff95d",
+      "commit_sha": "7cd7fefd09fb174654276f0d82a92086a4550a57",
+      "version_id": "appgprj_6abfe6074b88819193a08ce5edefc274~appgver_2a634f86b5a8819198adf738f75286da",
+      "deployment_id": "appgdep_6ac141ecb8a481919f38315817e9ca23",
+      "url": "https://totip-fiume-anteprima.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "sound-horeg",
+      "project_id": "appgprj_6ab7f96112088191a0871f1c90f87aa4",
+      "base_commit_sha": "eab30d101daccf39a1e5013faa58957adf307a6f",
+      "commit_sha": "5d7b6a55eb16589e995b158946513c7d1bc0e64e",
+      "version_id": "appgprj_6ab7f96112088191a0871f1c90f87aa4~appgver_9f9bf65548bc81918dcae3438847fea0",
+      "deployment_id": "appgdep_6ac1413eca948191815dd6d7f670b4d0",
+      "url": "https://iso-sound-horeg-layout-01.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "gumleaf",
+      "project_id": "appgprj_6ac0d30538cc8191bbfec94001940fbe",
+      "base_commit_sha": "b04817e1b4c9d8a750481056af1baac6c057fce0",
+      "commit_sha": "f5562904618e560e46db306fd37ecd17e48941fd",
+      "version_id": "appgprj_6ac0d30538cc8191bbfec94001940fbe~appgver_1bb733047c4081919eb9092341573bc0",
+      "deployment_id": "appgdep_6ac14177e958819196889e72a72908cd",
+      "url": "https://iso-gumleaf-layout-01.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "ick",
+      "project_id": "appgprj_6ab6aad143008191940382240d64e1cb",
+      "base_commit_sha": "c220253837fd76b189055d0de1ef7a3b057b4822",
+      "commit_sha": "1687426a391b8797b42a23d9fe0d105bb75f71bb",
+      "version_id": "appgprj_6ab6aad143008191940382240d64e1cb~appgver_3b45c98d92308191b89ee0bfa6b986e7",
+      "deployment_id": "appgdep_6ac141afaa648191b5ff08759fee7954",
+      "url": "https://iso-ick-interview-layout-01.area-di-lavo-9208.chatgpt.site"
+    }
+  ]
+}

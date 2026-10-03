@@ -1,0 +1,35 @@
+# Cursore comune ISO v1 — 3 ottobre 2026
+
+Richiesta di William: cerchio piccolo che inverte il colore delle superfici, con la mano nativa sui punti cliccabili, comune a tutte le pagine del sito.
+
+Il componente ufficiale è `shared/iso-cursor.js`. Le copie distribuite nei Sites sono identiche. È autonomo, senza dipendenze: crea il proprio stile e un solo indicatore per documento.
+
+- Cerchio pieno di 12 pixel, centrato sulle coordinate del mouse, senza coda o ritardo intenzionale.
+- Fondo bianco con `mix-blend-mode: difference`: inverte i pixel sotto il cerchio, anche nelle immagini e nelle scritte.
+- Link, bottoni, comandi del player, controlli con ruoli accessibili e le aree già dichiarate `cursor: pointer` mostrano la mano nativa e nascondono il cerchio.
+- I campi di testo mantengono il cursore nativo per scrivere. I controlli disabilitati non diventano punti cliccabili.
+- L'indicatore non riceve eventi e non annulla gesti o clic. Il movimento usa al massimo una scrittura per frame e non tiene attiva un'animazione quando il mouse è fermo.
+- Touch e dispositivi senza mouse, oppure browser privi del supporto necessario, conservano il comportamento nativo.
+- Le pagine negli iframe dello stesso sito vengono collegate automaticamente; il marker sul documento impedisce duplicati. Il cursore si nasconde uscendo dalla pagina o perdendo il focus.
+- Nella cartolina Soglia, `.photo-module.erase-cursor-live` conserva l'indicatore della gomma, che rappresenta l'area cancellata. Il nuovo cerchio non si sovrappone alla gomma.
+
+Installazione su una pagina HTML:
+
+```html
+<script defer src="iso-cursor.js?v=20261003-cursor1"></script>
+```
+
+Per un'area con uno strumento proprio, usare `data-iso-cursor="native"` sul contenitore oppure un selettore nel tag dello script:
+
+```html
+<script defer src="iso-cursor.js?v=20261003-cursor1"
+  data-iso-cursor-native=".photo-module.erase-cursor-live"></script>
+```
+
+Per un controllo personalizzato, usare un bottone/link o il ruolo accessibile appropriato. È disponibile anche `data-iso-cursor="pointer"`. `ISOCursor.install(document)`, `ISOCursor.refresh()` e `ISOCursor.destroy()` gestiscono integrazioni aggiuntive e il ripristino del comportamento nativo.
+
+La Home usa lo stesso file in `public/iso-cursor.js`, importato dal layout con `next/script` dopo l'idratazione. Soglia, WORKS, WORKS YouTube, Blog, Archivio e le tre prove degli articoli ricevono nuove versioni. Dentro Blog e Archivio sono aggiornate anche le storie e le varianti interne. I vecchi checkpoint Frozen e gli studi separati rimangono documenti storici.
+
+Verifiche eseguite: sintassi; 23 riferimenti HTML al file corretto e copie identiche; sorgenti delle pagine uguali alla base salvo l'importazione del cursore; modello DOM/API per movimento, mano, discendenti di un link, controlli disabilitati, bersagli CSS, strumento eraser, touch, iframe e installazione unica; build della Home. I controlli non costituiscono una verifica visiva in un browser reale. Gli audio, i meter e il meccanismo dell'eraser non sono modificati.
+
+Riferimento CSS: [W3C — Compositing and Blending Level 1](https://www.w3.org/TR/compositing-1/#blendingdifference).

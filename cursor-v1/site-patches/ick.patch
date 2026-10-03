@@ -1,0 +1,12 @@
+diff --git a/dist/index.html b/dist/index.html
+index 72a0505..fa58e41 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -71,6 +71,7 @@
+     .hint{position:fixed;z-index:30;left:50%;bottom:9px;transform:translateX(-50%);color:#eee;font-size:9px;letter-spacing:.14em;text-transform:uppercase;transition:opacity .8s}
+     @media(max-width:720px){:root{--frame:19px}.frame-label{font-size:8px}.tr,.br{display:none}.spread{flex-basis:178vw}.hero h1{font-size:22vw}.hero-copy{width:44%}.hero-art{left:50%;width:50%}.hero .dek{font-size:14px;width:38%;left:55%}.q{font-size:21px}.a{font-size:14px}.hint{bottom:5px}.tl{top:6px}.bl{bottom:6px}.progress{bottom:var(--frame)}}
+   </style>
++<script defer src="iso-cursor.js?v=20261003-cursor1"></script>
+ </head>
+ <body>
+   <div class="frame-label tl"><span class="pulse">IL SUONO ORGANIZZATO</span></div>

@@ -1,0 +1,14 @@
+diff --git a/dist/index.html b/dist/index.html
+index 66c9875..e740303 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -350,7 +350,8 @@
+       .g-ending .g-source-note{left:7vw;bottom:5%;width:84vw;font-size:9px}
+       .g-spread figcaption{font-size:9px}
+     }
+-</style></head><body><div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Gumleaf">
++</style><script defer src="iso-cursor.js?v=20261003-cursor1"></script>
++</head><body><div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Gumleaf">
+ <div class="gate-pane gate-left"></div><div class="gate-pane gate-right"></div>
+ <button class="gate-card" id="gateCard" type="button" aria-label="Apri Gumleaf"><span class="gate-title">Gumleaf</span><span class="gate-meta"><span>Blog / Storia</span><span>02 / 06</span><span>Australia</span></span></button>
+ <div class="gate-count">02 / 06</div><div class="gate-hint">CLICK CARD</div></div>

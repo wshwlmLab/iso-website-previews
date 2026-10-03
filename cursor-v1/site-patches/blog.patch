@@ -1,0 +1,40 @@
+diff --git a/dist/gumleaf/index.html b/dist/gumleaf/index.html
+index d7d6119..b10452d 100644
+--- a/dist/gumleaf/index.html
++++ b/dist/gumleaf/index.html
+@@ -357,7 +357,8 @@
+     @media(max-width:760px){.entry-inset::after,.hero .hero-inset::after{border-width:2px}}
+     
+         .g-stage::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--signal);z-index:5;pointer-events:none}
+-        </style></head><body><div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Gumleaf">
++        </style><script defer src="../iso-cursor.js?v=20261003-cursor1"></script>
++</head><body><div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Gumleaf">
+ <div class="gate-pane gate-left"></div><div class="gate-pane gate-right"></div>
+ <button class="gate-card" id="gateCard" type="button" aria-label="Apri Gumleaf"><span class="gate-title">Gumleaf</span><span class="gate-meta"><span>Blog / Storia</span><span>02 / 02</span><span>Australia</span></span></button>
+ <div class="gate-count">02 / 02</div><div class="gate-hint">CLICK CARD</div></div>
+diff --git a/dist/index.html b/dist/index.html
+index 4f0899c..47c2681 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -117,7 +117,8 @@ body.has-moved .hint{opacity:0}
+ body.article-active .stage,body.article-active .card-shell,body.article-active .index,body.article-active .hint{visibility:hidden;pointer-events:none}
+ @media(max-width:760px){.card-shell{width:76cqw;height:129px}.card-face{padding:12px 13px 11px}.card-title{font-size:18.75px}.card-meta{font-size:9.375px;column-gap:8px}}
+ @media(max-aspect-ratio:4/3){:root{--identity-size:clamp(18px,4.25vw,30px);--micro-size:clamp(8px,1.7vw,10px)}.micro{width:46vw}}
+-</style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
++</style><script defer src="iso-cursor.js?v=20261003-cursor1"></script>
++</head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
+   <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
+   <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
+   <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
+diff --git a/dist/sound-horeg/index.html b/dist/sound-horeg/index.html
+index e0b8417..3d1b4bb 100644
+--- a/dist/sound-horeg/index.html
++++ b/dist/sound-horeg/index.html
+@@ -287,6 +287,7 @@
+ .final .last .final-title-line{display:block;white-space:nowrap}
+ @media(min-width:761px){.final .last .accent-line{margin-left:.45em}}
+ </style>
++<script defer src="../iso-cursor.js?v=20261003-cursor1"></script>
+ </head>
+ <body>
+   <div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Una festa che deve tremare">
