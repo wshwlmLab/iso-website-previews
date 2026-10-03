@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Il Suono Organizzato — Soglia v73 — continuous layered loop</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Cg fill='white'%3E%3Crect x='6' y='20' width='2' height='6'/%3E%3Crect x='11' y='16' width='2' height='10'/%3E%3Crect x='15' y='10' width='2' height='16'/%3E%3Crect x='19' y='14' width='2' height='12'/%3E%3Crect x='24' y='18' width='2' height='8'/%3E%3C/g%3E%3C/svg%3E">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #soglia { display: block; width: 100%; height: 100%; border: 0; }
+
+    /* ISO OFFICIAL METER v1 — FROZEN 2026-09-20 */
+    .meter, .meter-hit {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: calc(6.52vh / 2);
+      width: clamp(52px, 4.2vw, 62px);
+      height: clamp(32px, 2.85vw, 41px);
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meter {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+      opacity: 1;
+    }
+    .meter-hit {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .meter-hit.active { pointer-events: auto; }
+    .meter-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 50%;
+      height: 80%;
+      padding: 1px 0;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(4px, .35vw, 6px);
+    }
+    .meter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 0;
+    }
+    .meter-seg {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      flex: 0 0 1px;
+      background: #343434;
+      opacity: 1;
+      border-radius: 0;
+      transform: scaleY(1);
+      transform-origin: center;
+      transition: background 56ms linear, opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      height: 2px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+    .meter.paused .meter-seg { background: #343434 !important; opacity: 1 !important; transform: scaleY(1) !important; }
+    .meter.pixel-enter .meter-seg {
+      animation: meterPixelIn 2.55s cubic-bezier(.18,.72,.2,1) both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    .meter.pixel-enter .meter-seg::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1px;
+      height: 5px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%);
+      animation: meterPixelVertical 2.55s ease both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    @keyframes meterPixelIn {
+      0% { transform: translate(var(--pixel-x), var(--pixel-y)) scale(.18); }
+      62% { transform: translate(0, 0) scale(.82); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes meterPixelVertical {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      45% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="soglia" title="Pagina Soglia interattiva" data-source="soglia-frozen.html"></iframe>
+  <audio id="meterCalibrationAudio" preload="auto" loop crossorigin="anonymous"></audio>
+  <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
+  <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
+
+  <script>
+    (() => {
+      // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
+      const frame = document.getElementById('soglia');
+      const meter = document.getElementById('meter');
+      const meterHit = document.getElementById('meterHit');
+      const meterZone = document.getElementById('meterZone');
+      const audioBaseUrl = 'https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev';
+      const audioObjectKey = 'Endless Ascent.wav';
+      const calibrationAudio = document.getElementById('meterCalibrationAudio');
+      calibrationAudio.src = `${audioBaseUrl}/${encodeURIComponent(audioObjectKey)}`;
+      const columns = Array.from({ length: 2 }, () => {
+        const column = document.createElement('span');
+        column.className = 'meter-col';
+        for (let index = 0; index < 16; index++) {
+          const segment = document.createElement('i');
+          segment.className = 'meter-seg';
+          column.appendChild(segment);
+        }
+        meterZone.appendChild(column);
+        return column;
+      });
+
+      let meterPaused = false;
+      let meterStarted = false;
+      let revealLevel = 0;
+      let targetRevealLevel = 0;
+      let meterPrevious = performance.now();
+      let samplePrevious = 0;
+      let audioContext = null;
+      let analyserLeft = null;
+      let analyserRight = null;
+      let masterInput = null;
+      let masterGain = null;
+      let muteGain = null;
+      let silentSink = null;
+      let calibrationStarted = false;
+      let monoEvidence = 0;
+      const meterValues = [0, 0];
+      const timeLeft = new Float32Array(2048);
+      const timeRight = new Float32Array(2048);
+      const attachedMedia = new WeakMap();
+
+      function clamp(value, min = 0, max = 1) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function startMeterEntrance() {
+        if (meterStarted) return;
+        meterStarted = true;
+      }
+
+      function createAudioEngine() {
+        if (audioContext) return audioContext;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContextClass();
+        masterInput = audioContext.createGain();
+        masterGain = audioContext.createGain();
+        muteGain = audioContext.createGain();
+        const splitter = audioContext.createChannelSplitter(2);
+        analyserLeft = audioContext.createAnalyser();
+        analyserRight = audioContext.createAnalyser();
+        silentSink = audioContext.createGain();
+
+        analyserLeft.fftSize = analyserRight.fftSize = 2048;
+        analyserLeft.smoothingTimeConstant = analyserRight.smoothingTimeConstant = 0;
+        silentSink.gain.value = 0;
+
+        masterInput.connect(masterGain);
+        masterGain.connect(muteGain);
+        muteGain.connect(audioContext.destination);
+        muteGain.connect(splitter);
+        splitter.connect(analyserLeft, 0);
+        splitter.connect(analyserRight, 1);
+        analyserLeft.connect(silentSink);
+        analyserRight.connect(silentSink);
+        silentSink.connect(audioContext.destination);
+        masterGain.gain.value = 0;
+        muteGain.gain.value = 1;
+        return audioContext;
+      }
+
+      function fadeMuteState(paused) {
+        if (!audioContext || !muteGain) return;
+        const now = audioContext.currentTime;
+        const gain = muteGain.gain;
+        const current = gain.value;
+        if (typeof gain.cancelAndHoldAtTime === 'function') gain.cancelAndHoldAtTime(now);
+        else {
+          gain.cancelScheduledValues(now);
+          gain.setValueAtTime(current, now);
+        }
+        gain.linearRampToValueAtTime(paused ? 0 : 1, now + 1);
+      }
+
+      function attachMediaElement(media) {
+        if (!media || attachedMedia.has(media)) return attachedMedia.get(media);
+        createAudioEngine();
+        try {
+          const source = audioContext.createMediaElementSource(media);
+          source.connect(masterInput);
+          attachedMedia.set(media, source);
+          return source;
+        } catch (error) {
+          console.warn('ISO meter: media element non collegabile', error);
+          return null;
+        }
+      }
+
+      function scanMedia(root = document) {
+        root.querySelectorAll('audio, video').forEach(attachMediaElement);
+      }
+
+      function rms(buffer) {
+        let sum = 0;
+        for (let index = 0; index < buffer.length; index++) sum += buffer[index] * buffer[index];
+        return Math.sqrt(sum / buffer.length);
+      }
+
+      function vuLevel(linear) {
+        if (linear < .00008) return 0;
+        const db = 20 * Math.log10(linear);
+        return clamp((db + 54) / 48);
+      }
+
+      function readStereoLevels() {
+        if (!analyserLeft || !analyserRight || audioContext.state !== 'running') return [0, 0];
+        analyserLeft.getFloatTimeDomainData(timeLeft);
+        analyserRight.getFloatTimeDomainData(timeRight);
+        let left = rms(timeLeft);
+        let right = rms(timeRight);
+
+        if (left > .001 && right < left * .015) monoEvidence = Math.min(45, monoEvidence + 1);
+        else if (right > .001) monoEvidence = Math.max(0, monoEvidence - 4);
+        if (monoEvidence > 18) right = left;
+        return [vuLevel(left), vuLevel(right)];
+      }
+
+      async function ensureAudioStarted() {
+        const context = createAudioEngine();
+        scanMedia();
+        const resumePromise = context.state !== 'running' ? context.resume() : Promise.resolve();
+        if (!calibrationStarted) {
+          attachMediaElement(calibrationAudio);
+          const playPromise = calibrationAudio.play();
+          try {
+            await Promise.all([resumePromise, playPromise]);
+            calibrationStarted = true;
+          } catch (_) {}
+        } else {
+          await resumePromise;
+        }
+      }
+
+      function sampleRevealProgress(now) {
+        if (now - samplePrevious < 90) return;
+        samplePrevious = now;
+        try {
+          const debug = frame.contentWindow.__eraseDebug;
+          if (!debug) return;
+          const white = clamp(debug.whiteErasedRatio || 0);
+          const second = clamp(debug.layer2DiscoveredRatio || 0);
+          let third = 0;
+          const states = debug.photoState;
+          if (states && states.length) {
+            const stride = Math.max(1, Math.floor(states.length / 4096));
+            let total = 0;
+            let thirdCount = 0;
+            for (let index = 0; index < states.length; index += stride) {
+              total++;
+              if (states[index] === 3) thirdCount++;
+            }
+            third = total ? thirdCount / total : 0;
+          }
+          targetRevealLevel = clamp(white * .50 + second * .30 + third * .20);
+          if (targetRevealLevel > .001) startMeterEntrance();
+        } catch (_) {}
+      }
+
+      function draw(now) {
+        const dt = Math.min(40, now - meterPrevious);
+        meterPrevious = now;
+        sampleRevealProgress(now);
+        revealLevel += (targetRevealLevel - revealLevel) * (1 - Math.exp(-.0055 * dt));
+
+        if (masterGain && audioContext) {
+          // Reveal and mute are separate gain stages. Keeping mute out of this
+          // fast-following stage prevents the short discontinuity that clicked.
+          const audibleReveal = Math.pow(revealLevel, 1.35);
+          masterGain.gain.setTargetAtTime(audibleReveal, audioContext.currentTime, .055);
+        }
+
+        const [left, right] = meterPaused ? [0, 0] : readStereoLevels();
+        const targets = [left, right];
+        columns.forEach((column, columnIndex) => {
+          const delta = targets[columnIndex] - meterValues[columnIndex];
+          const rate = delta > 0 ? .032 : .0075;
+          meterValues[columnIndex] += delta * (1 - Math.exp(-rate * dt));
+          if (targets[columnIndex] === 0 && meterValues[columnIndex] < .002) meterValues[columnIndex] = 0;
+          const exact = meterValues[columnIndex] * 16;
+          Array.from(column.children).forEach((segment, index) => {
+            const distance = exact - index;
+            const partialOpacity = Math.min(.9, .16 + Math.max(0, distance) * .72);
+            segment.style.background = meterPaused || distance <= .03
+              ? '#343434'
+              : distance >= 1
+                ? '#f1f1f1'
+                : `rgba(241,241,241,${partialOpacity})`;
+            segment.style.opacity = '1';
+            segment.style.transform = 'scaleY(1)';
+          });
+        });
+        requestAnimationFrame(draw);
+      }
+
+      frame.addEventListener('load', () => {
+        try {
+          frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');
+          frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
+          scanMedia(frame.contentDocument);
+          new MutationObserver(() => scanMedia(frame.contentDocument)).observe(frame.contentDocument, { childList: true, subtree: true });
+        } catch (_) {}
+      });
+
+      async function loadFrozenSoglia() {
+        const localSource = frame.dataset.source;
+        const remoteSource = 'https://raw.githubusercontent.com/wshwlmLab/iso-website-previews/main/Il-Suono-Organizzato-Soglia-v62-FROZEN-2026-09-10.html';
+        try {
+          let response = await fetch(localSource, { cache: 'no-store' });
+          if (!response.ok) response = await fetch(remoteSource, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Soglia source unavailable: ${response.status}`);
+          frame.srcdoc = await response.text();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      meterHit.addEventListener('click', event => {
+        event.stopPropagation();
+        ensureAudioStarted();
+        meterPaused = !meterPaused;
+        fadeMuteState(meterPaused);
+        meter.classList.toggle('paused', meterPaused);
+        meterHit.setAttribute('aria-pressed', String(meterPaused));
+        meterHit.setAttribute('aria-label', meterPaused ? "Riattiva l'audio" : "Disattiva l'audio");
+      });
+
+      window.__sogliaMeterDebug = {
+        get revealLevel() { return revealLevel; },
+        get targetRevealLevel() { return targetRevealLevel; },
+        get levels() { return meterValues.slice(); },
+        get audioState() { return audioContext ? audioContext.state : 'not-created'; },
+        get paused() { return meterPaused; },
+        attachMediaElement,
+        connect(node) {
+          createAudioEngine();
+          node.connect(masterInput);
+          return node;
+        }
+      };
+
+      window.ISOAudioMeter = window.__sogliaMeterDebug;
+
+      meterHit.classList.add('active');
+      scanMedia();
+      new MutationObserver(() => scanMedia()).observe(document.body, { childList: true, subtree: true });
+      loadFrozenSoglia();
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>
