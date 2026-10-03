@@ -142,6 +142,7 @@
   <script src="experience-loader.js?v=20261003-preload"></script>
   <script src="cartolina-config.js?v=20261003-preload"></script>
   <script src="loop-audio.js?v=20261003-preload"></script>
+  <script src="iso-meter-response.js?v=20261003-1"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -375,9 +376,7 @@
         const [left, right] = meterPaused ? [0, 0] : readStereoLevels();
         const targets = [left, right];
         columns.forEach((column, columnIndex) => {
-          const delta = targets[columnIndex] - meterValues[columnIndex];
-          const rate = delta > 0 ? .032 : .0075;
-          meterValues[columnIndex] += delta * (1 - Math.exp(-rate * dt));
+          meterValues[columnIndex] = window.ISOMeterResponse.advance(meterValues[columnIndex], targets[columnIndex], dt);
           if (targets[columnIndex] === 0 && meterValues[columnIndex] < .002) meterValues[columnIndex] = 0;
           const exact = meterValues[columnIndex] * 16;
           Array.from(column.children).forEach((segment, index) => {

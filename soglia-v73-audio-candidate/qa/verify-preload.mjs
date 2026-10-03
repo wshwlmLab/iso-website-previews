@@ -116,7 +116,7 @@ function harness({ corrupt = null, failManifest = false } = {}) {
       queueMicrotask(() => { for (const [listener, key] of events) if (key === 'load') listener(); });
     }
   });
-  for (const file of ['experience-loader.js', 'cartolina-config.js', 'loop-audio.js']) vm.runInContext(read(file), context);
+  for (const file of ['experience-loader.js', 'cartolina-config.js', 'loop-audio.js', 'iso-meter-response.js']) vm.runInContext(read(file), context);
   vm.runInContext(outer, context);
   return {
     window, elements, frame, requests, streams, images, decodes, sources, gains, readyFonts, releaseDownload, innerEvents, meterEvents, retryEvents,

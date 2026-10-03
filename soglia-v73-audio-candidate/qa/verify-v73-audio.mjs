@@ -105,6 +105,7 @@ async function verifyAudio() {
   window.ISOExperienceLoader={bytes:async()=>new ArrayBuffer(8),prepare:(key,operation)=>operation(),snapshot:()=>({error:null}),subscribe(){},retry(){},preparing(){},ready(){},fail(error){throw error}};
   let draw;
   const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>0},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number,URL,setTimeout,clearTimeout});
+  vm.runInContext(fs.readFileSync(path.join(root,'iso-meter-response.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(root,'loop-audio.js'),'utf8'),context);
   const engineContext=new AudioContext();
   const original=new Buffer(2,400,100);
