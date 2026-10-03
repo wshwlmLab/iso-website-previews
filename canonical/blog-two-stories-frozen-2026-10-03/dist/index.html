@@ -117,7 +117,38 @@ body.has-moved .hint{opacity:0}
 body.article-active .stage,body.article-active .card-shell,body.article-active .index,body.article-active .hint{visibility:hidden;pointer-events:none}
 @media(max-width:760px){.card-shell{width:76cqw;height:129px}.card-face{padding:12px 13px 11px}.card-title{font-size:18.75px}.card-meta{font-size:9.375px;column-gap:8px}}
 @media(max-aspect-ratio:4/3){:root{--identity-size:clamp(18px,4.25vw,30px);--micro-size:clamp(8px,1.7vw,10px)}.micro{width:46vw}}
-</style></head><body><div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
+
+/* ===== INTERACTION LAB v01 — BLOG -> SOGLIA ===== */
+#sogliaDestination{
+  position:fixed;inset:0;width:100%;height:100%;border:0;
+  z-index:0;visibility:hidden;pointer-events:none;background:#000;
+}
+.frame-stage{
+  position:relative;z-index:2;
+  transition:opacity 110ms linear;
+}
+.page-window{
+  transform:translateZ(0) scale3d(1,1,1);
+  transform-origin:50% 50%;
+  transition:transform 210ms cubic-bezier(.2,.72,.2,1);
+}
+.identity{cursor:pointer}
+body.return-armed .page-window{
+  transform:translateZ(0) scale3d(.994,.988,1);
+}
+body.returning .page-window{
+  transform:translateZ(0) scale3d(1,1,1);
+}
+body.show-soglia #sogliaDestination{visibility:visible}
+body.return-complete .frame-stage{
+  opacity:0;pointer-events:none;
+}
+body.return-complete #sogliaDestination{
+  visibility:visible;pointer-events:auto;
+}
+</style></head><body>
+<iframe id="sogliaDestination" title="Pagina Soglia" src="../../../soglia-v73-frozen/index.html?from=blog-return-v01" aria-hidden="true"></iframe>
+<div class="frame-stage">  <div class="identity id-il"><span class="identity-inner">IL</span></div>
   <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
   <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
   <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
@@ -281,4 +312,76 @@ function clock(){const n=new Date();document.getElementById('clock').textContent
 clock();setInterval(clock,15000);
 
 
-</script></body></html>
+</script>
+<script>
+(() => {
+  const identities=[...document.querySelectorAll('.identity')];
+  const destination=document.getElementById('sogliaDestination');
+  const frameStage=document.querySelector('.frame-stage');
+  let returning=false;
+
+  function reverseFrames(frames){
+    const reversed=[...frames].reverse();
+    return reversed.map((frame,index)=>({
+      ...frame,
+      offset:reversed.length===1 ? 1 : index/(reversed.length-1)
+    }));
+  }
+
+  function armReturn(){
+    if(returning) return;
+    document.body.classList.add('return-armed');
+  }
+  function disarmReturn(){
+    if(returning) return;
+    document.body.classList.remove('return-armed');
+  }
+
+  function returnToSoglia(){
+    if(returning || document.body.classList.contains('article-active')) return;
+    returning=true;
+    locked=true;
+    document.body.classList.remove('return-armed');
+    document.body.classList.add('returning','show-soglia');
+
+    identities.forEach(el=>el.setAttribute('aria-disabled','true'));
+
+    const opts={duration:760,easing:'linear',fill:'forwards'};
+    const leftAnimation=leftBase.animate(reverseFrames(pageTurnFrames(-100)),opts);
+    const rightAnimation=rightBase.animate(reverseFrames(pageTurnFrames(100)),opts);
+    const cardAnimation=cardBase.animate(reverseFrames(pageTurnFrames(-100,.48,.16)),opts);
+
+    indexEl.animate([{opacity:1},{opacity:0}],{duration:250,fill:'forwards'});
+    const hint=document.querySelector('.hint');
+    if(hint) hint.animate([{opacity:getComputedStyle(hint).opacity},{opacity:0}],{duration:180,fill:'forwards'});
+
+    window.setTimeout(()=>{
+      frameStage.animate([{opacity:1},{opacity:0}],{
+        duration:110,easing:'linear',fill:'forwards'
+      }).finished.then(()=>{
+        document.body.classList.add('return-complete');
+        destination.setAttribute('aria-hidden','false');
+        try{ destination.contentWindow.focus(); }catch(_){}
+      });
+    },650);
+
+    Promise.allSettled([leftAnimation.finished,rightAnimation.finished,cardAnimation.finished]);
+  }
+
+  identities.forEach(el=>{
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+    el.setAttribute('aria-label','Torna alla Soglia');
+    el.addEventListener('pointerenter',armReturn);
+    el.addEventListener('pointerleave',disarmReturn);
+    el.addEventListener('click',returnToSoglia);
+    el.addEventListener('keydown',event=>{
+      if(event.key==='Enter' || event.key===' '){
+        event.preventDefault();
+        returnToSoglia();
+      }
+    });
+  });
+})();
+</script>
+</body></html>
