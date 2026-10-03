@@ -206,7 +206,8 @@ body.bridge-pre .cursor-note{visibility:hidden;pointer-events:none}
     <div class="glass-core"></div>
   </div>
 </div>
-<script src="cartolina-config.js"></script>
+<script src="experience-loader.js?v=20261003-preload"></script>
+<script src="cartolina-config.js?v=20261003-preload"></script>
 <script>
 (() => {
 let PHOTO_SRC = [];
@@ -404,8 +405,6 @@ let guardDirty=true;
 let loopCount=0;
 let pendingPointerPoints=[];
 let pointerFrame=0;
-
-function load(src){return new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=rej;im.src=src})}
 
 function rects(){
   const mr=moduleEl.getBoundingClientRect(),vr=viewport.getBoundingClientRect();
@@ -904,17 +903,35 @@ function setCursorMode(mode){
   stone.classList.add('mode-'+mode);
 }
 
-window.ISOCartolinaReady.then(config=>{
-  PHOTO_SRC=config.layers.map(layer=>layer.image);
-  return Promise.all(PHOTO_SRC.map(load));
-}).then(a=>{
-  imgs=a;
-  size();
-  const start=()=>{window.__frozenSogliaReady=true;requestAnimationFrame(snake)};
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(start); else start();
-}).catch(error=>{window.__cartolinaLoadError=error.message;console.error('ISO cartolina: immagini non disponibili',error)});
+document.body.inert=true;
+let prepared=null;
+window.__prepareFrozenSoglia=()=>{
+  if(prepared)return prepared;
+  prepared=(async()=>{
+    const config=await window.ISOCartolina.load();
+    PHOTO_SRC=config.layers.map(layer=>layer.image);
+    imgs=await Promise.all(config.layers.map(layer=>window.ISOExperienceLoader.image(layer.image,layer.imageSHA256)));
+    if(document.fonts){
+      await document.fonts.ready;
+      if([...document.fonts].some(font=>font.status==='error'))throw new Error('Font non disponibile');
+    }
+    setOpticalFlipAxes();
+    size();
+    window.__prepareSogliaIntro();
+    window.__sogliaAssetsReady=true;
+  })().catch(error=>{prepared=null;window.__cartolinaLoadError=error.message;throw error});
+  return prepared;
+};
+window.__startSogliaExperience=()=>{
+  if(!window.__sogliaAssetsReady||window.__frozenSogliaReady)return;
+  window.__frozenSogliaReady=true;
+  document.body.inert=false;
+  window.__cartolinaLoadError=null;
+  window.__startSogliaIntro();
+  requestAnimationFrame(snake);
+};
 
-window.addEventListener('resize',size);
+window.addEventListener('resize',()=>{if(imgs.length)size()});
 })();
 </script>
 
@@ -1511,12 +1528,13 @@ function initialMotionLetterIntro(){
   });
   setTimeout(()=>{initialMotionIntroDone=true},1240);
 }
-function bootInitialMotionIntro(){
-  rebuild();render(isOpen?1:0);initialMotionLetterIntro();
-}
-if(document.fonts&&document.fonts.ready){
-  document.fonts.ready.then(bootInitialMotionIntro).catch(bootInitialMotionIntro);
-}else{bootInitialMotionIntro();}
+window.__prepareSogliaIntro=()=>{rebuild();render(isOpen?1:0)};
+let initialMotionIntroStarted=false;
+window.__startSogliaIntro=()=>{
+  if(initialMotionIntroStarted)return;
+  initialMotionIntroStarted=true;
+  initialMotionLetterIntro();
+};
 
 const DURATION=1490;
 const BASE_SPEED=5;

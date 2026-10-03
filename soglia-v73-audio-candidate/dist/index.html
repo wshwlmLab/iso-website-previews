@@ -115,14 +115,33 @@
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
     }
   </style>
+  <style>
+    #soglia[aria-busy="true"] { visibility: hidden; pointer-events: none; }
+    body[data-experience="loading"] .meter { visibility: hidden; }
+    .loading-gate { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; gap: 14px; text-align: center; color: #f1f1f1; background: #000; font: 13px/1.5 monospace; }
+    .loading-gate[hidden], .loading-gate [hidden] { display: none; }
+    .loading-gate p { margin: 0; }
+    .loading-gate progress { width: 180px; height: 2px; margin: 0 auto; border: 0; accent-color: #f1f1f1; background: #343434; }
+    .loading-gate progress::-webkit-progress-bar { background: #343434; }
+    .loading-gate progress::-webkit-progress-value { background: #f1f1f1; }
+    .loading-gate progress::-moz-progress-bar { background: #f1f1f1; }
+    .loading-gate button { justify-self: center; padding: 5px 12px; border: 1px solid #777; color: inherit; background: transparent; font: inherit; cursor: pointer; }
+  </style>
 </head>
-<body>
-  <iframe id="soglia" title="Pagina Soglia interattiva" data-source="soglia-frozen.html"></iframe>
+<body data-experience="loading">
+  <div class="loading-gate" id="loadingGate">
+    <p id="loadingLabel" role="status" aria-live="polite">Caricamento…</p>
+    <p id="loadingProgress" aria-hidden="true"></p>
+    <progress id="loadingBar" max="100" value="0" aria-label="Caricamento dell’esperienza" hidden></progress>
+    <button id="loadingRetry" type="button" hidden>Riprova</button>
+  </div>
+  <iframe id="soglia" title="Pagina Soglia interattiva" data-source="soglia-frozen.html" aria-busy="true" aria-hidden="true" inert></iframe>
   <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
-  <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
+  <button class="meter-hit" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false" disabled></button>
 
-  <script src="cartolina-config.js"></script>
-  <script src="loop-audio.js"></script>
+  <script src="experience-loader.js?v=20261003-preload"></script>
+  <script src="cartolina-config.js?v=20261003-preload"></script>
+  <script src="loop-audio.js?v=20261003-preload"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -130,6 +149,14 @@
       const meter = document.getElementById('meter');
       const meterHit = document.getElementById('meterHit');
       const meterZone = document.getElementById('meterZone');
+      const loader = window.ISOExperienceLoader;
+      const loadingGate = document.getElementById('loadingGate');
+      const loadingLabel = document.getElementById('loadingLabel');
+      const loadingProgress = document.getElementById('loadingProgress');
+      const loadingBar = document.getElementById('loadingBar');
+      const loadingRetry = document.getElementById('loadingRetry');
+      let experienceReady = false;
+      let preparationPromise = null;
       const photoTracks = [];
       const photoGains = [];
       const targetPhotoLevels = [];
@@ -258,7 +285,7 @@
 
       function loadCartolinaAudio() {
         if (cartolinaLoadPromise) return cartolinaLoadPromise;
-        cartolinaLoadPromise = window.ISOCartolinaReady.then(async config => {
+        cartolinaLoadPromise = window.ISOCartolina.load().then(async config => {
           cartolinaConfig = config;
           const context = createAudioEngine();
           if (!photoTracks.length) {
@@ -267,15 +294,18 @@
               gain.gain.value = 0;
               gain.connect(masterInput);
               photoGains.push(gain);
-              photoTracks.push({ url: layer.audio, buffer: null, source: null });
+              photoTracks.push({ url: layer.audio, sha256: layer.audioSHA256, buffer: null, source: null });
               targetPhotoLevels.push(0);
               scheduledPhotoLevels.push(-1);
             });
           }
-          await Promise.all(photoTracks.map(async track => {
-            if (track.buffer) return;
-            Object.assign(track, await window.ISOLoopAudio.load(context, track.url, config.loopCrossfadeSeconds));
-          }));
+          // Fetch concurrently, then decode one file at a time while the gate
+          // is still closed. No decoding or seam preparation during the eraser.
+          await Promise.all(photoTracks.filter(track => !track.buffer).map(track => loader.bytes(track.url, track.sha256)));
+          for (const track of photoTracks) {
+            if (track.buffer) continue;
+            Object.assign(track, await window.ISOLoopAudio.load(context, track.url, config.loopCrossfadeSeconds, track.sha256));
+          }
           audioLoadError = null;
         }).catch(error => {
           audioLoadError = error.message;
@@ -286,20 +316,22 @@
       }
 
       async function ensureAudioStarted() {
+        if (!experienceReady) return;
         const context = createAudioEngine();
-        // Resume synchronously inside the original pointer gesture, even if
-        // Cloudflare is still loading. All decoded loops start together once.
+        // Buffers are already prepared. Resume in the original pointer gesture.
         const resumePromise = context.state !== 'running' ? context.resume() : Promise.resolve();
         try {
-          await Promise.all([resumePromise, loadCartolinaAudio()]);
+          await resumePromise;
           if (loopsStartedAt !== null) return;
           loopsStartedAt = context.currentTime + .025;
           photoTracks.forEach((track, index) => {
             const source = context.createBufferSource();
             source.buffer = track.buffer;
             source.loop = true;
+            source.loopStart = track.loopStart;
+            source.loopEnd = track.loopEnd;
             source.connect(photoGains[index]);
-            source.start(loopsStartedAt);
+            source.start(loopsStartedAt, track.loopStart);
             track.source = source;
           });
         } catch (error) {
@@ -363,21 +395,79 @@
         requestAnimationFrame(draw);
       }
 
-      frame.addEventListener('load', () => {
-        try {
-          frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');
-          frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
-          scanMedia(frame.contentDocument);
-          new MutationObserver(() => scanMedia(frame.contentDocument)).observe(frame.contentDocument, { childList: true, subtree: true });
-        } catch (_) {}
+      function loadFrozenSoglia() {
+        return new Promise((resolve, reject) => {
+          const source = new URL(frame.dataset.source + window.location.search, window.location.href);
+          source.searchParams.set('build', '20261003-preload');
+          const sourceURL = source.href;
+          const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
+          function finish(error) {
+            clearTimeout(timeout);
+            frame.removeEventListener('load', loaded);
+            if (error) reject(error); else resolve();
+          }
+          async function loaded() {
+            try {
+              if (frame.contentWindow.location.href !== sourceURL) return;
+              const child = frame.contentWindow;
+              if (typeof child.__prepareFrozenSoglia !== 'function' || typeof child.__startSogliaExperience !== 'function') {
+                throw new Error('Pagina non disponibile');
+              }
+              frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');
+              frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
+              await child.__prepareFrozenSoglia();
+              finish();
+            } catch (error) { finish(error); }
+          }
+          frame.addEventListener('load', loaded);
+          frame.src = sourceURL;
+        });
+      }
+
+      loader.subscribe(state => {
+        loadingRetry.hidden = state.status !== 'error';
+        loadingBar.hidden = !state.total || state.status === 'error';
+        loadingBar.value = state.percent;
+        loadingLabel.textContent = state.status === 'error' ? 'Caricamento interrotto. Riprova.' : 'Caricamento…';
+        loadingProgress.textContent = state.status === 'error' ? '' : state.total ? `${state.percent}%` : '';
       });
 
-      async function loadFrozenSoglia() {
-        frame.src = frame.dataset.source + window.location.search;
+      function prepareExperience() {
+        if (experienceReady) return Promise.resolve();
+        if (preparationPromise) return preparationPromise;
+        loader.retry();
+        loadingRetry.disabled = true;
+        preparationPromise = (async () => {
+          await window.ISOCartolina.load();
+          // Wait for both branches even on failure, so a retry cannot race the
+          // previous iframe or decode and start duplicate preparation work.
+          const results = await Promise.allSettled([loadFrozenSoglia(), loadCartolinaAudio()]);
+          const failed = results.find(result => result.status === 'rejected');
+          if (failed) throw failed.reason;
+          loader.preparing();
+          if (document.fonts) await document.fonts.ready;
+          loader.ready();
+          frame.contentWindow.__startSogliaExperience();
+          experienceReady = true;
+          frame.inert = false;
+          frame.setAttribute('aria-busy', 'false');
+          frame.removeAttribute('aria-hidden');
+          meterHit.disabled = false;
+          meterHit.classList.add('active');
+          document.body.dataset.experience = 'ready';
+          loadingGate.hidden = true;
+          requestAnimationFrame(draw);
+        })().catch(error => {
+          loader.fail(error);
+          console.warn('ISO cartolina: esperienza in attesa', error);
+        }).finally(() => { preparationPromise = null; loadingRetry.disabled = false; });
+        return preparationPromise;
       }
+      loadingRetry.addEventListener('click', prepareExperience);
 
       meterHit.addEventListener('click', event => {
         event.stopPropagation();
+        if (!experienceReady) return;
         ensureAudioStarted();
         meterPaused = !meterPaused;
         fadeMuteState(meterPaused);
@@ -391,15 +481,17 @@
         get targetRevealLevel() { return targetRevealLevel; },
         get levels() { return meterValues.slice(); },
         get audioState() { return audioContext ? audioContext.state : 'not-created'; },
+        get experienceReady() { return experienceReady; },
+        get loading() { return loader.snapshot(); },
         get paused() { return meterPaused; },
         get cartolina() { return cartolinaConfig ? cartolinaConfig.manifestURL : null; },
-        get error() { return audioLoadError || window.__cartolinaLoadError || null; },
+        get error() { return loader.snapshot().error || audioLoadError || window.__cartolinaLoadError || null; },
         get tracks() {
           return photoTracks.map((track, index) => ({
             source: track.url,
             loop: track.source ? track.source.loop : false,
             playing: loopsStartedAt !== null && audioContext.state === 'running',
-            time: loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % track.buffer.duration,
+            time: loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % (track.loopEnd - track.loopStart),
             readyState: track.buffer ? 4 : 0,
             loopCrossfadeSeconds: track.crossfadeSeconds || 0,
             targetVolume: targetPhotoLevels[index],
@@ -416,12 +508,7 @@
 
       window.ISOAudioMeter = window.__sogliaMeterDebug;
 
-      meterHit.classList.add('active');
-      scanMedia();
-      new MutationObserver(() => scanMedia()).observe(document.body, { childList: true, subtree: true });
-      loadFrozenSoglia();
-      loadCartolinaAudio().catch(() => {});
-      requestAnimationFrame(draw);
+      prepareExperience();
     })();
   </script>
 </body>

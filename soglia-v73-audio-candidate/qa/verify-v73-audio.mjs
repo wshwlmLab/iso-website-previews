@@ -23,7 +23,7 @@ function verifyEraser(layers) {
   const window={addEventListener(){}};
   const context=vm.createContext({document,window,Uint8Array,Uint32Array,Float32Array,Uint8ClampedArray,Math,Infinity,Array,requestAnimationFrame:()=>1,cancelAnimationFrame(){}});
   const begin=inner.indexOf('const moduleEl=document.getElementById');
-  const end=inner.indexOf('window.ISOCartolinaReady.then(config=>',begin);
+  const end=inner.indexOf('document.body.inert=true;',begin);
   vm.runInContext(inner.slice(begin,end),context);
   vm.runInContext(`imgs=Array.from({length:${layers}},()=>({width:420,height:240}));size();`,context);
   const debug=window.__eraseDebug;
@@ -75,7 +75,7 @@ async function verifyAudio() {
     constructor(){this.gain=new Param();this.connections=[];}
     connect(node){this.connections.push(node);}
     getFloatTimeDomainData(buffer){buffer.fill(0);}
-    start(time){this.started=time;this.startCalls=(this.startCalls||0)+1;}
+    start(time,offset){this.offset=offset;this.started=time;this.startCalls=(this.startCalls||0)+1;}
   }
   class Buffer {
     constructor(channels,length,sampleRate){this.numberOfChannels=channels;this.length=length;this.sampleRate=sampleRate;this.duration=length/sampleRate;this.channels=Array.from({length:channels},()=>new Float32Array(length));}
@@ -94,40 +94,50 @@ async function verifyAudio() {
   const frameEvents={},meterEvents={},innerEvents={};
   const innerDocument={documentElement:{style:{setProperty(){}}},addEventListener:(key,cb)=>innerEvents[key]=cb,querySelectorAll:()=>[]};
   const ratios=[0,0,0];
-  const frame={dataset:{source:'soglia-frozen.html'},contentDocument:innerDocument,contentWindow:{__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb};
+  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-preload'},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
   const meterHit={classList:classList(),setAttribute(){},addEventListener:(key,cb)=>meterEvents[key]=cb};
   const meter={classList:classList()};
-  const document={body:{},getElementById:id=>({soglia:frame,meter,meterHit,meterZone:{appendChild(){}}})[id],querySelectorAll:()=>[],createElement:()=>({className:'',children:[],style:{},appendChild(child){this.children.push(child)}})};
+  const loadingElements=Object.fromEntries(['loadingGate','loadingLabel','loadingProgress','loadingBar','loadingRetry'].map(id=>[id,{hidden:false,addEventListener(){}}]));
+  const document={body:{dataset:{}},getElementById:id=>({soglia:frame,meter,meterHit,meterZone:{appendChild(){}},...loadingElements})[id],querySelectorAll:()=>[],createElement:()=>({className:'',children:[],style:{},appendChild(child){this.children.push(child)}})};
   const base='https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev/cartoline/soglia-prova/v1/';
-  const window={AudioContext,location:{search:'?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
+  const window={AudioContext,location:{search:'?cartolina=soglia-prova',href:'https://test.invalid/?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
+  window.ISOCartolina={load:()=>window.ISOCartolinaReady};
+  window.ISOExperienceLoader={bytes:async()=>new ArrayBuffer(8),prepare:(key,operation)=>operation(),snapshot:()=>({error:null}),subscribe(){},retry(){},preparing(){},ready(){},fail(error){throw error}};
   let draw;
-  const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>0},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number});
+  const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>0},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number,URL,setTimeout,clearTimeout});
   vm.runInContext(fs.readFileSync(path.join(root,'loop-audio.js'),'utf8'),context);
   const engineContext=new AudioContext();
   const original=new Buffer(2,400,100);
   original.channels.forEach((samples,channel)=>samples.forEach((_,i)=>samples[i]=i/500+channel/10));
+  const inputs=original.channels.map(samples=>samples.slice());
   const seamless=window.ISOLoopAudio.makeSeamlessLoop(engineContext,original,1);
   assert.equal(seamless.crossfadeSeconds,1);
-  assert.equal(seamless.buffer.length,300);
+  assert.equal(seamless.buffer,original,'preparation must not allocate another full PCM buffer');
+  assert.equal(seamless.buffer.length,400);
+  assert.equal(seamless.loopStart,1);
+  assert.equal(seamless.loopEnd,4);
   assert.equal(seamless.buffer.numberOfChannels,2);
   for(let channel=0;channel<2;channel++){
-    const input=original.getChannelData(channel),output=seamless.buffer.getChannelData(channel);
-    assert.equal(output[0],input[100]);
-    assert.equal(output[199],input[299]);
-    assert.equal(output[200],input[300]);
-    assert.equal(output[299],input[99]);
-    assert.ok(Math.abs(output[0]-output.at(-1))<.003,'loop seam must continue the head, not jump from the original tail');
-    assert.ok(Math.abs(output[249]-(input[349]+input[49])/2)<.008,'middle of overlap must blend both ends');
+    const input=inputs[channel],output=seamless.buffer.getChannelData(channel);
+    assert.equal(output[100],input[100]);
+    assert.equal(output[299],input[299]);
+    assert.equal(output[300],input[300]);
+    assert.equal(output[399],input[99]);
+    assert.ok(Math.abs(output[100]-output.at(-1))<.003,'loop seam must continue the head, not jump from the original tail');
+    assert.ok(Math.abs(output[349]-(input[349]+input[49])/2)<.008,'middle of overlap must blend both ends');
   }
   const short=window.ISOLoopAudio.makeSeamlessLoop(engineContext,new Buffer(2,40,100),1);
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
-  assert.equal(frame.src,'soglia-frozen.html?cartolina=soglia-prova');
-  frameEvents.load();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-preload');
+  await frameEvents.load();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(window.ISOAudioMeter.experienceReady,true);
   await innerEvents.pointerdown();
   assert.equal(window.ISOAudioMeter.audioState,'running');
   assert.equal(sources.length,3);
-  assert.ok(sources.every(source=>source.loop && source.started===10.025));
+  assert.ok(sources.every(source=>source.loop && source.started===10.025 && source.offset===1 && source.loopStart===1 && source.loopEnd===4));
   assert.ok(gains.slice(4).every(gain=>gain.gain.value===0),'all sources must start silent before their entrance fade');
   AudioContext.last.currentTime=10.1;
   for(const target of [[.4,0,0],[.65,.25,.1],[.15,.2,.65],[.9,.07,.03],[0,0,0]]){
