@@ -1,0 +1,185 @@
+diff --git a/CURSOR-v1-2026-10-03.md b/CURSOR-v1-2026-10-03.md
+index 670a6bc..81772ae 100644
+--- a/CURSOR-v1-2026-10-03.md
++++ b/CURSOR-v1-2026-10-03.md
+@@ -1,3 +1,5 @@
++> Ritirato il 4 ottobre 2026 su richiesta dell’utente. Il sito usa nuovamente la freccetta del browser e la mano sui punti cliccabili. La descrizione seguente documenta soltanto la prova precedente.
++
+ # Cursore comune ISO v1 — 3 ottobre 2026
+ 
+ Richiesta di William: cerchio piccolo che inverte il colore delle superfici, con la mano nativa sui punti cliccabili, comune a tutte le pagine del sito.
+diff --git a/dist/index.html b/dist/index.html
+index b317a3f..60efea2 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -267,7 +267,7 @@
+     .entry-inset img,.entry-right,.hero-inset img,.hero-photo img,.opening-image img{filter:grayscale(1) saturate(0) contrast(1.08)}
+     @media(prefers-reduced-motion:reduce){.move-a,.move-b{animation:none}.track{scroll-behavior:auto}}
+   </style>
+-<script defer src="iso-cursor.js?v=20261003-cursor1"></script>
++
+ </head>
+ <body>
+   <div class="blog-gate" id="blogGate" aria-label="Indice BLOG, storia Una festa che deve tremare">
+diff --git a/dist/iso-cursor.js b/dist/iso-cursor.js
+index 1cde0fb..6e4fbb7 100644
+--- a/dist/iso-cursor.js
++++ b/dist/iso-cursor.js
+@@ -1,147 +1,13 @@
++/* The custom circle cursor was withdrawn on 2026-10-04.
++ * Compatibility entry point for old imports. Leave native browser cursors alone.
++ */
+ (() => {
+   'use strict';
+-  const script = document.currentScript;
+-  const options = { nativeSelector: script?.getAttribute('data-iso-cursor-native') || '' };
+-  const marker = '__isoCursorV1';
+-  const pointerSelector = 'a[href],button,input[type="button"],input[type="submit"],input[type="reset"],input[type="checkbox"],input[type="radio"],input[type="range"],input[type="file"],input[type="color"],select,summary,label,[role="button"],[role="link"],[onclick],[data-iso-cursor="pointer"],video[controls]';
+-  const textSelector = 'textarea,input:not([type]),input[type="text"],input[type="search"],input[type="email"],input[type="url"],input[type="tel"],input[type="password"],input[type="number"],[contenteditable="true"]';
+-  const css = `
+-    [data-iso-cursor-dot]{position:fixed!important;left:0!important;top:0!important;width:12px!important;height:12px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#fff!important;mix-blend-mode:difference!important;pointer-events:none!important;z-index:2147483647!important;visibility:hidden;transform:translate(-50%,-50%);transition:none!important;box-shadow:none!important;}
+-    html[data-iso-cursor-mode="circle"],html[data-iso-cursor-mode="circle"] *{cursor:none!important;}
+-    html[data-iso-cursor-mode="pointer"],html[data-iso-cursor-mode="pointer"] *{cursor:pointer!important;}
+-    html[data-iso-cursor-mode="text"],html[data-iso-cursor-mode="text"] *{cursor:text!important;}
+-  `;
+-  function closest(node, selector) {
+-    try { return node?.closest?.(selector) || null; } catch { return null; }
+-  }
+-  function install(doc, settings = options) {
+-    if (doc[marker]) return doc[marker];
+-    const win = doc.defaultView;
+-    if (!win?.matchMedia || !win.CSS?.supports?.('mix-blend-mode', 'difference')) return null;
+-    const media = win.matchMedia('(any-hover: hover) and (any-pointer: fine)');
+-    const root = doc.documentElement;
+-    if (!root) return null;
+-    const style = doc.createElement('style');
+-    style.setAttribute('data-iso-cursor-style', '');
+-    style.textContent = css;
+-    const dot = doc.createElement('div');
+-    dot.setAttribute('data-iso-cursor-dot', '');
+-    dot.setAttribute('aria-hidden', 'true');
+-    let x = null, y = null, frame = 0, disposed = false, pointerRules = [];
+-    const children = new Map();
+-    const listeners = [];
+-    const listen = (object, type, handler, config) => {
+-      object.addEventListener(type, handler, config);
+-      listeners.push(() => object.removeEventListener(type, handler, config));
+-    };
+-    function readPointerRules() {
+-      pointerRules = [];
+-      function visit(rules) {
+-        for (const rule of rules) {
+-          if (rule.selectorText && rule.style?.cursor === 'pointer') pointerRules.push(rule.selectorText);
+-          if (rule.cssRules && (!rule.media || win.matchMedia(rule.media.mediaText).matches)) visit(rule.cssRules);
+-        }
+-      }
+-      for (const sheet of doc.styleSheets) {
+-        if (sheet.ownerNode?.hasAttribute?.('data-iso-cursor-style')) continue;
+-        try { visit(sheet.cssRules); } catch { /* An external stylesheet need not be readable. */ }
+-      }
+-    }
+-    function hide() {
+-      x = y = null;
+-      root.removeAttribute('data-iso-cursor-mode');
+-      dot.style.visibility = 'hidden';
+-      if (frame) win.cancelAnimationFrame(frame);
+-      frame = 0;
+-    }
+-    function kind(node) {
+-      if (!node || node.tagName === 'IFRAME') return 'native';
+-      if (closest(node, '[data-iso-cursor="native"]') || (settings.nativeSelector && closest(node, settings.nativeSelector))) return 'native';
+-      if (closest(node, ':disabled,[aria-disabled="true"]')) return 'circle';
+-      if (closest(node, textSelector)) return 'text';
+-      if (closest(node, pointerSelector) || pointerRules.some(selector => closest(node, selector))) return 'pointer';
+-      for (let item = node; item; item = item.parentElement) {
+-        if (typeof item.onclick === 'function' || item.style?.cursor === 'pointer') return 'pointer';
+-      }
+-      return 'circle';
+-    }
+-    function render() {
+-      frame = 0;
+-      if (disposed || x === null || !media.matches || doc.hidden) return;
+-      const node = doc.elementFromPoint(x, y);
+-      let mode = kind(node);
+-      const fullscreen = doc.fullscreenElement || doc.webkitFullscreenElement;
+-      if (fullscreen?.tagName === 'VIDEO') mode = 'native';
+-      let dialog = closest(node, 'dialog[open]');
+-      const popover = closest(node, '[popover]');
+-      try { if (popover?.matches(':popover-open')) dialog = popover; } catch { /* Older engines have no popover support. */ }
+-      const host = fullscreen || dialog || root;
+-      if (dot.parentElement !== host) host.appendChild(dot);
+-      if (mode === 'native') root.removeAttribute('data-iso-cursor-mode');
+-      else root.setAttribute('data-iso-cursor-mode', mode);
+-      dot.style.visibility = mode === 'circle' ? 'visible' : 'hidden';
+-      if (mode === 'circle') dot.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%)`;
+-    }
+-    function schedule() {
+-      if (!disposed && x !== null && !frame) frame = win.requestAnimationFrame(render);
+-    }
+-    function move(event) {
+-      if ((event.pointerType && event.pointerType !== 'mouse') || !media.matches) { hide(); return; }
+-      x = event.clientX; y = event.clientY;
+-      schedule();
+-    }
+-    function attachFrame(iframe) {
+-      let child;
+-      try {
+-        child = iframe.contentDocument;
+-        if (!child || (child.URL === 'about:blank' && !iframe.hasAttribute('srcdoc'))) return;
+-      } catch { return; }
+-      const previous = children.get(iframe);
+-      if (previous?.document !== child) previous?.destroy();
+-      const controller = install(child, settings);
+-      if (controller) children.set(iframe, controller);
+-    }
+-    function refresh() {
+-      readPointerRules();
+-      for (const iframe of doc.querySelectorAll('iframe')) attachFrame(iframe);
+-      for (const [iframe, child] of children) if (!iframe.isConnected) { child.destroy(); children.delete(iframe); }
+-      schedule();
+-    }
+-    const controller = {
+-      document: doc, refresh, hide,
+-      destroy() {
+-        if (disposed) return;
+-        disposed = true;
+-        hide();
+-        for (const cleanup of listeners) cleanup();
+-        for (const child of children.values()) child.destroy();
+-        dot.remove(); style.remove(); delete doc[marker];
+-      }
+-    };
+-    doc[marker] = controller;
+-    readPointerRules();
+-    (doc.head || root).appendChild(style);
+-    root.appendChild(dot);
+-    listen(doc, 'pointermove', move, { passive: true, capture: true });
+-    listen(doc, 'pointerover', move, { passive: true, capture: true });
+-    listen(doc, 'pointerout', event => { if (!event.relatedTarget) hide(); }, { passive: true, capture: true });
+-    listen(doc, 'pointerdown', event => { if (event.pointerType && event.pointerType !== 'mouse') hide(); }, { passive: true, capture: true });
+-    listen(doc, 'scroll', schedule, { passive: true, capture: true });
+-    listen(doc, 'visibilitychange', () => { if (doc.hidden) hide(); });
+-    listen(doc, 'fullscreenchange', schedule);
+-    listen(doc, 'webkitfullscreenchange', schedule);
+-    listen(doc, 'load', event => {
+-      if (event.target?.tagName === 'IFRAME') attachFrame(event.target);
+-      else if (event.target?.tagName === 'LINK') refresh();
+-    }, true);
+-    listen(win, 'blur', hide);
+-    listen(win, 'resize', refresh, { passive: true });
+-    if (media.addEventListener) listen(media, 'change', () => { if (!media.matches) hide(); });
+-    refresh();
+-    return controller;
+-  }
+-  const boot = () => install(document);
+-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+-  else boot();
+-  window.ISOCursor = Object.freeze({ version: '1.0', diameter: 12, install, refresh: () => document[marker]?.refresh(), destroy: () => document[marker]?.destroy() });
++  if (typeof window.ISOCursor?.destroy === 'function') window.ISOCursor.destroy();
++  const restore = (doc = document) => {
++    doc.documentElement?.removeAttribute('data-iso-cursor-mode');
++    doc.querySelectorAll('[data-iso-cursor-dot],[data-iso-cursor-style]').forEach(node => node.remove());
++  };
++  restore();
++  window.ISOCursor = Object.freeze({version: '2.0-native', mode: 'native', install: restore, refresh: restore, destroy: restore});
+ })();

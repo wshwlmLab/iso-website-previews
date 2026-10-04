@@ -1,3 +1,5 @@
+> Prova ritirata il 4 ottobre 2026 su richiesta di William. La regola attuale è freccetta normale e mano sui punti cliccabili. Vedi `shared/OFFICIAL-CURSOR-NATIVE-2026-10-04.md`. Le istruzioni sotto documentano soltanto la prova precedente.
+
 # Cursore comune ISO v1 — 3 ottobre 2026
 
 Cerchio pieno di 12 pixel con colori invertiti sulle superfici. Sui link e sui controlli compare la mano nativa. Il componente comune è `../shared/iso-cursor.js`; la guida è `../shared/OFFICIAL-CURSOR-v1-2026-10-03.md`.

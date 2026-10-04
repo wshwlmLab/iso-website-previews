@@ -1,3 +1,5 @@
+> Prova ritirata il 4 ottobre 2026 su richiesta di William. La regola attuale è freccetta normale e mano sui punti cliccabili. Vedi `shared/OFFICIAL-CURSOR-NATIVE-2026-10-04.md`. Le istruzioni sotto documentano soltanto la prova precedente.
+
 # Cursore comune ISO v1 — 3 ottobre 2026
 
 Richiesta di William: cerchio piccolo che inverte il colore delle superfici, con la mano nativa sui punti cliccabili, comune a tutte le pagine del sito.
