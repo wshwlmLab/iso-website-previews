@@ -122,13 +122,13 @@ body.article-active .stage,body.article-active .card-shell,body.article-active .
 .global-nav-band{
   position:fixed;z-index:55;left:50%;top:calc(var(--frame-top)/2);
   transform:translate(-50%,-50%);
-  width:min(58vw,920px);height:28px;
-  display:grid;grid-template-columns:1fr 86px 1fr;align-items:center;
+  width:min(76vw,1180px);height:28px;
+  display:grid;grid-template-columns:1fr clamp(150px,12vw,220px) 1fr;align-items:center;
   pointer-events:none;
-  font-size:clamp(8px,.62vw,10px);line-height:1;
+  font-size:var(--micro-size);line-height:1;
   letter-spacing:.075em;text-transform:uppercase;white-space:nowrap;
 }
-.global-nav-band .nav-cluster{display:flex;align-items:center;gap:clamp(13px,1.35vw,25px)}
+.global-nav-band .nav-cluster{display:flex;align-items:center;gap:clamp(18px,1.8vw,34px)}
 .global-nav-band .nav-left{justify-content:flex-end}
 .global-nav-band .nav-right{justify-content:flex-start}
 .global-nav-band .nav-item{color:#fff;opacity:.34}
