@@ -1,0 +1,45 @@
+/* Il Suono Organizzato — Global Navigation v1
+   Approved 2026-10-04.
+   Shared visual grammar for framed pages only.
+   Do not import on HOME/Soglia. FRAGMENT remains TBD/standalone.
+*/
+:root{
+  --iso-global-nav-tone:#949494;
+  --iso-global-nav-hover:#ffffff;
+}
+.iso-global-nav{
+  position:fixed;
+  z-index:55;
+  left:50%;
+  top:calc(var(--frame-top)/2 + (var(--identity-size) - var(--micro-size))/2);
+  transform:translate(-50%,-50%);
+  width:min(76vw,1180px);
+  height:28px;
+  display:grid;
+  grid-template-columns:1fr clamp(150px,12vw,220px) 1fr;
+  align-items:center;
+  pointer-events:none;
+  font-size:var(--micro-size);
+  line-height:1;
+  letter-spacing:.075em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.iso-global-nav__cluster{
+  display:flex;
+  align-items:center;
+  gap:clamp(18px,1.8vw,34px);
+}
+.iso-global-nav__cluster--left{justify-content:flex-end}
+.iso-global-nav__cluster--right{justify-content:flex-start}
+.iso-global-nav__item{
+  color:var(--iso-global-nav-tone);
+  pointer-events:auto;
+  cursor:pointer;
+  transition:color .14s ease;
+  text-decoration:none;
+}
+.iso-global-nav__item:hover,
+.iso-global-nav__item:focus-visible{color:var(--iso-global-nav-hover)}
+/* Match the timezone tone to the shared navigation. */
+.micro .tz{color:var(--iso-global-nav-tone)}
