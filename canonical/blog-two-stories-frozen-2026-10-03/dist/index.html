@@ -14,7 +14,7 @@
 .identity.identity-flipped .identity-inner{transform:scaleY(1)}
 .micro{position:absolute;left:.65vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%);font-size:var(--micro-size);display:flex;width:25vw;justify-content:space-between;gap:0;white-space:nowrap}
 .micro .clock-group{display:inline-flex;align-items:baseline;gap:.55em}
-.micro .tz{color:#777;font-size:.92em}    .meter, .meter-hit {
+.micro .tz{color:#949494;font-size:.92em}    .meter, .meter-hit {
       position: fixed;
       z-index: 50;
       left: 50%;
@@ -120,7 +120,7 @@ body.article-active .stage,body.article-active .card-shell,body.article-active .
 
 /* === GLOBAL NAV TEST A: in black band, around meter === */
 .global-nav-band{
-  position:fixed;z-index:55;left:50%;top:calc(var(--frame-top)/2);
+  position:fixed;z-index:55;left:50%;top:calc(var(--frame-top)/2 + (var(--identity-size) - var(--micro-size))/2);
   transform:translate(-50%,-50%);
   width:min(76vw,1180px);height:28px;
   display:grid;grid-template-columns:1fr clamp(150px,12vw,220px) 1fr;align-items:center;
@@ -131,8 +131,9 @@ body.article-active .stage,body.article-active .card-shell,body.article-active .
 .global-nav-band .nav-cluster{display:flex;align-items:center;gap:clamp(18px,1.8vw,34px)}
 .global-nav-band .nav-left{justify-content:flex-end}
 .global-nav-band .nav-right{justify-content:flex-start}
-.global-nav-band .nav-item{color:#fff;opacity:.34}
-.global-nav-band .nav-item.is-active{opacity:.82}
+.global-nav-band .nav-item{color:#fff;opacity:.58;pointer-events:auto;cursor:pointer;transition:opacity .14s ease}
+.global-nav-band .nav-item.is-active{opacity:.78}
+.global-nav-band .nav-item:hover{opacity:1}
 </style></head><body><div class="frame-stage"><nav class="global-nav-band" aria-label="Navigazione globale">
     <span class="nav-cluster nav-left"><span class="nav-item">HOME</span><span class="nav-item">FRAGMENT</span></span>
     <span aria-hidden="true"></span>
