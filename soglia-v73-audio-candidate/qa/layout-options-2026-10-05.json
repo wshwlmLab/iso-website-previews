@@ -1,0 +1,70 @@
+{
+  "siteProjectId": "appgprj_6aafc7401678819190b985290ad9e77d",
+  "sourceCommit": "ee405d1e2c9c2424e313260406520fc524ea4673",
+  "selectedOption": null,
+  "status": "Five still proposals awaiting William's choice; live menu remains unchanged.",
+  "viewport": { "width": 1440, "height": 900 },
+  "shared": {
+    "font": "New Heterodox Mono Book",
+    "fontSizeCss": "clamp(54px,7vw,112px)",
+    "letterSpacingEm": 0.055,
+    "paperSideVw": 1,
+    "paperTopBottomVh": 6.52,
+    "photo": "dist/cartoline/soglia-prova/v1/images/01.jpg",
+    "photoState": "Photo 1 fully revealed, same state in all five stills",
+    "rowTopPercent": [15, 35, 55, 75]
+  },
+  "options": [
+    {
+      "number": 1,
+      "name": "Alternanza regolare",
+      "rows": [
+        { "label": "FRAGMENT", "class": "home", "leftPercent": 8, "topPercent": 15 },
+        { "label": "BLOG", "class": "blog", "leftPercent": 23, "topPercent": 35 },
+        { "label": "FILM", "class": "works", "leftPercent": 8, "topPercent": 55 },
+        { "label": "ABOUT", "class": "about", "leftPercent": 23, "topPercent": 75 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Rientro leggero",
+      "rows": [
+        { "label": "FILM", "class": "works", "leftPercent": 9, "topPercent": 15 },
+        { "label": "FRAGMENT", "class": "home", "leftPercent": 18, "topPercent": 35 },
+        { "label": "ABOUT", "class": "about", "leftPercent": 9, "topPercent": 55 },
+        { "label": "BLOG", "class": "blog", "leftPercent": 18, "topPercent": 75 }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Scala",
+      "rows": [
+        { "label": "BLOG", "class": "blog", "leftPercent": 8, "topPercent": 15 },
+        { "label": "ABOUT", "class": "about", "leftPercent": 16, "topPercent": 35 },
+        { "label": "FRAGMENT", "class": "home", "leftPercent": 24, "topPercent": 55 },
+        { "label": "FILM", "class": "works", "leftPercent": 16, "topPercent": 75 }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Alternanza inversa",
+      "rows": [
+        { "label": "ABOUT", "class": "about", "leftPercent": 23, "topPercent": 15 },
+        { "label": "FILM", "class": "works", "leftPercent": 8, "topPercent": 35 },
+        { "label": "BLOG", "class": "blog", "leftPercent": 23, "topPercent": 55 },
+        { "label": "FRAGMENT", "class": "home", "leftPercent": 8, "topPercent": 75 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Allineamento a destra",
+      "rows": [
+        { "label": "FILM", "class": "works", "rightPercent": 46, "topPercent": 15 },
+        { "label": "ABOUT", "class": "about", "rightPercent": 46, "topPercent": 35 },
+        { "label": "FRAGMENT", "class": "home", "rightPercent": 46, "topPercent": 55 },
+        { "label": "BLOG", "class": "blog", "rightPercent": 46, "topPercent": 75 }
+      ]
+    }
+  ],
+  "implementationNote": "When chosen, set the existing .home/.blog/.works/.about anchors to these coordinates and retain the existing letter motion measurements, routes and hit targets. These proposals are not loaded by the live page."
+}
