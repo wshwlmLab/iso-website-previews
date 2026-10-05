@@ -243,30 +243,52 @@ words.forEach(w=>{
   });
 });
 
-// ---------- v42 click exit: selected word disappears in random letter order ----------
+// ---------- Soglia click exit: other letters, selected letters, route handoff ----------
 let menuClickBusy=false;
 words.forEach(w=>{
-  w.addEventListener('click',()=>{
+  w.addEventListener('click',async()=>{
     if(menuClickBusy||document.body.classList.contains('bridge-pre'))return;
     menuClickBusy=true;
-    const chars=[...w.querySelectorAll('.char')];
-    const order=shuffle(chars);
-    order.forEach((c,i)=>setTimeout(()=>{
-      c.style.transition='opacity 190ms ease';
-      c.style.opacity='0';
-    },i*72+Math.random()*40));
-    const total=Math.max(420,(order.length-1)*72+230);
-    setTimeout(()=>{
+    const selectedChars=[...w.querySelectorAll('.char')];
+    const otherChars=words.filter(word=>word!==w).flatMap(word=>[...word.querySelectorAll('.char')]);
+    const allChars=[...otherChars,...selectedChars];
+    const animations=[];
+    function restoreMenu(){
+      animations.forEach(animation=>animation.cancel());
+      allChars.forEach(c=>{c.style.transition='opacity 220ms ease';c.style.opacity='1'});
+      menuClickBusy=false;
+    }
+    async function fadeLetters(chars){
+      const group=shuffle(chars).map((c,i)=>{
+        const opacity=getComputedStyle(c).opacity;
+        c.style.transition='none';
+        const animation=c.animate([{opacity},{opacity:'0'}],{
+          duration:190,delay:i*72+Math.random()*40,easing:'ease',fill:'forwards'
+        });
+        animations.push(animation);
+        return animation;
+      });
+      // The next phase follows actual visual completion, including every fade.
+      await Promise.all(group.map(animation=>animation.finished));
+    }
+    try{
+      await fadeLetters(otherChars);
+      await fadeLetters(selectedChars);
+      allChars.forEach(c=>{c.style.opacity='0'});
+      animations.forEach(animation=>animation.cancel());
       const target=(w.dataset.label||'').toLowerCase();
-      window.dispatchEvent(new CustomEvent('iso:navigate-request',{detail:{target}}));
-      // Standalone Lab: route handoff is deliberately neutral until the common
-      // page-entry grammar is designed. Keep a hash only as an observable hook.
-      history.replaceState(null,'','#'+target);
-      setTimeout(()=>{
-        chars.forEach(c=>{c.style.transition='opacity 220ms ease';c.style.opacity='1'});
-        menuClickBusy=false;
-      },650);
-    },total);
+      const unhandled=window.dispatchEvent(new CustomEvent('iso:navigate-request',{
+        detail:{target},cancelable:true
+      }));
+      // A page-transition owner claims the handoff with preventDefault().
+      // Preserve the standalone Lab fallback until destinations are integrated.
+      if(unhandled){
+        history.replaceState(null,'','#'+target);
+        setTimeout(restoreMenu,650);
+      }
+    }catch{
+      restoreMenu();
+    }
   });
 });
 
