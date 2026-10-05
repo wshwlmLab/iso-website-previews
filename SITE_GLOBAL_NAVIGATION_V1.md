@@ -1,6 +1,6 @@
 # ISO — Global Navigation v1
 
-**Status:** approved direction — 2026-10-04
+**Status:** approved direction — 2026-10-05
 
 This file is the shared source of truth for the small navigation that lives in the upper black frame on framed pages.
 
@@ -18,28 +18,34 @@ This file is the shared source of truth for the small navigation that lives in t
 
 Current working site names:
 
-`HOME · FRAGMENT · WORK · BLOG · ABOUT`
+`HOME · FRAGMENT · FILM · BLOG · ABOUT`
 
 Meaning:
 - **HOME** = current internal “Soglia” page.
 - **FRAGMENT** = randomized standalone/autorial experience page.
-- **WORK** = current Works/film page.
+- **FILM** = current Works/film page.
 - **BLOG**
 - **ABOUT**
+
+## Large navigation on Soglia
+
+`FRAGMENT · BLOG · FILM · ABOUT`
+
+On 2026-10-05, the large `HOME` label was renamed `FRAGMENT` and `WORKS` was renamed `FILM`. Letter creation, random entrances, hover and click exits use the updated `data-label` values. Use `FRAGMENT` in the singular in the upper black navigation as well.
 
 ## Page-specific display logic
 
 The current page name is **omitted**, not highlighted.
 
 - **HOME / Soglia:** no small global navigation at all. The large navigation already exists in the page.
-- **BLOG landing:** `HOME · FRAGMENT · WORK · ARCHIVE · ABOUT`
+- **BLOG landing:** `HOME · FRAGMENT · FILM · ARCHIVE · ABOUT`
   - BLOG is omitted because it is the current page.
   - ARCHIVE takes its place as the local destination.
-- **BLOG archive:** `HOME · FRAGMENT · WORK · BLOG · ABOUT`
+- **BLOG archive:** `HOME · FRAGMENT · FILM · BLOG · ABOUT`
   - ARCHIVE is omitted because it is the current page.
   - BLOG takes its place to return to the Blog landing.
-- **WORK:** `HOME · FRAGMENT · BLOG · ABOUT`
-- **ABOUT:** `HOME · FRAGMENT · WORK · BLOG`
+- **FILM:** `HOME · FRAGMENT · BLOG · ABOUT`
+- **ABOUT:** `HOME · FRAGMENT · FILM · BLOG`
 - **FRAGMENT:** separate case; current assumption is no shared black frame. Do not force this navigation onto it until its final structure is defined.
 
 ## Implementation

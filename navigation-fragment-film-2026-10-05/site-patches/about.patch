@@ -1,0 +1,13 @@
+diff --git a/dist/index.html b/dist/index.html
+index 62181b4..834cd7d 100644
+--- a/dist/index.html
++++ b/dist/index.html
+@@ -25,7 +25,7 @@
+     </div>
+     <span aria-hidden="true"></span>
+     <div class="iso-global-nav__cluster iso-global-nav__cluster--right">
+-      <a class="iso-global-nav__item" href="https://iso-works-acab-youtube-candidate.area-di-lavo-9208.chatgpt.site">WORK</a>
++      <a class="iso-global-nav__item" href="https://iso-works-acab-youtube-candidate.area-di-lavo-9208.chatgpt.site">FILM</a>
+       <a class="iso-global-nav__item" href="https://iso-blog-archive-candidate-01.area-di-lavo-9208.chatgpt.site">BLOG</a>
+     </div>
+   </nav>

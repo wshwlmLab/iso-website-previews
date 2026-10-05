@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-05",
+  "largeSogliaLabels": [
+    "FRAGMENT",
+    "BLOG",
+    "FILM",
+    "ABOUT"
+  ],
+  "barLabels": [
+    "HOME",
+    "FRAGMENT",
+    "FILM",
+    "BLOG",
+    "ABOUT"
+  ],
+  "sites": [
+    {
+      "key": "soglia",
+      "project_id": "appgprj_6aafc7401678819190b985290ad9e77d",
+      "commit_sha": "853fd8fd1039fb49afee60126e507903d40f777f",
+      "published_commit": "ee405d1e2c9c2424e313260406520fc524ea4673",
+      "version_id": "appgprj_6aafc7401678819190b985290ad9e77d~appgver_3d06459d0b3881919dc996d982b3384d",
+      "url": "https://iso-soglia-real-meter.area-di-lavo-9208.chatgpt.site"
+    },
+    {
+      "key": "about",
+      "project_id": "appgprj_6ac25e13dd0481919bd3573080ae2b2e",
+      "commit_sha": "0aa39c1994e4a7186c6fde150a5b59dfff56a6d3",
+      "published_commit": "01e169066bc74ba56e841e8c32845aa1bde254c7",
+      "version_id": "appgprj_6ac25e13dd0481919bd3573080ae2b2e~appgver_ccef7754b4cc8191add3993cecc3c742",
+      "url": "https://iso-about-parole.area-di-lavo-9208.chatgpt.site",
+      "paths": [
+        "dist/index.html"
+      ]
+    },
+    {
+      "key": "blog-archive",
+      "project_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1",
+      "commit_sha": "0b9025b1a93ed99f696e3ca6530c07e19a546b4b",
+      "published_commit": "ec524b6481e2ab982756fc8a4cdffed11539d936",
+      "version_id": "appgprj_6ac11a35551881919ec03cb4ffd065f1~appgver_388aae9c11808191aa2442938833b43e",
+      "url": "https://iso-blog-archive-candidate-01.area-di-lavo-9208.chatgpt.site",
+      "paths": [
+        "dist/archivio-freight/index.html",
+        "dist/blog-standard-scroll/index.html",
+        "dist/blog/index.html"
+      ]
+    }
+  ],
+  "frozen_soglia_branch": "1fd73843345ae54ccc74e3ed259c0f626883ebf3"
+}
