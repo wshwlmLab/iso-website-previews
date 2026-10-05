@@ -1,8 +1,15 @@
 {
   "siteProjectId": "appgprj_6aafc7401678819190b985290ad9e77d",
   "sourceCommit": "ee405d1e2c9c2424e313260406520fc524ea4673",
-  "selectedOption": null,
-  "status": "Five still proposals awaiting William's choice; live menu remains unchanged.",
+  "selectedOption": 2,
+  "selectedAdjustment": "Swap BLOG and ABOUT in option 2.",
+  "selectedRows": [
+    { "label": "FILM", "class": "works", "leftPercent": 9, "topPercent": 15 },
+    { "label": "FRAGMENT", "class": "home", "leftPercent": 18, "topPercent": 35 },
+    { "label": "BLOG", "class": "blog", "leftPercent": 9, "topPercent": 55 },
+    { "label": "ABOUT", "class": "about", "leftPercent": 18, "topPercent": 75 }
+  ],
+  "status": "Approved by William on 2026-10-05 and applied to the live Soglia menu.",
   "viewport": { "width": 1440, "height": 900 },
   "shared": {
     "font": "New Heterodox Mono Book",
@@ -66,5 +73,5 @@
       ]
     }
   ],
-  "implementationNote": "When chosen, set the existing .home/.blog/.works/.about anchors to these coordinates and retain the existing letter motion measurements, routes and hit targets. These proposals are not loaded by the live page."
+  "implementationNote": "Selected rows applied to the existing menu anchors and DOM order. Letter entrances, hover and exits continue using those live elements; routes and timing remain unchanged. The original five still proposals are preserved below for reference."
 }
