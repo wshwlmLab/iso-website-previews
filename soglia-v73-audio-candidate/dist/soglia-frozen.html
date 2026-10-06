@@ -42,11 +42,15 @@ html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"New 
 .micro .tz{color:#777;font-size:.92em}
 .menu{position:absolute;inset:0;overflow:hidden}
 .word{position:absolute;color:#000;font-size:var(--menu-size);line-height:1;letter-spacing:var(--psyop-tracking);font-weight:500;white-space:nowrap;user-select:none;cursor:pointer}
-.word::before{content:"";position:absolute;top:var(--optical-axis-y,50%);right:calc(100% + 22px);width:20px;height:20px;background:#000;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:0;transform:translateY(-50%) scale(.28);transition:opacity 170ms ease,transform 230ms cubic-bezier(.2,.72,.2,1);pointer-events:none}
-.word:hover::before{opacity:1;transform:translateY(-50%) scale(1)}
+.menu-dot{position:absolute;top:var(--optical-axis-y,50%);right:calc(100% + 22px);width:20px;height:20px;background:#000;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:0;transform:translateY(-50%) scale(.28);transition:opacity 170ms ease,transform 230ms cubic-bezier(.2,.72,.2,1);pointer-events:none}
+.word:hover .menu-dot,.word.is-clicked .menu-dot{opacity:1;transform:translateY(-50%) scale(1)}
 .works{left:9%;top:15%}.home{left:18%;top:35%}.blog{left:9%;top:55%}.about{left:18%;top:75%}
 .word-inner{display:inline-block;line-height:1;transform-origin:50% var(--optical-axis-y,50%);transform:scaleY(1);will-change:transform;pointer-events:none}
 .word.is-hovered .word-inner{transform:scaleY(-1)}
+.word.is-clicked .word-inner{transform:scaleY(1)}
+body.menu-is-exiting .menu,body.menu-is-exiting .photo-module{pointer-events:none}
+body.menu-is-exiting .word:not(.is-clicked) .menu-dot{opacity:0}
+body.menu-is-exiting .stone{opacity:0}
 .char{display:inline-block;line-height:1;will-change:opacity,transform;pointer-events:none}
 .char-flip{display:inline-block;line-height:1;pointer-events:none}
 
@@ -221,6 +225,10 @@ words.forEach(w=>{
   inner.className='word-inner';
   [...s].forEach(ch=>{const e=document.createElement('span');e.className='char';const f=document.createElement('span');f.className='char-flip';f.textContent=ch;e.appendChild(f);inner.appendChild(e)});
   w.appendChild(inner);
+  const dot=document.createElement('span');
+  dot.className='menu-dot';
+  dot.setAttribute('aria-hidden','true');
+  w.appendChild(dot);
 });
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function intro(){const cs=[...document.querySelectorAll('.char')];cs.forEach(c=>{c.style.opacity=0;c.style.transition='none'});shuffle(cs).forEach((c,i)=>setTimeout(()=>{c.style.transition='opacity 120ms ease';c.style.opacity=1},i*38+Math.random()*18))}
@@ -234,6 +242,7 @@ words.forEach(w=>{
   w.addEventListener('pointerenter',()=>{
     if(inside) return;
     inside=true;
+    if(menuClickBusy)return;
     w.classList.add('is-hovered');
   });
   w.addEventListener('pointerleave',()=>{
@@ -249,33 +258,79 @@ words.forEach(w=>{
   w.addEventListener('click',async()=>{
     if(menuClickBusy||document.body.classList.contains('bridge-pre'))return;
     menuClickBusy=true;
+    const postcard=document.getElementById('module');
+    const dot=w.querySelector('.menu-dot');
+    const dotOpacity=getComputedStyle(dot).opacity;
+    w.classList.remove('is-hovered');
+    w.classList.add('is-clicked');
+    dot.style.transition='none';
+    dot.style.opacity=dotOpacity;
+    document.body.classList.add('menu-is-exiting');
     const selectedChars=[...w.querySelectorAll('.char')];
     const otherChars=words.filter(word=>word!==w).flatMap(word=>[...word.querySelectorAll('.char')]);
     const allChars=[...otherChars,...selectedChars];
     const animations=[];
+    function planLetters(chars){
+      const letters=shuffle(chars).map((char,i)=>({char,delay:i*72+Math.random()*40}));
+      return {letters,duration:Math.max(...letters.map(letter=>letter.delay+190))};
+    }
+    const others=planLetters(otherChars);
+    const selected=planLetters(selectedChars);
+    const startedAt=document.timeline.currentTime;
+    const duration=others.duration+selected.duration;
+    function signalAudio(level,endTime){
+      window.dispatchEvent(new CustomEvent('iso:menu-fade',{
+        detail:{level,deadline:performance.timeOrigin+endTime}
+      }));
+    }
+    function trackAnimation(element,keyframes,options,startTime){
+      const animation=element.animate(keyframes,{...options,fill:'forwards'});
+      animation.startTime=startTime;
+      animations.push(animation);
+      // A cancellation can happen before this animation's phase is awaited.
+      animation.finished.catch(()=>{});
+      return animation;
+    }
     function restoreMenu(){
       animations.forEach(animation=>animation.cancel());
       allChars.forEach(c=>{c.style.transition='opacity 220ms ease';c.style.opacity='1'});
+      postcard.style.transition='opacity 220ms linear';
+      postcard.style.opacity='1';
+      dot.style.transition='';
+      dot.style.opacity='';
+      words.forEach(word=>word.classList.remove('is-clicked','is-hovered'));
+      document.body.classList.remove('menu-is-exiting');
+      signalAudio(1,document.timeline.currentTime+220);
       menuClickBusy=false;
     }
-    async function fadeLetters(chars){
-      const group=shuffle(chars).map((c,i)=>{
+    async function fadeLetters(plan,startTime){
+      const group=plan.letters.map(({char:c,delay})=>{
         const opacity=getComputedStyle(c).opacity;
         c.style.transition='none';
-        const animation=c.animate([{opacity},{opacity:'0'}],{
-          duration:190,delay:i*72+Math.random()*40,easing:'ease',fill:'forwards'
-        });
-        animations.push(animation);
-        return animation;
+        return trackAnimation(c,[{opacity},{opacity:'0'}],{
+          duration:190,delay,easing:'ease'
+        },startTime);
       });
       // The next phase follows actual visual completion, including every fade.
       await Promise.all(group.map(animation=>animation.finished));
     }
     try{
-      await fadeLetters(otherChars);
-      await fadeLetters(selectedChars);
+      postcard.style.transition='none';
+      const postcardFade=trackAnimation(postcard,[{opacity:getComputedStyle(postcard).opacity},{opacity:'0'}],{
+        duration,easing:'linear'
+      },startedAt);
+      signalAudio(0,startedAt+duration);
+      await fadeLetters(others,startedAt);
+      const selectedStart=startedAt+others.duration;
+      const dotFade=trackAnimation(dot,[{opacity:dotOpacity},{opacity:'0'}],{
+        duration:selected.duration,easing:'linear'
+      },selectedStart);
+      await Promise.all([fadeLetters(selected,selectedStart),dotFade.finished,postcardFade.finished]);
       allChars.forEach(c=>{c.style.opacity='0'});
+      postcard.style.opacity='0';
+      dot.style.opacity='0';
       animations.forEach(animation=>animation.cancel());
+      signalAudio(0,document.timeline.currentTime);
       const target=(w.dataset.label||'').toLowerCase();
       const unhandled=window.dispatchEvent(new CustomEvent('iso:navigate-request',{
         detail:{target},cancelable:true

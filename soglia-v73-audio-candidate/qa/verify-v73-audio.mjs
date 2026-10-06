@@ -93,10 +93,10 @@ async function verifyAudio() {
     decodeAudioData(){return Promise.resolve(new Buffer(2,400,100));}
     resume(){this.state='running';return Promise.resolve();}
   }
-  const frameEvents={},meterEvents={},innerEvents={};
+  const frameEvents={},meterEvents={},innerEvents={},childEvents={};
   const innerDocument={documentElement:{style:{setProperty(){}}},addEventListener:(key,cb)=>innerEvents[key]=cb,querySelectorAll:()=>[]};
   const ratios=[0,0,0];
-  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-cartolina1'},__showSogliaIntro:async()=>{},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
+  const frame={inert:true,dataset:{source:'soglia-frozen.html'},setAttribute(){},removeAttribute(){},contentDocument:innerDocument,contentWindow:{addEventListener:(key,cb)=>childEvents[key]=cb,location:{href:'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova'},__showSogliaIntro:async()=>{},__prepareFrozenSoglia:async()=>{},__startSogliaExperience(){},__eraseDebug:{visiblePhotoRatios:ratios}},addEventListener:(key,cb)=>frameEvents[key]=cb,removeEventListener(){}};
   const meterHit={classList:classList(),setAttribute(){},addEventListener:(key,cb)=>meterEvents[key]=cb};
   const meter={classList:classList()};
   const loadingElements=Object.fromEntries(['loadingGate','loadingLabel','loadingProgress','loadingBar','loadingRetry'].map(id=>[id,{hidden:false,addEventListener(){}}]));
@@ -106,7 +106,9 @@ async function verifyAudio() {
   window.ISOCartolina={load:()=>window.ISOCartolinaReady};
   window.ISOExperienceLoader={bytes:async()=>new ArrayBuffer(8),prepare:(key,operation)=>operation(),snapshot:()=>({error:null}),subscribe(){},retry(){},preparing(){},ready(){},fail(error){throw error}};
   let draw;
-  const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>0},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number,URL,setTimeout,clearTimeout});
+  let visualNow=0;
+  const timeOrigin=100000;
+  const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>visualNow,timeOrigin},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number,URL,setTimeout,clearTimeout});
   vm.runInContext(fs.readFileSync(path.join(root,'iso-meter-response.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(root,'loop-audio.js'),'utf8'),context);
   const engineContext=new AudioContext();
@@ -133,10 +135,15 @@ async function verifyAudio() {
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261003-cartolina1');
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261006-click-postcard-fade');
   await frameEvents.load();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(window.ISOAudioMeter.experienceReady,true);
+  const menuFade=(level,milliseconds)=>childEvents['iso:menu-fade']({detail:{level,deadline:timeOrigin+visualNow+milliseconds}});
+  menuFade(0,2000);
+  assert.equal(gains.length,0,'A menu fade must not create or unlock an audio context');
+  assert.equal(window.ISOAudioMeter.experienceAudioLevel,0);
+  menuFade(1,220);
   await innerEvents.pointerdown();
   assert.equal(window.ISOAudioMeter.audioState,'running');
   assert.equal(sources.length,3);
@@ -159,6 +166,34 @@ async function verifyAudio() {
   assert.ok(Array.from(window.ISOAudioMeter.tracks).every(track=>track.loopCrossfadeSeconds===1));
   assert.equal(window.ISOAudioMeter.error,null);
   console.log('Audio: 0.5-second meter mute, 1-second unmute and photo fades; loop seam crossfade continuous; all loops start once; mute never restarts them.');
+
+  // Departure affects the common PCM/HTML bus, leaving meter mute and photo
+  // reveal gains intact. Interrupted restoration starts at the exact ramp value.
+  assert.equal(gains[0].connections[0],gains[1]);
+  assert.equal(gains[1].connections[0],gains[2]);
+  window.ISOAudioMeter.setMuted(true);
+  const muteCalls=gains[2].gain.calls.length;
+  const photoCalls=gains.slice(4).map(gain=>gain.gain.calls.length);
+  menuFade(0,1750);
+  assert.deepEqual(gains[1].gain.calls.at(-1),['ramp',0,11.85]);
+  visualNow=875;AudioContext.last.currentTime=10.975;
+  menuFade(1,220);
+  assert.ok(Math.abs(gains[1].gain.calls.at(-2)[1]-.5)<1e-10,'Restoration must not jump from a partly completed fade');
+  assert.deepEqual(gains[1].gain.calls.at(-1),['ramp',1,11.195]);
+  visualNow=1200;AudioContext.last.currentTime=11.3;
+  menuFade(0,2000);
+  visualNow=3200;AudioContext.last.currentTime=13.3;
+  menuFade(0,0);
+  assert.deepEqual(gains[1].gain.calls.at(-1),['set',0,13.3]);
+  menuFade(1,220);
+  assert.deepEqual(gains[1].gain.calls.at(-1).slice(0,2),['ramp',1]);
+  assert.ok(Math.abs(gains[1].gain.calls.at(-1)[2]-13.52)<1e-10);
+  assert.equal(gains[2].gain.calls.length,muteCalls,'A page fade/reset must preserve the user mute envelope');
+  assert.equal(window.ISOAudioMeter.paused,true);
+  assert.deepEqual(gains.slice(4).map(gain=>gain.gain.calls.length),photoCalls);
+  assert.equal(sources.length,3);
+  assert(sources.every(source=>source.startCalls===1));
+  console.log('Departure: shared visual deadline, independent audio envelope, seamless cancellation/reset, meter mute preserved, all three loop positions preserved.');
 }
 
 verifyEraser(3);

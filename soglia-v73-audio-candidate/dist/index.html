@@ -177,6 +177,7 @@
       let masterInput = null;
       let masterGain = null;
       let muteGain = null;
+      let experienceAudioLevel = 1;
       let silentSink = null;
       let monoEvidence = 0;
       const meterValues = [0, 0];
@@ -218,7 +219,7 @@
         analyserLeft.connect(silentSink);
         analyserRight.connect(silentSink);
         silentSink.connect(audioContext.destination);
-        masterGain.gain.value = 1;
+        masterGain.gain.value = experienceAudioLevel;
         muteGain.gain.value = 1;
         ensurePhotoGains();
         audioContext.addEventListener?.('statechange', () => record('audio-state', { state: audioContext.state }));
@@ -240,6 +241,24 @@
       function fadeMuteState(paused) {
         if (!audioContext || !muteGain) return;
         window.ISOMeterResponse.fadeMuted(audioContext, muteGain.gain, paused);
+      }
+
+      // Page departure has its own envelope, before the independent meter mute.
+      // Both PCM and native HTML loops keep running through the same audio bus.
+      function fadeExperienceAudio(level, seconds) {
+        experienceAudioLevel = level;
+        if (audioContext && masterGain) {
+          window.ISOLoopAudio.fade(audioContext, masterGain.gain, level, seconds);
+        }
+        record('menu-audio-fade', { level, seconds });
+      }
+
+      function receiveMenuFade(event) {
+        const { level, deadline } = event.detail || {};
+        if ((level !== 0 && level !== 1) || !Number.isFinite(deadline)) return;
+        // The iframe and audio context share an absolute visual deadline.
+        const seconds = Math.max(0, (deadline - performance.timeOrigin - performance.now()) / 1000);
+        fadeExperienceAudio(level, seconds);
       }
 
       function attachMediaElement(media) {
@@ -427,7 +446,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261005-menu-exit-others-first');
+          source.searchParams.set('build', '20261006-click-postcard-fade');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {
@@ -443,6 +462,7 @@
                 throw new Error('Pagina non disponibile');
               }
               frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');
+              child.addEventListener('iso:menu-fade', receiveMenuFade);
               frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
               frame.contentDocument.addEventListener('keydown', event => {
                 if (event.code === 'Space' || event.code === 'Enter') ensureAudioStarted();
@@ -513,6 +533,7 @@
         get loading() { return loader.snapshot(); },
         get diagnostics() { return diagnostics.slice(); },
         get paused() { return meterPaused; },
+        get experienceAudioLevel() { return experienceAudioLevel; },
         get cartolina() { return cartolinaConfig ? cartolinaConfig.manifestURL : null; },
         get audioOrigin() { return cartolinaConfig ? cartolinaConfig.audioOrigin : null; },
         get audioEngine() { return audioEngineMode; },
