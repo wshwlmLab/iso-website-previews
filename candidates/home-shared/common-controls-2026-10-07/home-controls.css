@@ -1,0 +1,58 @@
+/* Shared Home controls. Home 3 keeps its installation-specific footer anchor. */
+:root { --meter-y: 3.26vh; --meter-height: clamp(32px, 2.85vw, 41px); }
+.stage, .scene { color: #141414; }
+.audio-label, .meter, .meter-hit {
+  position: absolute; left: 50%; top: var(--meter-y); transform: translate(-50%, -50%);
+  box-sizing: border-box; color: #141414; -webkit-tap-highlight-color: transparent;
+}
+.audio-label {
+  top: 5.88vh; z-index: 5; font-family: 'Cousine', 'Courier New', monospace;
+  font-size: clamp(13px, 1.5vw, 18px); letter-spacing: .22em; font-weight: 500;
+  line-height: 1; white-space: nowrap; background: none; color: inherit;
+  border: 1.5px solid currentColor; border-radius: 1px; padding: 9px 16px; margin: 0; cursor: pointer;
+}
+.audio-label.is-leaving { animation: activationFadeOut .65s ease forwards; pointer-events: none; cursor: default; }
+.audio-label:disabled { cursor: default; }
+@keyframes activationFadeOut { from { opacity: 1; } to { opacity: 0; } }
+.meter, .meter-hit {
+  z-index: 50; width: clamp(52px, 4.2vw, 62px); height: var(--meter-height);
+  border: 0; border-radius: 0; padding: 0; background: transparent;
+}
+.meter { --meter-inactive: #d9d9d9; pointer-events: none; opacity: .52; }
+.meter:not([hidden]) { animation: homeMeterFadeIn 6s ease both; }
+@keyframes homeMeterFadeIn { from { opacity: 0; } to { opacity: .52; } }
+.meter-hit { color: transparent; cursor: pointer; }
+.meter-hit:disabled { cursor: default; pointer-events: none; }
+.meter-zone {
+  position: absolute; left: 50%; top: 50%; width: 50%; height: 80%; padding: 1px 0;
+  transform: translate(-50%, -50%); display: flex; align-items: flex-end;
+  justify-content: space-between; gap: clamp(4px, .35vw, 6px);
+}
+.meter-col {
+  flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column-reverse;
+  justify-content: space-between; align-items: stretch; gap: 0;
+}
+.meter-seg {
+  position: relative; width: 100%; min-height: 0; flex: 0 0 1px;
+  background: var(--meter-inactive); opacity: 1; border-radius: 0; transform: scaleY(1);
+  transform-origin: center; transition: background 56ms linear, opacity 56ms linear,
+  transform 72ms cubic-bezier(.2, .8, .2, 1);
+}
+.meter::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 82%; height: 2px;
+  background: currentColor; transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+  transform-origin: center; transition: transform .18s ease;
+}
+.meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+.meter.paused .meter-seg { background: var(--meter-inactive) !important; opacity: 1 !important; transform: scaleY(1) !important; }
+.scene.landscape-visible .meter { color: #fff; --meter-inactive: rgba(255, 255, 255, .28); }
+.stage.blue-final .meter { color: #259ee8; }
+.audio-label:focus-visible, .meter-hit:focus-visible, .plus:focus-visible { outline: 2px solid #0063ae; outline-offset: 4px; }
+.audio-label[hidden], .meter[hidden], .meter-hit[hidden] { display: none; }
+@media (max-width: 700px) {
+  .audio-label { font-size: clamp(11px, 3.6vw, 15px); letter-spacing: .16em; padding: 7px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audio-label.is-leaving, .meter:not([hidden]) { animation-duration: .01ms; }
+  .meter-seg, .meter::after { transition: none; }
+}
