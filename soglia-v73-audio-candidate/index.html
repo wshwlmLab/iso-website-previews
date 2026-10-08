@@ -449,7 +449,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261008-menu-sequence');
+          source.searchParams.set('build', '20261008-menu-inverted');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {
