@@ -8,7 +8,7 @@ Approvata da William l'8 ottobre 2026, ore 20:31 Europe/Rome: usare questo compo
 - Su hover o focus da tastiera, ROME, ITALY scompare lettera per lettera, nello stesso ordine casuale dell'uscita delle parole della Soglia: 190 ms per lettera, intervalli di 72 ms con variazione di 0–40 ms.
 - Dopo l'ultima lettera, la parola ENGLISH entra tutta insieme con un fade di 420 ms se la lingua attuale è italiana. Se è inglese, compare ITALIANO con lo stesso fade.
 - Il clic cambia la lingua condivisa del sito. Spostando il mouse, la parola della lingua sfuma in 240 ms e tornano le lettere di ROME, ITALY, con intervalli di 38 ms e variazione di 0–18 ms.
-- Ora, fuso orario e anno continuano il loro normale funzionamento e mantengono la posizione. Il testo della città conserva sempre il proprio ingombro; la lingua gli è sovrapposta. L'area cliccabile non cambia durante l'animazione.
+- Ora, fuso orario e anno continuano il loro normale funzionamento e mantengono la posizione. Il testo della città conserva sempre il proprio ingombro; ENGLISH/ITALIANO è sovrapposto e centrato orizzontalmente nello spazio di ROME, ITALY, come richiesto alle 21:03. L'area cliccabile non cambia durante l'animazione.
 - Freccia normale nel sito e puntatore a dito sul controllo. I cambi rapidi di hover invertono le transizioni correnti; con movimento ridotto il cambio è immediato.
 
 ## Codice comune
