@@ -531,10 +531,6 @@
           stage.classList.remove('is-start');
           installation.classList.add('is-visible');
           await new Promise(resolve => setTimeout(resolve, reduced ? 0 : 6000));
-          // Once the plastic page is in place, build the truck with the exact
-          // same particle entrance used by the following click layers.
-          await Promise.all(groups[0].map(img => reveal(img, 3100)));
-          step = 1;
           advanceButton.disabled = false;
         } catch (error) { console.error('Unable to reveal installation', error); }
         finally { locked = false; }
@@ -545,7 +541,7 @@
         onReveal: startInstallation
       });
       ready.then(() => controls.ready()).catch(console.error);
-      advanceButton.addEventListener('click', () => { if (step > 0) advance(); });
+      advanceButton.addEventListener('click', () => { if (!stage.classList.contains('is-start')) advance(); });
 
       if (new URLSearchParams(location.search).get('state') === 'final') {
         ready.then(() => {
