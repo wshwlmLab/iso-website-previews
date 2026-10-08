@@ -1,0 +1,9 @@
+/* ISO frame language v1 — approved by William, 8 October 2026. */
+.location-language{position:relative;display:inline-block;flex:none;margin:0;padding:0;border:0;border-radius:0;background:none;color:inherit;font:inherit;line-height:inherit;letter-spacing:inherit;text-align:left;appearance:none;cursor:pointer}
+.location-name{display:block;white-space:nowrap}
+.location-letter{display:inline-block;white-space:pre;transition:opacity 190ms ease;transition-delay:calc(240ms + var(--location-return-delay,0ms))}
+.language-target{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 240ms ease}
+.location-language:is(:hover,:focus-visible) .location-letter{opacity:0;transition-delay:var(--location-exit-delay,0ms)}
+.location-language:is(:hover,:focus-visible) .language-target{opacity:1;transition-duration:420ms;transition-delay:var(--location-exit-duration,0ms)}
+.location-language:focus-visible{outline:1px solid currentColor;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.location-letter,.language-target{transition:none!important}}

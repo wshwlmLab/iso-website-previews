@@ -1,4 +1,6 @@
-# Prova lingua nella cornice della Soglia
+# Lingua nella cornice della Soglia — regola approvata
+
+William ha approvato questa prova alle 20:31 dell'8 ottobre 2026 e ha chiesto di conservarla come regola per tutte le cornici del sito. Il riferimento comune è [shared/OFFICIAL-FRAME-LANGUAGE-v1-2026-10-08.md](https://github.com/wshwlmLab/iso-website-previews/blob/main/shared/OFFICIAL-FRAME-LANGUAGE-v1-2026-10-08.md), con CSS e controller riutilizzabili nella stessa cartella.
 
 Richiesta di William dell'8 ottobre 2026, ore 20:00–20:01 Europe/Rome. Il selettore in alto a destra, allineato ad ATTIVA L'AUDIO/SOUND ON, riguarda la Home: verrà applicato nella chat della Home. In questa prova cambia soltanto il controllo ROME, ITALY nella cornice della Soglia.
 
