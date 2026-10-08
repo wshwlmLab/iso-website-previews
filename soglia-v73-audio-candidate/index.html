@@ -127,6 +127,7 @@
   <script src="loop-audio.js?v=20261003-cartolina1"></script>
   <script src="iso-meter-response.js?v=20261003-meter12"></script>
   <script src="site-visit.js?v=20261008-entry-once"></script>
+  <script src="site-language.js?v=20261008-language-frame"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -448,7 +449,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261008-entry-once');
+          source.searchParams.set('build', '20261008-language-frame');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {

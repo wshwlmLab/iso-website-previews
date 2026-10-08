@@ -40,6 +40,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"New 
 .micro{position:absolute;left:.65vw;bottom:calc(var(--frame-top)/2);transform:translateY(50%);font-size:var(--micro-size);display:flex;width:25vw;justify-content:space-between;gap:0;white-space:nowrap}
 .micro .clock-group{display:inline-flex;align-items:baseline;gap:.55em}
 .micro .tz{color:#777;font-size:.92em}
+.location-language{position:relative;display:inline-block;flex:none;margin:0;padding:0;border:0;border-radius:0;background:none;color:inherit;font:inherit;line-height:inherit;letter-spacing:inherit;text-align:left;appearance:none;cursor:pointer}
+.location-name{display:block;white-space:nowrap}
+.language-target{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;pointer-events:none}
+.location-language:is(:hover,:focus-visible) .location-name{visibility:hidden}
+.location-language:is(:hover,:focus-visible) .language-target{opacity:1}
+.location-language:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 .menu{position:absolute;inset:0;overflow:hidden}
 .word{position:absolute;color:#000;font-size:var(--menu-size);line-height:1;letter-spacing:var(--psyop-tracking);font-weight:500;white-space:nowrap;user-select:none;cursor:pointer}
 .menu-dot{position:absolute;top:var(--optical-axis-y,50%);right:calc(100% + 22px);width:20px;height:20px;background:#000;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:0;transform:translateY(-50%) scale(.28);transition:opacity 170ms ease,transform 230ms cubic-bezier(.2,.72,.2,1);pointer-events:none}
@@ -164,7 +170,7 @@ body.bridge-pre .cursor-note{visibility:hidden;pointer-events:none}
   <div class="identity id-il"><span class="identity-inner">IL</span></div>
   <div class="identity id-suono"><span class="identity-inner">SUONO</span></div>
   <div class="identity id-organizzato"><span class="identity-inner">ORGANIZZATO</span></div>
-  <div class="micro"><span>Rome, Italy</span><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
+  <div class="micro"><button class="location-language" id="languageSwitch" type="button" aria-label="Passa alla versione inglese"><span class="location-name" aria-hidden="true">ROME, ITALY</span><span class="language-target" id="languageTarget" aria-hidden="true">ENGLISH</span></button><span class="clock-group"><span id="clock">--:--</span><span class="tz">(UTC+1)</span></span><span id="year">2026</span></div>
 
   <main class="paper">
 
@@ -212,9 +218,27 @@ body.bridge-pre .cursor-note{visibility:hidden;pointer-events:none}
 </div>
 <script src="experience-loader.js?v=20261003-cartolina1"></script>
 <script src="cartolina-config.js?v=20261003-cartolina1"></script>
+<script src="site-language.js?v=20261008-language-frame"></script>
 <script>
 (() => {
 let PHOTO_SRC = [];
+
+// ---------- Frame language selector ----------
+const languageSwitch=document.getElementById('languageSwitch');
+const languageTarget=document.getElementById('languageTarget');
+const unsubscribeLanguage=window.ISOSiteLanguage.subscribe(language=>{
+  languageTarget.textContent=language==='it'?'ENGLISH':'ITALIANO';
+  languageSwitch.setAttribute('aria-label',language==='it'?'Passa alla versione inglese':'Switch to Italian');
+});
+languageSwitch.addEventListener('click',event=>{
+  event.stopPropagation();
+  window.ISOSiteLanguage.toggleLanguage();
+});
+languageSwitch.addEventListener('keydown',event=>{
+  if(event.code==='Space'||event.code==='Enter')event.stopPropagation();
+});
+window.addEventListener('pagehide',event=>{if(!event.persisted)unsubscribeLanguage();});
+// ---------- End frame language selector ----------
 
 // ---------- baseline menu ----------
 const words=[...document.querySelectorAll('.word')];
