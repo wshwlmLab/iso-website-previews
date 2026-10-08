@@ -38,8 +38,12 @@
         const stereo = context.createChannelMerger(2);
         rockTrim.connect(center); center.connect(stereo, 0, 0); center.connect(stereo, 0, 1); stereo.connect(bus);
       }
-      const motion = context.createGain(); motion.connect(rockTrim);
+      const rockEntrance = context.createGain(); rockEntrance.gain.value = 0;
+      rockEntrance.connect(rockTrim);
+      const motion = context.createGain(); motion.connect(rockEntrance);
       origin = context.currentTime + .025;
+      rockEntrance.gain.setValueAtTime(0, origin);
+      rockEntrance.gain.linearRampToValueAtTime(1, origin + config.rockFadeInSeconds);
       if (reduced) motion.gain.value = .65;
       else {
         // A looping, inaudible control buffer modulates gain continuously.

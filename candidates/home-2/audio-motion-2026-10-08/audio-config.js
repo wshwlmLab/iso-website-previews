@@ -1,7 +1,8 @@
 /* Terra Viva first listening test. Levels remain independent. */
 window.ISOTerraConfig = Object.freeze({
   loopSeconds: 14,
-  rockLevel: 1,
+  rockLevel: 10 ** (-6 / 20),
+  rockFadeInSeconds: 5,
   musicLevel: 1,
   outputLevel: .9,
   rockMotionFloor: .35,
