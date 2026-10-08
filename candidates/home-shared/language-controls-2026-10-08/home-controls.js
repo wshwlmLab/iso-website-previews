@@ -9,13 +9,28 @@
     }
     return null;
   }
-  function create({ root, onReveal }) {
+  function create({ root, onReveal = () => {} }) {
     const prompt = root.querySelector('.audio-label');
     window.ISOLanguage?.bindHome(root);
     const language = root.querySelector('.home-language');
-    const meter = root.querySelector('.meter');
-    const hit = root.querySelector('.meter-hit');
-    const zone = meter.querySelector('.meter-zone');
+    // Every Home using this controller receives the official meter, even when
+    // its installation markup omits the meter and mute button.
+    let meter = root.querySelector('.meter');
+    if (!meter) {
+      meter = document.createElement('span'); meter.className = 'meter';
+      meter.hidden = true; meter.setAttribute('aria-hidden', 'true'); prompt.after(meter);
+    }
+    let hit = root.querySelector('.meter-hit');
+    if (!hit) {
+      hit = document.createElement('button'); hit.className = 'meter-hit'; hit.type = 'button';
+      hit.hidden = true; hit.setAttribute('aria-pressed', 'false');
+      hit.setAttribute('aria-label', window.ISOLanguage?.text('mute') || 'Disattiva l’audio'); meter.after(hit);
+    }
+    let zone = meter.querySelector('.meter-zone');
+    if (!zone) { zone = document.createElement('span'); zone.className = 'meter-zone'; meter.append(zone); }
+    const unsubscribeLanguage = window.ISOLanguage?.subscribe(() => {
+      hit.setAttribute('aria-label', window.ISOLanguage.text(hit.getAttribute('aria-pressed') === 'true' ? 'unmute' : 'mute'));
+    });
     const columns = Array.from({ length: 2 }, () => {
       const column = document.createElement('span'); column.className = 'meter-col';
       const segments = Array.from({ length: 16 }, () => {
@@ -72,7 +87,7 @@
     return {
       ready() { if (!activated) prompt.disabled = false; },
       activate,
-      dispose() { clearTimeout(timer); cancelAnimationFrame(frame); }
+      dispose() { clearTimeout(timer); cancelAnimationFrame(frame); unsubscribeLanguage?.(); }
     };
   }
   window.ISOHomeControls = Object.freeze({ create });
