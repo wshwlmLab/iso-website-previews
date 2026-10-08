@@ -4,15 +4,18 @@ import vm from 'node:vm';
 
 const moduleSource=fs.readFileSync('dist/site-language.js','utf8');
 const inner=fs.readFileSync('dist/soglia-frozen.html','utf8');
-const binding=inner.slice(inner.indexOf('// ---------- Frame language selector'),inner.indexOf('// ---------- baseline menu'));
+const shuffle=inner.slice(inner.indexOf('function shuffle('),inner.indexOf('function intro('));
+const binding=shuffle+inner.slice(inner.indexOf('// ---------- Frame language selector'),inner.indexOf('// ---------- baseline menu'));
 const stored=new Map();
 function createView({parent,blocked=false}={}){
   const listeners=new Map(),events=[];
-  const button={attributes:{},handlers:{},setAttribute(key,value){this.attributes[key]=value;},addEventListener(type,handler){this.handlers[type]=handler;}};
+  const style=()=>({setProperty(key,value){this[key]=value;}});
+  const city={textContent:'ROME, ITALY',children:[],replaceChildren(...children){this.children=children;}};
+  const button={style:style(),attributes:{},handlers:{},querySelector:()=>city,setAttribute(key,value){this.attributes[key]=value;},addEventListener(type,handler){this.handlers[type]=handler;}};
   const label={textContent:''};
   const clock={textContent:'20:00',style:{left:'unchanged'}};
   const year={textContent:'2026',style:{left:'unchanged'}};
-  const document={documentElement:{lang:'it'},getElementById:id=>({languageSwitch:button,languageTarget:label,clock,year})[id]};
+  const document={documentElement:{lang:'it'},createElement:()=>({style:style()}),getElementById:id=>({languageSwitch:button,languageTarget:label,clock,year})[id]};
   const window={addEventListener(type,listener){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(listener);},dispatchEvent(event){events.push(event);}};
   window.parent=parent||window;
   Object.defineProperty(window,'localStorage',{get(){if(blocked)throw new Error('Storage unavailable');return {getItem:key=>stored.get(key),setItem:(key,value)=>stored.set(key,value)};}});
