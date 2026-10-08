@@ -2,7 +2,7 @@
 
 Prova basata sulla Home 2 Terra Viva con rocce a −6 dB e ingresso di 5 secondi, commit `299239621f0edc663a32d1e92f6230a89e49532f`, e sulla Home 1 con controlli comuni approvati del 7 ottobre. Audio, immagini, shader, movimenti, meter e punto di attivazione non cambiano.
 
-Sulla schermata iniziale il selettore è una scritta senza bordo, a destra a `.72vw`, come SUONO nella cornice. Centro verticale a `5.88vh`, identico al pulsante audio. Font Cousine, peso, dimensione e tracking sono condivisi con il pulsante, comprese le regole per telefono. Puntatore normale, mano sui controlli cliccabili. Il selettore svanisce insieme al pulsante audio quando entra l’installazione.
+Sulla schermata iniziale il selettore è una scritta senza bordo, con il centro orizzontale esattamente sopra il centro del più. Centro verticale a `5.88vh`, identico al pulsante audio. Font ufficiale New Heterodox Mono Book: lo stesso file della Soglia, peso 500, dimensione e tracking condivisi con il pulsante, comprese le regole per telefono. Il file è servito e precaricato da `shared/fonts/NewHeterodoxMono-Book.otf`, blob Git `d4a4ef069fb78c774b9d257a9b74ca4a076eb667`, con licenza OFL accanto. Sotto 500 px il pulsante audio si sposta solo quanto serve a evitare la sovrapposizione, mantenendo altezza e tipografia; il meter conserva il suo punto centrale. Puntatore normale, mano sui controlli cliccabili. Il selettore svanisce insieme al pulsante audio quando entra l’installazione.
 
 | Lingua | Attivazione audio | Lingua alternativa |
 |---|---|---|

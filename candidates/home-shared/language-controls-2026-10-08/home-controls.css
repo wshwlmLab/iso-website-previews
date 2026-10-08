@@ -1,20 +1,26 @@
 /* Shared Home controls. Home 3 keeps its installation-specific footer anchor. */
-:root { --meter-y: 3.26vh; --meter-height: clamp(32px, 2.85vw, 41px); --home-prompt-size: clamp(13px, 1.5vw, 18px); --home-prompt-tracking: .22em; }
+@font-face {
+  font-family: 'New Heterodox Mono';
+  src: url('/shared/fonts/NewHeterodoxMono-Book.otf') format('opentype');
+  font-style: normal; font-weight: 400 500; font-display: swap;
+}
+:root { --meter-y: 3.26vh; --meter-height: clamp(32px, 2.85vw, 41px); --home-prompt-size: clamp(13px, 1.5vw, 18px); --home-prompt-tracking: .22em; --home-plus-right: clamp(22px, 2.2vw, 42px); --home-plus-width: clamp(128px, 10.4vw, 176px); }
+.plus { right: var(--home-plus-right); width: var(--home-plus-width); }
 .stage, .scene { color: #141414; }
 .audio-label, .meter, .meter-hit {
   position: absolute; left: 50%; top: var(--meter-y); transform: translate(-50%, -50%);
   box-sizing: border-box; color: #141414; -webkit-tap-highlight-color: transparent;
 }
 .audio-label {
-  top: 5.88vh; z-index: 5; font-family: 'Cousine', 'Courier New', monospace;
+  top: 5.88vh; z-index: 5; font-family: 'New Heterodox Mono', 'Courier New', monospace;
   font-size: var(--home-prompt-size); letter-spacing: var(--home-prompt-tracking); font-weight: 500;
   line-height: 1; white-space: nowrap; background: none; color: inherit;
   border: 1.5px solid currentColor; border-radius: 1px; padding: 9px 16px; margin: 0; cursor: pointer;
 }
 .home-language {
-  position: absolute; z-index: 5; top: 5.88vh; right: max(.72vw, env(safe-area-inset-right, 0px));
-  transform: translateY(-50%); margin: 0; padding: 12px 2px; border: 0; border-radius: 0;
-  background: transparent; color: inherit; font-family: 'Cousine', 'Courier New', monospace;
+  position: absolute; z-index: 5; top: 5.88vh; right: calc(var(--home-plus-right) + var(--home-plus-width) / 2);
+  transform: translate(50%, -50%); margin: 0; padding: 12px 2px; border: 0; border-radius: 0;
+  background: transparent; color: inherit; font-family: 'New Heterodox Mono', 'Courier New', monospace;
   font-size: var(--home-prompt-size); letter-spacing: var(--home-prompt-tracking); font-weight: 500;
   line-height: 1; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
@@ -57,8 +63,12 @@
 .audio-label:focus-visible, .home-language:focus-visible, .meter-hit:focus-visible, .plus:focus-visible { outline: 2px solid #0063ae; outline-offset: 4px; }
 .audio-label[hidden], .home-language[hidden], .meter[hidden], .meter-hit[hidden] { display: none; }
 @media (max-width: 700px) {
-  :root { --home-prompt-size: clamp(11px, 3.6vw, 15px); --home-prompt-tracking: .16em; }
+  :root { --home-prompt-size: clamp(11px, 3.6vw, 15px); --home-prompt-tracking: .16em; --home-plus-right: 18px; --home-plus-width: 136px; }
   .audio-label { padding: 7px 12px; }
+}
+@media (max-width: 500px) {
+  /* Keep the longer Italian prompt clear of the selector on narrow screens. */
+  .audio-label { left: min(50%, calc(100% - var(--home-plus-right) - var(--home-plus-width) / 2 - 10.5ch - 1.68em - 28px)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .audio-label.is-leaving, .home-language.is-leaving, .meter:not([hidden]) { animation-duration: .01ms; }
