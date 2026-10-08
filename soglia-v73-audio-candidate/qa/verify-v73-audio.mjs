@@ -136,7 +136,7 @@ async function verifyAudio() {
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261008-language-centered');
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261009-city-case');
   await frameEvents.load();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(window.ISOAudioMeter.experienceReady,true);

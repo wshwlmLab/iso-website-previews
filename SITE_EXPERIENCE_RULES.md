@@ -21,6 +21,6 @@ Prima di dichiarare risolta un'interruzione sonora, distinguere i test automatic
 
 ## Lingua nelle cornici — regola approvata dell'8 ottobre 2026
 
-William ha approvato come regola comune per tutte le cornici il controllo ROME, ITALY: su hover/focus, la città scompare lettera per lettera e poi ENGLISH oppure ITALIANO entra in fade come parola intera. Il clic cambia la preferenza condivisa; all'uscita la lingua sfuma e torna la città. Ora e anno mantengono la posizione. Non aggiungere un selettore fisso nella cornice.
+William ha approvato come regola comune per tutte le cornici il controllo Rome, Italy (solo R e I maiuscole): su hover/focus, la città scompare lettera per lettera e poi ENGLISH oppure ITALIANO entra in fade come parola intera. Il clic cambia la preferenza condivisa; all'uscita la lingua sfuma e torna la città. Ora e anno mantengono la posizione. Non aggiungere un selettore fisso nella cornice.
 
 Il riferimento vincolante è [shared/OFFICIAL-FRAME-LANGUAGE-v1-2026-10-08.md](shared/OFFICIAL-FRAME-LANGUAGE-v1-2026-10-08.md), con tempi approvati, markup e componenti comuni. Le altre pagine dotate di cornice devono adottarlo nei relativi aggiornamenti. La Home bianca conserva il proprio selettore iniziale e usa la stessa preferenza `iso.language`. Questo salvataggio conserva la regola e non sostituisce l'integrazione nelle altre preview.

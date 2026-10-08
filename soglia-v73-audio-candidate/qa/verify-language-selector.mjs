@@ -10,7 +10,7 @@ const stored=new Map();
 function createView({parent,blocked=false}={}){
   const listeners=new Map(),events=[];
   const style=()=>({setProperty(key,value){this[key]=value;}});
-  const city={textContent:'ROME, ITALY',children:[],replaceChildren(...children){this.children=children;}};
+  const city={textContent:'Rome, Italy',children:[],replaceChildren(...children){this.children=children;}};
   const button={style:style(),attributes:{},handlers:{},querySelector:()=>city,setAttribute(key,value){this.attributes[key]=value;},addEventListener(type,handler){this.handlers[type]=handler;}};
   const label={textContent:''};
   const clock={textContent:'20:00',style:{left:'unchanged'}};
