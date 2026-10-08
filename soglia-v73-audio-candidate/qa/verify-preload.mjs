@@ -113,7 +113,7 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
   elements.loadingRetry.addEventListener = (key, fn) => { retryEvents[key] = fn; };
   const document = { body: { dataset: {} }, fonts: { ready: Promise.resolve() }, getElementById: id => elements[id], createElement: element };
   const search = '?cartolina=soglia-prova' + (audioOrigin === 'locale' ? '&audio_origine=locale' : '') + (audioEngine === 'html' ? '&audio_motore=html' : '');
-  const window = { AudioContext, OfflineAudioContext:Decoder, Audio:NativeAudio, location: { href: 'https://test.invalid/' + search, search } };
+  const window = { addEventListener() {}, AudioContext, OfflineAudioContext:Decoder, Audio:NativeAudio, location: { href: 'https://test.invalid/' + search, search } };
   window.parent = window;
   let draw = null, intros = 0, layouts = 0, geometry = 0, frameCount = 0;
   const globals = { console: { warn() {} }, fetch, crypto: webcrypto, AbortController, Image, Blob, URL, URLSearchParams, TextDecoder, Uint8Array, Float32Array, Promise, Math, Number, Array, performance: { now: () => 0 }, setTimeout, clearTimeout, requestAnimationFrame: cb => { draw = cb; }, MutationObserver: class { observe() {} } };
@@ -137,7 +137,7 @@ function harness({ corrupt = null, failManifest = false, redirect = false, layer
       queueMicrotask(() => { for (const [listener, key] of events) if (key === 'load') listener(); });
     }
   });
-  for (const file of ['experience-loader.js', 'cartolina-config.js', 'loop-audio.js', 'iso-meter-response.js']) vm.runInContext(read(file), context);
+  for (const file of ['experience-loader.js', 'cartolina-config.js', 'loop-audio.js', 'iso-meter-response.js', 'site-visit.js']) vm.runInContext(read(file), context);
   vm.runInContext(outer, context);
   return {
     window, elements, frame, requests, streams, images, decodes, sources, gains, nativeMedia, readyFonts, releaseDownload, innerEvents, meterEvents, retryEvents,
@@ -273,7 +273,7 @@ console.log('Manifest failure: does not hide or freeze the intro; configuration 
 const bridge=read('soglia-frozen.html');
 const advance=bridge.slice(bridge.indexOf('function advance(){'),bridge.indexOf('const arm=e=>'));
 const thresholdWindow={__frozenSogliaReady:false};let dispersion=0;
-const threshold=vm.createContext({window:thresholdWindow,initialMotionIntroDone:true,animating:false,armed:true,dispersionStarted:false,phase:2,disperseToThreshold(){dispersion++},prepareNextSentence(){},animate(){}});
+const threshold=vm.createContext({window:thresholdWindow,directEntryRequested:false,initialMotionIntroDone:true,animating:false,armed:true,dispersionStarted:false,phase:2,disperseToThreshold(){dispersion++},prepareNextSentence(){},animate(){}});
 vm.runInContext(advance,threshold);vm.runInContext('advance()',threshold);
 assert.equal(dispersion,0);assert.equal(thresholdWindow.__pendingSogliaThreshold,true);
 thresholdWindow.__frozenSogliaReady=true;thresholdWindow.__resumeSogliaThreshold();

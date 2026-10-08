@@ -2,7 +2,9 @@
 
 Aggiornamento di William, 3 ottobre 2026: prima risolvere e misurare le performance; progettare poi dove e quando mostrare un'eventuale attesa. La schermata con percentuale della precedente prova Soglia è stata rifiutata e rimossa. Non introdurre automaticamente percentuali, spinner, blocchi a tutto schermo o pannelli di caricamento nelle altre pagine.
 
-Le risorse necessarie allo svelamento manuale devono essere preparate prima di abilitarlo. In Soglia, l'ingresso tipografico approvato resta visibile e interattivo mentre immagini e audio vengono preparati in parallelo. La transizione verso la cartolina viene completata solo quando tutti i layer sono pronti. Dopo che inizia l'eraser, nessun caricamento deve interromperlo o sostituirlo con un indicatore.
+Le risorse necessarie allo svelamento manuale devono essere preparate prima di abilitarlo. Al primo ingresso in Soglia, l'ingresso tipografico approvato resta visibile e interattivo mentre immagini e audio vengono preparati in parallelo. La transizione verso la cartolina viene completata solo quando tutti i layer sono pronti. Dopo che inizia l'eraser, nessun caricamento deve interromperlo o sostituirlo con un indicatore.
+
+Decisione di William dell'8 ottobre 2026: l'introduzione della Soglia compare soltanto al primo ingresso della visita. Quando si torna dalla navigazione interna, tramite cronologia o ricaricando la pagina nella stessa scheda, si raggiunge direttamente il menu con l'eraser. `shared/site-visit.js` conserva `iso.soglia.entered` in sessionStorage; le pagine assemblate devono condividere lo stesso dominio e la stessa chiave. Anche l'ingresso diretto attende la preparazione completa dei media prima di abilitare lo svelamento. La regola è già applicata alla Soglia; non introduce un cookie permanente o una schermata di caricamento.
 
 Regole di implementazione:
 

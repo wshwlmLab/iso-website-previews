@@ -270,6 +270,7 @@ words.forEach(w=>{
     const otherChars=words.filter(word=>word!==w).flatMap(word=>[...word.querySelectorAll('.char')]);
     const allChars=[...otherChars,...selectedChars];
     const animations=[];
+    let menuRestored=false;
     function planLetters(chars){
       const letters=shuffle(chars).map((char,i)=>({char,delay:i*72+Math.random()*40}));
       return {letters,duration:Math.max(...letters.map(letter=>letter.delay+190))};
@@ -292,6 +293,8 @@ words.forEach(w=>{
       return animation;
     }
     function restoreMenu(){
+      if(menuRestored)return;
+      menuRestored=true;
       animations.forEach(animation=>animation.cancel());
       allChars.forEach(c=>{c.style.transition='opacity 220ms ease';c.style.opacity='1'});
       postcard.style.transition='opacity 220ms linear';
@@ -303,6 +306,7 @@ words.forEach(w=>{
       signalAudio(1,document.timeline.currentTime+220);
       menuClickBusy=false;
     }
+    window.__restoreSogliaMenu=restoreMenu;
     async function fadeLetters(plan,startTime){
       const group=plan.letters.map(({char:c,delay})=>{
         const opacity=getComputedStyle(c).opacity;
@@ -1033,11 +1037,12 @@ function setCursorMode(mode){
 
 let prepared=null;
 let introPrepared=null;
-window.__showSogliaIntro=()=>{
+window.__showSogliaIntro=({direct=false}={})=>{
   if(introPrepared)return introPrepared;
   introPrepared=(async()=>{
     if(document.fonts)await document.fonts.ready;
     setOpticalFlipAxes();
+    if(direct){window.__requestSogliaDirectEntry();return;}
     window.__prepareSogliaIntro();
     window.__startSogliaIntro();
   })();
@@ -1745,6 +1750,46 @@ function prepareFrozenMenu(){
 }
 prepareFrozenMenu();
 
+// ---------- First visit / direct return to the prepared Soglia ----------
+let directEntryRequested=false;
+let thresholdEntered=false;
+function finishSogliaThreshold(direct=false){
+  if(thresholdEntered||!window.__frozenSogliaReady)return;
+  thresholdEntered=true;
+  dispersionStarted=true;
+  armed=false;
+  phase=7;
+  animating=false;
+  initialMotionIntroDone=true;
+  initialMotionIntroStarted=true;
+  if(direct){
+    slowMenuStarted=true;
+    document.querySelectorAll('.menu .char').forEach(c=>{
+      c.style.transition='none';
+      c.style.opacity='1';
+      c.style.transform='translateY(0)';
+    });
+  }
+  stage.style.display='none';
+  const bridge=document.getElementById('motionBridge');
+  bridge.style.display='none';
+  bridge.style.pointerEvents='none';
+  document.getElementById('dispersionLayer').innerHTML='';
+  document.body.classList.remove('bridge-pre');
+  window.__startSogliaBorder?.();
+  window.__resetEraseCursorForThreshold?.();
+  window.dispatchEvent(new CustomEvent('iso:soglia-entered',{detail:{direct}}));
+}
+window.__requestSogliaDirectEntry=()=>{
+  directEntryRequested=true;
+  window.__restoreSogliaMenu?.();
+  // Never expose or start the introductory phrase on a return visit.
+  // The existing preparation gate still protects the eraser and its audio.
+  stage.style.display='none';
+  if(window.__frozenSogliaReady)finishSogliaThreshold(true);
+};
+// ---------- End first visit / direct return ----------
+
 function disperseToThreshold(){
   if(animating||dispersionStarted||phase!==2)return;
   dispersionStarted=true;armed=false;animating=true;
@@ -1841,11 +1886,7 @@ function disperseToThreshold(){
     const doneAt=menuStartAt+(menuDuration||0)+80;
     if(menuStarted&&elapsed>=doneAt&&!finished){
       finished=true;
-      phase=7;animating=false;
-      bridge.style.display='none';
-      bridge.style.pointerEvents='none';
-      document.body.classList.remove('bridge-pre');
-      window.__resetEraseCursorForThreshold?.();
+      finishSogliaThreshold();
       return;
     }
 
@@ -1868,6 +1909,7 @@ function advance(){
   else if(phase===2)disperseToThreshold();
 }
 window.__resumeSogliaThreshold=()=>{
+  if(directEntryRequested){finishSogliaThreshold(true);return;}
   if(window.__pendingSogliaThreshold){window.__pendingSogliaThreshold=false;advance();}
 };
 const arm=e=>{lastPos=[e.clientX,e.clientY];origin=[e.clientX,e.clientY];if(initialMotionIntroDone&&!animating&&!dispersionStarted)armed=true};

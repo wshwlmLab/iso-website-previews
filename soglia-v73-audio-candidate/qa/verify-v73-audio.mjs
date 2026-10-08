@@ -102,7 +102,7 @@ async function verifyAudio() {
   const loadingElements=Object.fromEntries(['loadingGate','loadingLabel','loadingProgress','loadingBar','loadingRetry'].map(id=>[id,{hidden:false,addEventListener(){}}]));
   const document={body:{dataset:{}},getElementById:id=>({soglia:frame,meter,meterHit,meterZone:{appendChild(){}},...loadingElements})[id],querySelectorAll:()=>[],createElement:()=>({className:'',children:[],style:{},appendChild(child){this.children.push(child)}})};
   const base='https://pub-db4922fd516c4a87b423232b0ddef047.r2.dev/cartoline/soglia-prova/v1/';
-  const window={AudioContext,OfflineAudioContext:class{decodeAudioData(){return Promise.resolve(new Buffer(2,400,100))}},location:{search:'?cartolina=soglia-prova',href:'https://test.invalid/?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
+  const window={addEventListener(){},AudioContext,OfflineAudioContext:class{decodeAudioData(){return Promise.resolve(new Buffer(2,400,100))}},location:{search:'?cartolina=soglia-prova',href:'https://test.invalid/?cartolina=soglia-prova'},ISOCartolinaReady:Promise.resolve({manifestURL:base+'manifest.json',fadeSeconds:1,loopCrossfadeSeconds:1,layers:['river','endless-ascent','sciola'].map(id=>({audio:base+'audio/'+id+'.mp3'}))})};
   window.ISOCartolina={load:()=>window.ISOCartolinaReady};
   window.ISOExperienceLoader={bytes:async()=>new ArrayBuffer(8),prepare:(key,operation)=>operation(),snapshot:()=>({error:null}),subscribe(){},retry(){},preparing(){},ready(){},fail(error){throw error}};
   let draw;
@@ -111,6 +111,7 @@ async function verifyAudio() {
   const context=vm.createContext({window,document,console,fetch:async url=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)}),performance:{now:()=>visualNow,timeOrigin},requestAnimationFrame:cb=>{draw=cb},MutationObserver:class{observe(){}},Promise,Float32Array,Math,Array,Number,URL,setTimeout,clearTimeout});
   vm.runInContext(fs.readFileSync(path.join(root,'iso-meter-response.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(root,'loop-audio.js'),'utf8'),context);
+  vm.runInContext(fs.readFileSync(path.join(root,'site-visit.js'),'utf8'),context);
   const engineContext=new AudioContext();
   const original=new Buffer(2,400,100);
   original.channels.forEach((samples,channel)=>samples.forEach((_,i)=>samples[i]=i/500+channel/10));
@@ -135,7 +136,7 @@ async function verifyAudio() {
   assert.equal(short.crossfadeSeconds,.1);
   vm.runInContext(outer.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261006-click-postcard-fade');
+  assert.equal(frame.src,'https://test.invalid/soglia-frozen.html?cartolina=soglia-prova&build=20261008-entry-once');
   await frameEvents.load();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(window.ISOAudioMeter.experienceReady,true);

@@ -126,6 +126,7 @@
   <script src="cartolina-config.js?v=20261003-cartolina1"></script>
   <script src="loop-audio.js?v=20261003-cartolina1"></script>
   <script src="iso-meter-response.js?v=20261003-meter12"></script>
+  <script src="site-visit.js?v=20261008-entry-once"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -134,6 +135,7 @@
       const meterHit = document.getElementById('meterHit');
       const meterZone = document.getElementById('meterZone');
       const loader = window.ISOExperienceLoader;
+      const directEntry = window.ISOSiteVisit.hasEnteredSoglia();
       // Optional historical-player comparison. The normal experience keeps
       // the prepared PCM crossfade; this mode tests native HTML audio only.
       const audioEngineMode = new URL(window.location.href).searchParams.get('audio_motore') === 'html' ? 'html' : 'pcm';
@@ -446,7 +448,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261006-click-postcard-fade');
+          source.searchParams.set('build', '20261008-entry-once');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {
@@ -463,11 +465,17 @@
               }
               frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');
               child.addEventListener('iso:menu-fade', receiveMenuFade);
+              child.addEventListener('iso:soglia-entered', () => {
+                window.ISOSiteVisit.markSogliaEntered();
+                record('threshold-entered', { direct: directEntry });
+              });
               frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
               frame.contentDocument.addEventListener('keydown', event => {
                 if (event.code === 'Space' || event.code === 'Enter') ensureAudioStarted();
               }, { capture: true });
-              child.__showSogliaIntro().then(() => record('intro-started')).catch(error => record('intro-error', { error: error.message }));
+              child.__showSogliaIntro({ direct: directEntry })
+                .then(() => record(directEntry ? 'direct-entry-prepared' : 'intro-started'))
+                .catch(error => record('intro-error', { error: error.message }));
               clearTimeout(timeout);
               frame.removeEventListener('load', loaded);
               resolve(child);
@@ -480,6 +488,13 @@
 
       const frozenFrame = loadFrozenSoglia();
       frozenFrame.catch(error => record('frame-error', { error: error.message }));
+      window.addEventListener('pageshow', event => {
+        if (!event.persisted || !window.ISOSiteVisit.hasEnteredSoglia()) return;
+        // Browser Back may restore the old iframe, including its departure fade.
+        // Reuse its prepared media and reveal the menu rather than replaying intro.
+        frozenFrame.then(child => child.__requestSogliaDirectEntry())
+          .catch(error => record('return-entry-error', { error: error.message }));
+      });
 
       function prepareExperience() {
         if (experienceReady) return Promise.resolve();
