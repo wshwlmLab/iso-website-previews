@@ -33,3 +33,9 @@ Inserire il pulsante nel punto già occupato dalla città, lasciando ora e anno 
 La Soglia usa già il comportamento approvato. I componenti comuni sono salvati per l'adozione nelle altre cornici e nell'assemblaggio del sito; questo salvataggio non dichiara aggiornate le altre preview. I contenuti tradotti si collegano alla stessa scelta di lingua quando vengono integrati.
 
 La pagina bianca iniziale della Home mantiene il proprio selettore ENGLISH/ITALIANO e ATTIVA L'AUDIO/SOUND ON: è una modalità distinta, collegata alla stessa preferenza. Questa regola non aggiunge una cornice alle pagine che non la prevedono. Conservare gli snapshot Frozen approvati.
+
+## Verifica comune — 10 ottobre 2026
+
+La regola è parte essenziale della cornice in tutte le pagine correnti con cornice: Soglia, Film, About, Blog e archivio. Gli articoli incorporati usano la cornice del contenitore. Le pagine che non prevedono una cornice conservano la propria struttura.
+
+Il pulsante `.location-language` deve dichiarare `pointer-events:auto`, anche se la cornice o la microcopy usano `pointer-events:none`: altrimenti il pulsante eredita il blocco e non riceve hover o clic. L'abilitazione riguarda soltanto il pulsante, mantenendo invariati ora, anno, area cliccabile e tempi dell'animazione approvata. Le copie pubblicate del componente mantengono lo stesso CSS e controller.
