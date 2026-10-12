@@ -1,13 +1,14 @@
 @font-face{font-family:"New Heterodox Mono";src:url("fonts/NewHeterodoxMono-Book.otf") format("opentype");font-style:normal;font-weight:400 500;font-display:swap}
-:root{--mobile-safe-top:env(safe-area-inset-top,0px);--mobile-header-height:calc(60px + var(--mobile-safe-top));--mobile-margin:18px}
+:root{--mobile-safe-top:env(safe-area-inset-top,0px);--mobile-header-height:calc(60px + var(--mobile-safe-top));--mobile-margin:18px;--mobile-symbol-width:34px;--mobile-symbol-height:13.5px}
 html,body{width:100%;height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;background:#fff;color:#090909;font-family:"New Heterodox Mono","Courier New",monospace;-webkit-text-size-adjust:100%;scroll-padding-top:var(--mobile-header-height)}
 body{padding-top:var(--mobile-header-height)}
 button,a{-webkit-tap-highlight-color:transparent}
 button{font:inherit}
 .mobile-header{position:fixed;z-index:100;inset:0 0 auto;height:var(--mobile-header-height);padding:var(--mobile-safe-top) var(--mobile-margin) 0;display:flex;align-items:center;justify-content:space-between;background:#000;color:#fff}
-.mobile-logo{display:flex;align-items:center;min-width:44px;min-height:44px;color:inherit;text-decoration:none;font-size:26px;line-height:1;letter-spacing:.04em;transform:translateY(6px)}
+.mobile-logo{display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex:none;color:inherit;text-decoration:none}
+.mobile-logo-mark{display:block;width:var(--mobile-symbol-width);height:var(--mobile-symbol-height);font-family:"New Heterodox Mono","Courier New",monospace;font-size:12px;line-height:var(--mobile-symbol-height);font-weight:400;letter-spacing:-.13em;text-align:center;white-space:nowrap}
 .mobile-toggle{position:relative;width:48px;height:48px;border:0;padding:0;background:transparent;color:#fff;cursor:pointer;touch-action:manipulation}
-.mobile-toggle span{position:absolute;left:7px;top:23px;width:34px;height:1.5px;background:currentColor;transform-origin:center;transition:transform 300ms cubic-bezier(.65,0,.35,1),opacity 180ms ease}
+.mobile-toggle span{position:absolute;left:7px;top:23px;width:var(--mobile-symbol-width);height:1.5px;background:currentColor;transform-origin:center;transition:transform 300ms cubic-bezier(.65,0,.35,1),opacity 180ms ease}
 .mobile-toggle span:nth-child(1){transform:translateY(-6px)}
 .mobile-toggle span:nth-child(3){transform:translateY(6px)}
 .mobile-toggle[aria-expanded="true"] span:nth-child(1){transform:rotate(45deg)}
@@ -23,7 +24,7 @@ button{font:inherit}
 .mobile-line:nth-child(5){margin-top:.2em}
 .mobile-letter{display:inline-block;white-space:pre;transform-origin:center}
 .mobile-postcard{position:relative;width:100%;aspect-ratio:1;overflow:hidden}
-.mobile-signature{margin:20px 0 0;text-align:center;font-size:clamp(15px,4.4vw,21px);line-height:1.2;font-weight:400;letter-spacing:.02em}
+.mobile-signature{margin:20px 0 0;text-align:center;font-family:"New Heterodox Mono","Courier New",monospace;font-size:clamp(15px,4.4vw,21px);line-height:1.2;font-weight:400;letter-spacing:.055em}
 #soglia{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;opacity:0;pointer-events:none;transition:opacity 380ms ease}
 body.mobile-media-ready #soglia{opacity:1;pointer-events:auto}
 .mobile-menu{position:fixed;z-index:95;top:var(--mobile-header-height);left:0;right:0;height:calc(100vh - var(--mobile-header-height));height:calc(100dvh - var(--mobile-header-height));background:#fff;overflow:auto;overscroll-behavior:contain;clip-path:inset(0 0 100% 0);pointer-events:none;transition:clip-path 420ms cubic-bezier(.65,0,.35,1);padding:4px var(--mobile-margin) calc(24px + env(safe-area-inset-bottom,0px))}
