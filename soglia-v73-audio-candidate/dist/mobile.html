@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Il Suono Organizzato — Soglia mobile</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='black'/%3E%3Cg fill='white'%3E%3Crect x='6' y='20' width='2' height='6'/%3E%3Crect x='11' y='16' width='2' height='10'/%3E%3Crect x='15' y='10' width='2' height='16'/%3E%3Crect x='19' y='14' width='2' height='12'/%3E%3Crect x='24' y='18' width='2' height='8'/%3E%3C/g%3E%3C/svg%3E">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #soglia { display: block; width: 100%; height: 100%; border: 0; }
+
+    /* ISO OFFICIAL METER v1 — FROZEN 2026-09-20 */
+    .meter, .meter-hit {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: calc(6.52vh / 2);
+      width: clamp(52px, 4.2vw, 62px);
+      height: clamp(32px, 2.85vw, 41px);
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .meter {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+      opacity: 1;
+    }
+    .meter-hit {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .meter-hit.active { pointer-events: auto; }
+    .meter-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 50%;
+      height: 80%;
+      padding: 1px 0;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(4px, .35vw, 6px);
+    }
+    .meter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 0;
+    }
+    .meter-seg {
+      position: relative;
+      width: 100%;
+      min-height: 0;
+      flex: 0 0 1px;
+      background: #343434;
+      opacity: 1;
+      border-radius: 0;
+      transform: scaleY(1);
+      transform-origin: center;
+      transition: background 56ms linear, opacity 56ms linear, transform 72ms cubic-bezier(.2,.8,.2,1);
+    }
+    .meter::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      height: 2px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%) rotate(-40deg) scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .meter.paused::after { transform: translate(-50%, -50%) rotate(-40deg) scaleX(1); }
+    .meter.paused .meter-seg { background: #343434 !important; opacity: 1 !important; transform: scaleY(1) !important; }
+    .meter.pixel-enter .meter-seg {
+      animation: meterPixelIn 2.55s cubic-bezier(.18,.72,.2,1) both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    .meter.pixel-enter .meter-seg::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1px;
+      height: 5px;
+      background: #f1f1f1;
+      transform: translate(-50%, -50%);
+      animation: meterPixelVertical 2.55s ease both;
+      animation-delay: var(--pixel-delay, 0ms);
+    }
+    @keyframes meterPixelIn {
+      0% { transform: translate(var(--pixel-x), var(--pixel-y)) scale(.18); }
+      62% { transform: translate(0, 0) scale(.82); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes meterPixelVertical {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      45% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+
+  <link rel="stylesheet" href="soglia-mobile-layout.css?v=20261012-mobile1">
+</head>
+<body id="top">
+  <header class="mobile-header">
+    <a class="mobile-logo" id="mobileLogo" href="#top" aria-label="Il Suono Organizzato">ISO</a>
+    <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Apri il menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+  </header>
+  <main class="mobile-content" id="mobileContent">
+    <h1 class="mobile-headline" id="mobileHeadline" aria-label="Nel suono nascono relazioni, immagini, spazi, storie che creano forme.">
+      <span class="mobile-line" aria-hidden="true">NEL SUONO</span>
+      <span class="mobile-line" aria-hidden="true">NASCONO RELAZIONI,</span>
+      <span class="mobile-line" aria-hidden="true">IMMAGINI, SPAZI,</span>
+      <span class="mobile-line" aria-hidden="true">STORIE</span>
+      <span class="mobile-line" aria-hidden="true">CHE CREANO FORME.</span>
+    </h1>
+    <section class="mobile-postcard" aria-label="Cartolina 1, immagini e suoni da svelare">
+      <iframe id="soglia" title="Cartolina interattiva da cancellare con il dito" data-source="soglia-frozen.html"></iframe>
+    </section>
+  </main>
+  <section class="mobile-menu" id="mobileMenu" aria-hidden="true" inert>
+    <nav class="mobile-navigation" aria-label="Menu principale">
+      <a style="--menu-order:0" data-target="film" href="https://iso-works-motion-lab.area-di-lavo-9208.chatgpt.site">FILM</a>
+      <a style="--menu-order:1" data-target="fragment" href="https://il-suono-organizzato-terra-viva.willy-washburn.chatgpt.site/">FRAGMENT</a>
+      <a style="--menu-order:2" data-target="blog" href="https://iso-blog-two-stories-candidate.area-di-lavo-9208.chatgpt.site">BLOG</a>
+      <a style="--menu-order:3" data-target="about" href="https://iso-about-parole.area-di-lavo-9208.chatgpt.site">ABOUT</a>
+    </nav>
+  </section>
+  <span class="meter" id="meter" aria-hidden="true"><span class="meter-zone" id="meterZone"></span></span>
+  <button class="meter-hit active" id="meterHit" type="button" aria-label="Disattiva l'audio" aria-pressed="false"></button>
+
+  <script src="experience-loader.js?v=20261003-cartolina1"></script>
+  <script src="cartolina-config.js?v=20261003-cartolina1"></script>
+  <script src="loop-audio.js?v=20261003-cartolina1"></script>
+  <script src="iso-meter-response.js?v=20261003-meter12"></script>
+  <script src="site-visit.js?v=20261008-entry-once"></script>
+  <script src="site-language.js?v=20261008-language-frame"></script>
+  <script src="soglia-mobile.js?v=20261012-mobile1"></script>
+  <script>
+    (() => {
+      // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
+      const frame = document.getElementById('soglia');
+      const meter = document.getElementById('meter');
+      const meterHit = document.getElementById('meterHit');
+      const meterZone = document.getElementById('meterZone');
+      const loader = window.ISOExperienceLoader;
+      const directEntry = true; // Mobile has its own headline; prepare only the shared eraser.
+      // Optional historical-player comparison. The normal experience keeps
+      // the prepared PCM crossfade; this mode tests native HTML audio only.
+      const audioEngineMode = new URL(window.location.href).searchParams.get('audio_motore') === 'html' ? 'html' : 'pcm';
+      let experienceReady = false;
+      let preparationPromise = null;
+      const diagnostics = [];
+      function record(kind, detail = {}) {
+        diagnostics.push({ time: performance.now(), kind, ...detail });
+        if (diagnostics.length > 60) diagnostics.shift();
+      }
+      const photoTracks = [];
+      const photoGains = [];
+      const targetPhotoLevels = [];
+      const scheduledPhotoLevels = [];
+      let cartolinaConfig = null;
+      let cartolinaLoadPromise = null;
+      let audioLoadError = null;
+      let loopsStartedAt = null;
+      let nativeStartPromise = null;
+      const columns = Array.from({ length: 2 }, () => {
+        const column = document.createElement('span');
+        column.className = 'meter-col';
+        for (let index = 0; index < 16; index++) {
+          const segment = document.createElement('i');
+          segment.className = 'meter-seg';
+          column.appendChild(segment);
+        }
+        meterZone.appendChild(column);
+        return column;
+      });
+
+      let meterPaused = false;
+      let meterStarted = false;
+      let revealLevel = 0;
+      let targetRevealLevel = 0;
+      let meterPrevious = performance.now();
+      let samplePrevious = 0;
+      let audioContext = null;
+      let analyserLeft = null;
+      let analyserRight = null;
+      let masterInput = null;
+      let masterGain = null;
+      let muteGain = null;
+      let experienceAudioLevel = 1;
+      let silentSink = null;
+      let monoEvidence = 0;
+      const meterValues = [0, 0];
+      const timeLeft = new Float32Array(2048);
+      const timeRight = new Float32Array(2048);
+      const attachedMedia = new WeakMap();
+
+      function clamp(value, min = 0, max = 1) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function startMeterEntrance() {
+        if (meterStarted) return;
+        meterStarted = true;
+      }
+
+      function createAudioEngine() {
+        if (audioContext) return audioContext;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContextClass({ sampleRate: 48000, latencyHint: 'balanced' });
+        masterInput = audioContext.createGain();
+        masterGain = audioContext.createGain();
+        muteGain = audioContext.createGain();
+        const splitter = audioContext.createChannelSplitter(2);
+        analyserLeft = audioContext.createAnalyser();
+        analyserRight = audioContext.createAnalyser();
+        silentSink = audioContext.createGain();
+
+        analyserLeft.fftSize = analyserRight.fftSize = 2048;
+        analyserLeft.smoothingTimeConstant = analyserRight.smoothingTimeConstant = 0;
+        silentSink.gain.value = 0;
+
+        masterInput.connect(masterGain);
+        masterGain.connect(muteGain);
+        muteGain.connect(audioContext.destination);
+        muteGain.connect(splitter);
+        splitter.connect(analyserLeft, 0);
+        splitter.connect(analyserRight, 1);
+        analyserLeft.connect(silentSink);
+        analyserRight.connect(silentSink);
+        silentSink.connect(audioContext.destination);
+        masterGain.gain.value = experienceAudioLevel;
+        muteGain.gain.value = 1;
+        ensurePhotoGains();
+        audioContext.addEventListener?.('statechange', () => record('audio-state', { state: audioContext.state }));
+        audioContext.addEventListener?.('error', () => record('audio-device-error', { state: audioContext.state }));
+        record('audio-created', { sampleRate: audioContext.sampleRate, baseLatency: audioContext.baseLatency });
+        return audioContext;
+      }
+
+      function ensurePhotoGains() {
+        if (!audioContext) return;
+        while (photoGains.length < photoTracks.length) {
+          const gain = audioContext.createGain();
+          gain.gain.value = 0;
+          gain.connect(masterInput);
+          photoGains.push(gain);
+        }
+      }
+
+      function fadeMuteState(paused) {
+        if (!audioContext || !muteGain) return;
+        window.ISOMeterResponse.fadeMuted(audioContext, muteGain.gain, paused);
+      }
+
+      // Page departure has its own envelope, before the independent meter mute.
+      // Both PCM and native HTML loops keep running through the same audio bus.
+      function fadeExperienceAudio(level, seconds) {
+        experienceAudioLevel = level;
+        if (audioContext && masterGain) {
+          window.ISOLoopAudio.fade(audioContext, masterGain.gain, level, seconds);
+        }
+        record('menu-audio-fade', { level, seconds });
+      }
+
+      function receiveMenuFade(event) {
+        const { level, deadline } = event.detail || {};
+        if ((level !== 0 && level !== 1) || !Number.isFinite(deadline)) return;
+        // The iframe and audio context share an absolute visual deadline.
+        const seconds = Math.max(0, (deadline - performance.timeOrigin - performance.now()) / 1000);
+        fadeExperienceAudio(level, seconds);
+      }
+
+      function attachMediaElement(media) {
+        if (!media || attachedMedia.has(media)) return attachedMedia.get(media);
+        createAudioEngine();
+        try {
+          const source = audioContext.createMediaElementSource(media);
+          source.connect(masterInput);
+          attachedMedia.set(media, source);
+          return source;
+        } catch (error) {
+          console.warn('ISO meter: media element non collegabile', error);
+          return null;
+        }
+      }
+
+      function scanMedia(root = document) {
+        root.querySelectorAll('audio, video').forEach(attachMediaElement);
+      }
+
+      function rms(buffer) {
+        let sum = 0;
+        for (let index = 0; index < buffer.length; index++) sum += buffer[index] * buffer[index];
+        return Math.sqrt(sum / buffer.length);
+      }
+
+      function vuLevel(linear) {
+        if (linear < .00008) return 0;
+        const db = 20 * Math.log10(linear);
+        return clamp((db + 54) / 48);
+      }
+
+      function readStereoLevels() {
+        if (!analyserLeft || !analyserRight || audioContext.state !== 'running') return [0, 0];
+        analyserLeft.getFloatTimeDomainData(timeLeft);
+        analyserRight.getFloatTimeDomainData(timeRight);
+        let left = rms(timeLeft);
+        let right = rms(timeRight);
+
+        if (left > .001 && right < left * .015) monoEvidence = Math.min(45, monoEvidence + 1);
+        else if (right > .001) monoEvidence = Math.max(0, monoEvidence - 4);
+        if (monoEvidence > 18) right = left;
+        return [vuLevel(left), vuLevel(right)];
+      }
+
+      function loadCartolinaAudio() {
+        if (cartolinaLoadPromise) return cartolinaLoadPromise;
+        cartolinaLoadPromise = window.ISOCartolina.load().then(async config => {
+          cartolinaConfig = config;
+          if (!photoTracks.length) {
+            config.layers.forEach(layer => {
+              photoTracks.push({ url: layer.audio, sha256: layer.audioSHA256, buffer: null, source: null });
+              targetPhotoLevels.push(0);
+              scheduledPhotoLevels.push(-1);
+            });
+          }
+          ensurePhotoGains();
+          // Fetch concurrently, then decode one file at a time while the gate
+          // is still closed. No decoding or seam preparation during the eraser.
+          await Promise.all(photoTracks.filter(track => !track.buffer && !track.media).map(track => loader.bytes(track.url, track.sha256)));
+          if (audioEngineMode === 'html') {
+            await Promise.all(photoTracks.map(async track => {
+              if (track.media) return;
+              Object.assign(track, await window.ISOLoopAudio.loadHTML(track.url, track.sha256));
+              record('audio-native-ready', { source: track.url, duration: track.media.duration });
+              ['waiting', 'stalled', 'error', 'ended'].forEach(event => {
+                track.media.addEventListener(event, () => record('audio-native-' + event, { source: track.url, readyState: track.media.readyState }));
+              });
+            }));
+            audioLoadError = null;
+            return;
+          }
+          // Decode independently of autoplay/device state, always at 48 kHz.
+          const decoder = window.ISOLoopAudio.createDecoder();
+          for (const track of photoTracks) {
+            if (track.buffer) continue;
+            record('audio-decoding', { source: track.url });
+            Object.assign(track, await window.ISOLoopAudio.load(decoder, track.url, config.loopCrossfadeSeconds, track.sha256));
+            record('audio-decoded', { source: track.url, duration: track.buffer.duration });
+          }
+          audioLoadError = null;
+        }).catch(error => {
+          audioLoadError = error.message;
+          cartolinaLoadPromise = null;
+          throw error;
+        });
+        return cartolinaLoadPromise;
+      }
+
+      async function ensureAudioStarted() {
+        const context = createAudioEngine();
+        // Unlock on the intro's first real gesture; sources remain silent until
+        // the photos are revealed. Background preparation never owns this step.
+        const resumePromise = context.state !== 'running' ? context.resume() : Promise.resolve();
+        try {
+          await Promise.all([resumePromise, loadCartolinaAudio()]);
+          if (!experienceReady) prepareExperience();
+          if (loopsStartedAt !== null) return;
+          if (audioEngineMode === 'html') {
+            if (!nativeStartPromise) nativeStartPromise = (async () => {
+              photoTracks.forEach((track, index) => {
+                if (track.source) return;
+                track.source = context.createMediaElementSource(track.media);
+                track.source.connect(photoGains[index]);
+              });
+              await Promise.all(photoTracks.map(track => track.media.paused ? track.media.play() : Promise.resolve()));
+              loopsStartedAt = context.currentTime;
+              record('audio-native-loops-started');
+            })().catch(error => { nativeStartPromise = null; throw error; });
+            await nativeStartPromise;
+            return;
+          }
+          loopsStartedAt = context.currentTime + .025;
+          photoTracks.forEach((track, index) => {
+            const source = context.createBufferSource();
+            source.buffer = track.buffer;
+            source.loop = true;
+            source.loopStart = track.loopStart;
+            source.loopEnd = track.loopEnd;
+            source.connect(photoGains[index]);
+            source.start(loopsStartedAt, track.loopStart);
+            source.addEventListener?.('ended', () => record('audio-source-ended', { source: track.url }));
+            track.source = source;
+          });
+          record('audio-loops-started');
+        } catch (error) {
+          console.warn('ISO cartolina: audio non ancora disponibile', error);
+        }
+      }
+
+      function sampleRevealProgress(now) {
+        if (now - samplePrevious < 90) return;
+        samplePrevious = now;
+        try {
+          const debug = frame.contentWindow.__eraseDebug;
+          if (!debug) return;
+          const ratios = debug.visiblePhotoRatios;
+          if (!ratios) return;
+          let visibleTotal = 0;
+          for (let index = 0; index < photoTracks.length; index++) {
+            targetPhotoLevels[index] = clamp(ratios[index] || 0);
+            visibleTotal += targetPhotoLevels[index];
+          }
+          targetRevealLevel = clamp(visibleTotal);
+          if (targetRevealLevel > .001) startMeterEntrance();
+        } catch (_) {}
+      }
+
+      function draw(now) {
+        const dt = Math.min(40, now - meterPrevious);
+        meterPrevious = now;
+        sampleRevealProgress(now);
+        revealLevel += (targetRevealLevel - revealLevel) * (1 - Math.exp(-.0055 * dt));
+
+        if (audioContext && loopsStartedAt !== null && audioContext.currentTime >= loopsStartedAt) {
+          photoGains.forEach((gain, index) => {
+            const target = targetPhotoLevels[index];
+            if (Math.abs(target - scheduledPhotoLevels[index]) < 1e-7) return;
+            window.ISOLoopAudio.fade(audioContext, gain.gain, target, cartolinaConfig.fadeSeconds);
+            scheduledPhotoLevels[index] = target;
+          });
+        }
+
+        const [left, right] = meterPaused ? [0, 0] : readStereoLevels();
+        const targets = [left, right];
+        columns.forEach((column, columnIndex) => {
+          meterValues[columnIndex] = window.ISOMeterResponse.advance(meterValues[columnIndex], targets[columnIndex], dt);
+          if (targets[columnIndex] === 0 && meterValues[columnIndex] < .002) meterValues[columnIndex] = 0;
+          const exact = meterValues[columnIndex] * 16;
+          Array.from(column.children).forEach((segment, index) => {
+            const distance = exact - index;
+            const partialOpacity = Math.min(.9, .16 + Math.max(0, distance) * .72);
+            segment.style.background = meterPaused || distance <= .03
+              ? '#343434'
+              : distance >= 1
+                ? '#f1f1f1'
+                : `rgba(241,241,241,${partialOpacity})`;
+            segment.style.opacity = '1';
+            segment.style.transform = 'scaleY(1)';
+          });
+        });
+        requestAnimationFrame(draw);
+      }
+
+      function loadFrozenSoglia() {
+        return new Promise((resolve, reject) => {
+          const source = new URL(frame.dataset.source + window.location.search, window.location.href);
+          source.searchParams.set('build', '20261012-mobile1');
+          const sourceURL = source.href;
+          const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
+          function finish(error) {
+            clearTimeout(timeout);
+            frame.removeEventListener('load', loaded);
+            if (error) reject(error); else resolve();
+          }
+          async function loaded() {
+            try {
+              const child = frame.contentWindow;
+              if (child.location.href === 'about:blank') return;
+              if (typeof child.__prepareFrozenSoglia !== 'function' || typeof child.__startSogliaExperience !== 'function') {
+                throw new Error('Pagina non disponibile');
+              }
+              window.ISOSogliaMobile.configureFrame(child);
+              child.addEventListener('iso:menu-fade', receiveMenuFade);
+              child.addEventListener('iso:soglia-entered', () => {
+                window.ISOSiteVisit.markSogliaEntered();
+                record('threshold-entered', { direct: directEntry });
+              });
+              frame.contentDocument.addEventListener('pointerdown', ensureAudioStarted, { capture: true });
+              frame.contentDocument.addEventListener('keydown', event => {
+                if (event.code === 'Space' || event.code === 'Enter') ensureAudioStarted();
+              }, { capture: true });
+              child.__showSogliaIntro({ direct: directEntry })
+                .then(() => record(directEntry ? 'direct-entry-prepared' : 'intro-started'))
+                .catch(error => record('intro-error', { error: error.message }));
+              clearTimeout(timeout);
+              frame.removeEventListener('load', loaded);
+              resolve(child);
+            } catch (error) { finish(error); }
+          }
+          frame.addEventListener('load', loaded);
+          frame.src = sourceURL;
+        });
+      }
+
+      const frozenFrame = loadFrozenSoglia();
+      frozenFrame.catch(error => record('frame-error', { error: error.message }));
+      window.addEventListener('pageshow', event => {
+        if (!event.persisted || !window.ISOSiteVisit.hasEnteredSoglia()) return;
+        // Browser Back may restore the old iframe, including its departure fade.
+        // Reuse its prepared media and reveal the menu rather than replaying intro.
+        frozenFrame.then(child => child.__requestSogliaDirectEntry())
+          .catch(error => record('return-entry-error', { error: error.message }));
+      });
+
+      function prepareExperience() {
+        if (experienceReady) return Promise.resolve();
+        if (preparationPromise) return preparationPromise;
+        loader.retry();
+        preparationPromise = (async () => {
+          await window.ISOCartolina.load();
+          const child = await frozenFrame;
+          // Wait for both branches even on failure, so a retry cannot race the
+          // previous iframe or decode and start duplicate preparation work.
+          const results = await Promise.allSettled([child.__prepareFrozenSoglia(), loadCartolinaAudio()]);
+          const failed = results.find(result => result.status === 'rejected');
+          if (failed) throw failed.reason;
+          loader.preparing();
+          if (document.fonts) await document.fonts.ready;
+          loader.ready();
+          frame.contentWindow.__startSogliaExperience();
+          experienceReady = true;
+          record('cartolina-ready');
+        })().catch(error => {
+          loader.fail(error);
+          record('preparation-error', { error: error.message });
+          console.warn('ISO cartolina: esperienza in attesa', error);
+        }).finally(() => { preparationPromise = null; });
+        return preparationPromise;
+      }
+      window.__retrySogliaAssets = prepareExperience;
+
+      function setMeterMuted(value) {
+        const next = Boolean(value);
+        if (next === meterPaused) return;
+        meterPaused = next;
+        fadeMuteState(meterPaused);
+        meter.classList.toggle('paused', meterPaused);
+        meterHit.setAttribute('aria-pressed', String(meterPaused));
+        meterHit.setAttribute('aria-label', meterPaused ? "Riattiva l'audio" : "Disattiva l'audio");
+      }
+      meterHit.addEventListener('click', event => {
+        event.stopPropagation();
+        ensureAudioStarted();
+        setMeterMuted(!meterPaused);
+      });
+
+      window.__sogliaMeterDebug = {
+        setMuted: setMeterMuted,
+        get revealLevel() { return revealLevel; },
+        get targetRevealLevel() { return targetRevealLevel; },
+        get levels() { return meterValues.slice(); },
+        get audioState() { return audioContext ? audioContext.state : 'not-created'; },
+        get experienceReady() { return experienceReady; },
+        get loading() { return loader.snapshot(); },
+        get diagnostics() { return diagnostics.slice(); },
+        get paused() { return meterPaused; },
+        get experienceAudioLevel() { return experienceAudioLevel; },
+        get cartolina() { return cartolinaConfig ? cartolinaConfig.manifestURL : null; },
+        get audioOrigin() { return cartolinaConfig ? cartolinaConfig.audioOrigin : null; },
+        get audioEngine() { return audioEngineMode; },
+        capture() {
+          const stats = audioContext?.playbackStats;
+          return {
+            build: '20261003-cartolina1', audioOrigin: this.audioOrigin, audioEngine: audioEngineMode,
+            ready: experienceReady, paused: meterPaused, error: this.error,
+            audio: audioContext ? {
+              state: audioContext.state, currentTime: audioContext.currentTime,
+              sampleRate: audioContext.sampleRate, baseLatency: audioContext.baseLatency,
+              outputLatency: audioContext.outputLatency,
+              playbackStats: stats ? {
+                totalDuration: stats.totalDuration,
+                underrunDuration: stats.underrunDuration, underrunEvents: stats.underrunEvents,
+                averageLatency: stats.averageLatency, maximumLatency: stats.maximumLatency
+              } : null
+            } : null,
+            tracks: this.tracks, resources: loader.snapshot().assets,
+            diagnostics: diagnostics.slice()
+          };
+        },
+        get error() { return loader.snapshot().error || audioLoadError || window.__cartolinaLoadError || null; },
+        get tracks() {
+          return photoTracks.map((track, index) => ({
+            source: track.url,
+            loop: track.media ? track.media.loop : track.source ? track.source.loop : false,
+            playing: loopsStartedAt !== null && audioContext.state === 'running' && (!track.media || !track.media.paused),
+            time: track.media ? track.media.currentTime : loopsStartedAt === null ? 0 : Math.max(0, audioContext.currentTime - loopsStartedAt) % (track.loopEnd - track.loopStart),
+            readyState: track.media ? track.media.readyState : track.buffer ? 4 : 0,
+            loopCrossfadeSeconds: track.crossfadeSeconds || 0,
+            targetVolume: targetPhotoLevels[index],
+            gain: photoGains[index] ? photoGains[index].gain.value : 0
+          }));
+        },
+        attachMediaElement,
+        connect(node) {
+          createAudioEngine();
+          node.connect(masterInput);
+          return node;
+        }
+      };
+
+      window.ISOAudioMeter = window.__sogliaMeterDebug;
+      if (window.PerformanceObserver) {
+        try {
+          new window.PerformanceObserver(list => {
+            list.getEntries().forEach(entry => record('long-task', { duration: entry.duration }));
+          }).observe({ type: 'longtask', buffered: true });
+        } catch (_) {}
+      }
+
+      prepareExperience();
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>

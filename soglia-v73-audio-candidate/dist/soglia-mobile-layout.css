@@ -1,0 +1,38 @@
+@font-face{font-family:"New Heterodox Mono";src:url("fonts/NewHeterodoxMono-Book.otf") format("opentype");font-style:normal;font-weight:400 500;font-display:swap}
+:root{--mobile-safe-top:env(safe-area-inset-top,0px);--mobile-header-height:calc(60px + var(--mobile-safe-top));--mobile-margin:18px}
+html,body{width:100%;height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;background:#fff;color:#090909;font-family:"New Heterodox Mono","Courier New",monospace;-webkit-text-size-adjust:100%;scroll-padding-top:var(--mobile-header-height)}
+body{padding-top:var(--mobile-header-height)}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:inherit}
+.mobile-header{position:fixed;z-index:100;inset:0 0 auto;height:var(--mobile-header-height);padding:var(--mobile-safe-top) var(--mobile-margin) 0;display:flex;align-items:center;justify-content:space-between;background:#000;color:#fff}
+.mobile-logo{display:flex;align-items:center;min-width:44px;min-height:44px;color:inherit;text-decoration:none;font-size:26px;line-height:1;letter-spacing:.04em}
+.mobile-toggle{position:relative;width:48px;height:48px;border:0;padding:0;background:transparent;color:#fff;cursor:pointer;touch-action:manipulation}
+.mobile-toggle span{position:absolute;left:7px;top:23px;width:34px;height:1.5px;background:currentColor;transform-origin:center;transition:transform 300ms cubic-bezier(.65,0,.35,1),opacity 180ms ease}
+.mobile-toggle span:nth-child(1){transform:translateY(-6px)}
+.mobile-toggle span:nth-child(3){transform:translateY(6px)}
+.mobile-toggle[aria-expanded="true"] span:nth-child(1){transform:rotate(45deg)}
+.mobile-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;transform:scaleX(.1)}
+.mobile-toggle[aria-expanded="true"] span:nth-child(3){transform:rotate(-45deg)}
+.meter,.meter-hit{z-index:110;top:calc(var(--mobile-safe-top) + 30px)}
+.meter-hit{width:60px;height:54px}
+.mobile-content{position:relative;width:100%;max-width:480px;margin:0 auto;padding:26px var(--mobile-margin) calc(28px + env(safe-area-inset-bottom,0px));isolation:isolate;overflow:clip}
+.mobile-headline{position:relative;z-index:2;margin:0 0 28px;font-weight:400;font-size:clamp(25px,7.5vw,36px);line-height:1.1;letter-spacing:.01em;pointer-events:none}
+.mobile-line{display:block;min-height:1.1em;white-space:nowrap}
+.mobile-line:nth-child(3),.mobile-line:nth-child(4){text-align:right}
+.mobile-line:nth-child(5){margin-top:.2em}
+.mobile-letter{display:inline-block;white-space:pre;transform-origin:center}
+.mobile-postcard{position:relative;width:100%;aspect-ratio:1;overflow:hidden}
+#soglia{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;opacity:0;pointer-events:none;transition:opacity 380ms ease}
+body.mobile-media-ready #soglia{opacity:1;pointer-events:auto}
+.mobile-menu{position:fixed;z-index:95;top:var(--mobile-header-height);left:0;right:0;height:calc(100vh - var(--mobile-header-height));height:calc(100dvh - var(--mobile-header-height));background:#fff;overflow:auto;overscroll-behavior:contain;clip-path:inset(0 0 100% 0);pointer-events:none;transition:clip-path 420ms cubic-bezier(.65,0,.35,1);padding:4px var(--mobile-margin) calc(24px + env(safe-area-inset-bottom,0px))}
+.mobile-menu.is-open{clip-path:inset(0 0 0 0);pointer-events:auto}
+.mobile-navigation{max-width:720px;margin:0 auto}
+.mobile-navigation a{display:block;min-height:62px;padding:17px 0 14px;border-bottom:1px solid #dedede;color:#090909;text-decoration:none;font-size:clamp(23px,6vw,29px);line-height:1.2;letter-spacing:.01em;opacity:0;transform:translateY(-7px);transition:opacity 190ms ease,transform 260ms cubic-bezier(.2,.7,.2,1);transition-delay:calc((3 - var(--menu-order))*35ms)}
+.mobile-menu.is-open .mobile-navigation a{opacity:1;transform:translateY(0);transition-delay:calc(130ms + var(--menu-order)*75ms)}
+.mobile-navigation a:last-child{border-bottom:0}
+.mobile-logo:focus-visible,.mobile-toggle:focus-visible,.meter-hit:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.mobile-navigation a:focus-visible{outline:1px solid currentColor;outline-offset:3px}
+html.mobile-menu-open{overflow-y:hidden}
+@media(max-width:359px){:root{--mobile-margin:14px}.mobile-headline{font-size:24px}.mobile-content{padding-top:22px}.mobile-headline{margin-bottom:24px}}
+@media(min-width:768px){.mobile-content{padding-top:32px}.mobile-headline{font-size:36px}}
+@media(prefers-reduced-motion:reduce){.mobile-toggle span,.mobile-menu,.mobile-navigation a,#soglia{transition:none!important}}
