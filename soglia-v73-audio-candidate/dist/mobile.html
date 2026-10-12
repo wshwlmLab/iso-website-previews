@@ -116,11 +116,11 @@
     }
   </style>
 
-  <link rel="stylesheet" href="soglia-mobile-layout.css?v=20261012-mobile1">
+  <link rel="stylesheet" href="soglia-mobile-layout.css?v=20261012-mobile2">
 </head>
 <body id="top">
   <header class="mobile-header">
-    <a class="mobile-logo" id="mobileLogo" href="#top" aria-label="Il Suono Organizzato">ISO</a>
+    <a class="mobile-logo" id="mobileLogo" href="#top" aria-label="Il Suono Organizzato">I.S.O.</a>
     <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Apri il menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
   </header>
   <main class="mobile-content" id="mobileContent">
@@ -134,6 +134,7 @@
     <section class="mobile-postcard" aria-label="Cartolina 1, immagini e suoni da svelare">
       <iframe id="soglia" title="Cartolina interattiva da cancellare con il dito" data-source="soglia-frozen.html"></iframe>
     </section>
+    <p class="mobile-signature">il suono organizzato</p>
   </main>
   <section class="mobile-menu" id="mobileMenu" aria-hidden="true" inert>
     <nav class="mobile-navigation" aria-label="Menu principale">
@@ -152,7 +153,7 @@
   <script src="iso-meter-response.js?v=20261003-meter12"></script>
   <script src="site-visit.js?v=20261008-entry-once"></script>
   <script src="site-language.js?v=20261008-language-frame"></script>
-  <script src="soglia-mobile.js?v=20261012-mobile1"></script>
+  <script src="soglia-mobile.js?v=20261012-mobile2"></script>
   <script>
     (() => {
       // ISO OFFICIAL METER v1 — canonical stereo VU implementation.
@@ -184,7 +185,7 @@
       const columns = Array.from({ length: 2 }, () => {
         const column = document.createElement('span');
         column.className = 'meter-col';
-        for (let index = 0; index < 16; index++) {
+        for (let index = 0; index < 20; index++) {
           const segment = document.createElement('i');
           segment.className = 'meter-seg';
           column.appendChild(segment);
@@ -455,7 +456,7 @@
         columns.forEach((column, columnIndex) => {
           meterValues[columnIndex] = window.ISOMeterResponse.advance(meterValues[columnIndex], targets[columnIndex], dt);
           if (targets[columnIndex] === 0 && meterValues[columnIndex] < .002) meterValues[columnIndex] = 0;
-          const exact = meterValues[columnIndex] * 16;
+          const exact = meterValues[columnIndex] * 20;
           Array.from(column.children).forEach((segment, index) => {
             const distance = exact - index;
             const partialOpacity = Math.min(.9, .16 + Math.max(0, distance) * .72);
@@ -474,7 +475,7 @@
       function loadFrozenSoglia() {
         return new Promise((resolve, reject) => {
           const source = new URL(frame.dataset.source + window.location.search, window.location.href);
-          source.searchParams.set('build', '20261012-mobile1');
+          source.searchParams.set('build', '20261012-mobile2');
           const sourceURL = source.href;
           const timeout = setTimeout(() => finish(new Error('Pagina non disponibile')), 45000);
           function finish(error) {

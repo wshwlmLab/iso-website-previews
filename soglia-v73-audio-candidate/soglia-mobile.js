@@ -9,11 +9,11 @@
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   const firstVisit=!window.ISOSiteVisit.hasEnteredSoglia();
   let open=false;
-  let introFinished=!firstVisit||reduceMotion.matches;
+  let introFinished=reduceMotion.matches;
   let mediaReady=false;
   let navigating=false;
   const entranceAnimations=[];
-  if(firstVisit&&!reduceMotion.matches)headline.style.visibility='hidden';
+  if(!reduceMotion.matches)headline.style.visibility='hidden';
 
   function revealPostcard(){
     document.body.classList.toggle('mobile-media-ready',introFinished&&mediaReady);
@@ -82,7 +82,7 @@
   async function formHeadline(){
     try{
       if(document.fonts)await document.fonts.ready;
-      if(!firstVisit||reduceMotion.matches)return;
+      if(reduceMotion.matches)return;
       const glyphs=[];
       for(const line of headline.querySelectorAll('.mobile-line')){
         const text=line.textContent;
@@ -93,18 +93,13 @@
           return span;
         }));
       }
-      // Read destinations once, then let the compositor settle each letter.
-      const bounds=glyphs.map(glyph=>glyph.getBoundingClientRect());
-      glyphs.forEach((glyph,index)=>{
-        const r=bounds[index];
-        const side=index%4;
-        const x=side===0?-r.right-28:side===1?window.innerWidth-r.left+28:(Math.random()-.5)*90;
-        const y=side===2?-r.bottom-40:side===3?window.innerHeight-r.top+40:(Math.random()-.5)*100;
-        const animation=glyph.animate([
-          {transform:`translate(${x}px,${y}px)`,opacity:0},
-          {opacity:1,offset:.2},
-          {transform:'translate(0,0)',opacity:1}
-        ],{duration:1350+Math.random()*450,delay:(index*47)%510,easing:'cubic-bezier(.16,.7,.16,1)',fill:'both'});
+      // Match the approved Soglia letter entrance: random fades in place.
+      // A fresh document has a brief fade; history restoration stays still.
+      glyphs.forEach(glyph=>{
+        const animation=glyph.animate([{opacity:0},{opacity:1}],{
+          duration:260,delay:Math.floor(Math.random()*980),
+          easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'
+        });
         entranceAnimations.push(animation);
       });
       headline.style.visibility='visible';

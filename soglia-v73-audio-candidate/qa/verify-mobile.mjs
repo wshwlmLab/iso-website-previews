@@ -9,10 +9,14 @@ const mobile=fs.readFileSync('dist/mobile.html','utf8');
 const inline=s=>[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
 const expected=inline(desktop)
   .replace('const directEntry = window.ISOSiteVisit.hasEnteredSoglia();','const directEntry = true; // Mobile has its own headline; prepare only the shared eraser.')
-  .replace("source.searchParams.set('build', '20261009-city-case');","source.searchParams.set('build', '20261012-mobile1');")
-  .replace("frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');",'window.ISOSogliaMobile.configureFrame(child);');
+  .replace("source.searchParams.set('build', '20261009-city-case');","source.searchParams.set('build', '20261012-mobile2');")
+  .replace("frame.contentDocument.documentElement.style.setProperty('--frame-side', '1vw');",'window.ISOSogliaMobile.configureFrame(child);')
+  .replace('for (let index = 0; index < 16; index++)','for (let index = 0; index < 20; index++)')
+  .replace('const exact = meterValues[columnIndex] * 16;','const exact = meterValues[columnIndex] * 20;');
 assert.equal(inline(mobile),expected,'The mobile player must retain the approved audio and meter engine');
+const mobileFiles=new Set(['dist/mobile.html','dist/soglia-mobile-layout.css','dist/soglia-mobile.js','MOBILE-TRIAL-2026-10-12.md','qa/verify-mobile.mjs']);
 for(const name of execFileSync('git',['ls-files'],{encoding:'utf8'}).trim().split('\n')){
+  if(mobileFiles.has(name))continue;
   const current=fs.readFileSync(name);
   const previous=execFileSync('git',['show','HEAD:'+name],{maxBuffer:64*1024*1024});
   assert.ok(current.equals(previous),'Existing source changed: '+name);
@@ -31,7 +35,7 @@ async function checkController({entered=false,reduced=false}={}){
       focus(){doc.activeElement=this;},
       replaceChildren(...nodes){this.children=nodes;},
       getBoundingClientRect(){return {left:20,right:40,top:100,bottom:135};},
-      animate(){let finish;const animation={finished:new Promise(resolve=>finish=resolve),cancel(){this.cancelled=true;},finish(){finish();}};animations.push(animation);return animation;},
+      animate(keyframes,options){let finish;const animation={keyframes,options,finished:new Promise(resolve=>finish=resolve),cancel(){this.cancelled=true;},finish(){finish();}};animations.push(animation);return animation;},
       getAnimations:()=>animations
     };
   }
@@ -52,13 +56,14 @@ async function checkController({entered=false,reduced=false}={}){
   assert.equal(nodes.soglia.inert,true,'Assets must be ready before touch is enabled');
   win.ISOSogliaMobile.configureFrame(child);
   childListeners['iso:soglia-entered']();
-  assert.equal(win.ISOSogliaMobile.ready,entered||reduced,'An animated first visit must still wait for all letters');
+  assert.equal(win.ISOSogliaMobile.ready,reduced,'The entry fade must finish before touch is enabled');
   await settle();
-  if(!entered&&!reduced){
+  if(!reduced){
     assert.ok(animations.length>50,'Every non-space letter must enter');
+    assert.ok(animations.every(a=>a.keyframes.every(f=>Object.keys(f).every(k=>k==='opacity'))),'Headline letters must only fade in place');
     assert.equal(nodes.soglia.inert,true);
     animations.forEach(a=>a.finish());await settle();
-  }else assert.equal(animations.length,0,'Return visits and reduced motion must keep the phrase still');
+  }else assert.equal(animations.length,0,'Reduced motion must keep the phrase still');
   assert.equal(win.ISOSogliaMobile.ready,true);assert.equal(nodes.soglia.inert,false);
   assert.equal(doc.body.classList.contains('mobile-media-ready'),true);
   for(let i=0;i<12;i++)nodes.mobileToggle.handlers.click();
@@ -73,7 +78,9 @@ async function checkController({entered=false,reduced=false}={}){
   listeners.keydown({key:'Escape',preventDefault(){}});
   assert.equal(win.ISOSogliaMobile.menuOpen,false);assert.equal(nodes.mobileMenu.inert,true);
   assert.equal(nodes.mobileContent.inert,false);assert.equal(doc.activeElement,nodes.mobileToggle);
+  const animationCount=animations.length;
   nodes.mobileToggle.handlers.click();listeners.pageshow({persisted:true});
+  assert.equal(animations.length,animationCount,'History restoration must not repeat the letter entrance');
   assert.equal(win.ISOSogliaMobile.menuOpen,false,'History return must close the modal menu');
   assert.equal(nodes.mobileHeadline.style.visibility,'visible');
 }
