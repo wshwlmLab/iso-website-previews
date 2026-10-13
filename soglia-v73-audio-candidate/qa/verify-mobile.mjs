@@ -89,7 +89,7 @@ await checkController();await checkController({entered:true});await checkControl
 // Exercise the unchanged engine with actual touch event conventions and
 // phone-sized viewports, including rapid sweeps and several complete cycles.
 const eraser=fs.readFileSync('dist/soglia-frozen.html','utf8');
-for(const width of [284,354])for(const layers of [3,5]){
+for(const width of [269,326])for(const layers of [3,5]){
   const canvasContext=()=>({drawImage(){},putImageData(){},getImageData(x,y,w,h){return this.createImageData(w,h);},createImageData(w,h){return {data:new Uint8ClampedArray(w*h*4)};}});
   const noopList={add(){},remove(){},contains(){return false;},toggle(){}};
   const rect=id=>id==='viewport'?{left:18,top:18,width:width-36,height:width-36}:{left:0,top:0,width,height:width};
